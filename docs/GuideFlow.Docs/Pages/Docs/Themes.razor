@@ -1,0 +1,132 @@
+@page "/docs/themes"
+@page "/docs/theming"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Themes - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>Themes</h1>
+    <p class="docs-lead">Switch between light, dark, and high-contrast themes with a single property. Themes control the overlay, popover, buttons, and progress bar colors. You can also define custom themes by overriding CSS variables.</p>
+
+    <h2 id="built-in-themes">
+        Built-in Themes
+        <a class="docs-anchor" href="#built-in-themes">#</a>
+    </h2>
+
+    <ul>
+        <li><code>gf-theme-light</code> - Default light theme (applied automatically)</li>
+        <li><code>gf-theme-dark</code> - Dark background with light text</li>
+        <li><code>gf-theme-high-contrast</code> - High contrast for accessibility</li>
+    </ul>
+
+    <h2 id="global-theme">
+        Global Theme
+        <a class="docs-anchor" href="#global-theme">#</a>
+    </h2>
+
+    <p>Set the <code>PopoverClass</code> property on <code>TourOptions</code> to apply a theme to all steps:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+{
+    PopoverClass =""gf-theme-dark"",  // All steps use dark theme
+    Overlay = true,
+    ShowProgress = true,
+};")" />
+
+    <h2 id="per-step-theme">
+        Per-Step Theme
+        <a class="docs-anchor" href="#per-step-theme">#</a>
+    </h2>
+
+    <p>Use <code>CssClass</code> on individual steps to override the global theme:</p>
+
+    <CodeBlock Language="razor" Code="@(@"<GuideFlowTour TourOptions=""options"">
+    <!-- This step uses the global (light) theme -->
+    <GuideFlowStep Selector=""#a"" Title=""Light"" Order=""0"">
+        <p>Default light theme.</p>
+    </GuideFlowStep>
+
+    <!-- This step overrides to dark -->
+    <GuideFlowStep Selector=""#b"" Title=""Dark"" Order=""1""
+                   CssClass=""gf-theme-dark"">
+        <p>Dark theme on this step only.</p>
+    </GuideFlowStep>
+</GuideFlowTour>")" />
+
+    <h2 id="custom-themes">
+        Custom Themes
+        <a class="docs-anchor" href="#custom-themes">#</a>
+    </h2>
+
+    <p>Create custom themes by overriding CSS variables:</p>
+
+    <CodeBlock Language="css" Code="@(@".gf-theme-brand {
+    --gf-bg: #1a1a2e;
+    --gf-text: #ffffff;
+    --gf-title: #667eea;
+    --gf-btn-next-bg: #667eea;
+    --gf-btn-next-text: #ffffff;
+    --gf-btn-back-bg: transparent;
+    --gf-btn-back-text: #a0a0b0;
+    --gf-progress-bg: #2a2a3e;
+    --gf-progress-fill: #667eea;
+    --gf-border: #2a2a3e;
+    --gf-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}")" />
+
+    <p>Then apply it: <code>PopoverClass ="gf-theme-brand"</code> or <code>CssClass="gf-theme-brand"</code>.</p>
+
+    <h2 id="live-demo">
+        Live Demo
+        <a class="docs-anchor" href="#live-demo">#</a>
+    </h2>
+
+    <div class="docs-demo">
+        <div class="docs-demo__header">
+            <span class="docs-demo__label">Live Demo</span>
+            <div style="display:flex;gap:8px;">
+                <button class="docs-demo__run" @onclick="StartLight" style="font-size:0.78rem;padding:5px 12px;">Light</button>
+                <button class="docs-demo__run" @onclick="StartDark" style="font-size:0.78rem;padding:5px 12px;background:#1a1a2e;">Dark</button>
+                <button class="docs-demo__run" @onclick="StartHC" style="font-size:0.78rem;padding:5px 12px;background:#000;border:2px solid #000;">High Contrast</button>
+            </div>
+        </div>
+        <div class="docs-demo__body" style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div id="theme-el" style="padding:1rem;background:#f1f3f5;border:1px solid #e5e7eb;border-radius:10px;font-weight:600;">
+                🎨 Themed Element
+            </div>
+        </div>
+    </div>
+
+    <GuideFlowTour @ref="lightTour" TourOptions="lightOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+        <GuideFlowStep Element="#theme-el" Title="Light Theme" Order="0" Side="Placement.Bottom" ShowSkip="false">
+            <p>Default clean light appearance.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+
+    <GuideFlowTour @ref="darkTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+        <GuideFlowStep Element="#theme-el" Title="Dark Theme" Order="0" Side="Placement.Bottom" ShowSkip="false">
+            <p>Dark background with light text.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+
+    <GuideFlowTour @ref="hcTour" TourOptions="hcOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+        <GuideFlowStep Element="#theme-el" Title="High Contrast" Order="0" Side="Placement.Bottom" ShowSkip="false">
+            <p>Maximum readability for accessibility.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+</div>
+
+@code {
+    private GuideFlowTour? lightTour, darkTour, hcTour;
+    private bool busy;
+
+    private TourOptions lightOpts = new() { Overlay = true, AnimationType = AnimationType.Fade };
+    private TourOptions darkOpts = new() { Overlay = true, PopoverClass ="gf-theme-dark", AnimationType = AnimationType.Fade };
+    private TourOptions hcOpts = new() { Overlay = true, PopoverClass ="gf-theme-high-contrast", AnimationType = AnimationType.None };
+
+    private async Task StartLight() { if (lightTour != null && !busy) { busy = true; await lightTour.DriveAsync(); } }
+    private async Task StartDark() { if (darkTour != null && !busy) { busy = true; await darkTour.DriveAsync(); } }
+    private async Task StartHC() { if (hcTour != null && !busy) { busy = true; await hcTour.DriveAsync(); } }
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

@@ -1,0 +1,52 @@
+@page "/docs/static-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Static Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="static-title">Static Tour</h1>
+    <p class="docs-lead" id="static-lead">A step-by-step guided tour without animations for instant transitions.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="static-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="static-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#my-header"" Title=""Welcome!"" Order=""0"">
+        <p>Instant transition - no animation.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private TourOptions options = new() { Animate = false };
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#static-title" Title="Static Tour" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start">
+        <p>No animation - popover jumps instantly between elements.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#static-code" Title="Code" Order="1"
+                   Side="Placement.Top">
+        <p>Set <code>Animate = false</code> in TourOptions.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#static-run-btn" Title="Try It!" Order="2"
+                   Side="Placement.Right">
+        <p>That's it - static tour complete.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { Animate = false };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

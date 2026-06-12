@@ -1,0 +1,103 @@
+@page "/docs/highlight-shapes"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Highlight Shapes - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="highlight-shapes-title">Highlight Shapes</h1>
+    <p class="docs-lead" id="highlight-shapes-lead">Change the cutout shape around the highlighted element - rounded rectangle (default), circle, or exact element fit. Useful for drawing attention to avatars, icons, or irregularly shaped UI elements.</p>
+
+    <h2 id="circle-shape">Circle Shape <a class="docs-anchor" href="#circle-shape">#</a></h2>
+    <p id="circle-desc">The circle shape is perfect for highlighting circular elements like avatars or icons.</p>
+    <button class="docs-demo__run" @onclick="StartCircleTour" id="circle-run-btn">▶ Show Circle Example</button>
+    <div id="circle-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tourCircle"" TourOptions=""circleOpts"">
+    <GuideFlowStep Element=""#circle-shape"" Title=""Circle"" Order=""0"">
+        <p>Circular highlight shape.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tourCircle;
+    private TourOptions circleOpts = new() { HighlightShape = HighlightShape.Circle };
+    private async Task StartCircleTour() { if (tourCircle != null) await tourCircle.DriveAsync(); }
+}")" />
+    </div>
+
+    <h2 id="rectangle-shape">Rectangle Shape <a class="docs-anchor" href="#rectangle-shape">#</a></h2>
+    <p id="rectangle-desc">The rectangle shape is the default and works well for standard UI elements.</p>
+    <button class="docs-demo__run" @onclick="StartRectTour" id="rectangle-run-btn">▶ Show Rectangle Example</button>
+    <div id="rectangle-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tourRect"" TourOptions=""rectOpts"">
+    <GuideFlowStep Element=""#rectangle-shape"" Title=""Rectangle"" Order=""0"">
+        <p>Rectangular highlight shape.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tourRect;
+    private TourOptions rectOpts = new() { HighlightShape = HighlightShape.Rectangle };
+    private async Task StartRectTour() { if (tourRect != null) await tourRect.DriveAsync(); }
+}")" />
+    </div>
+
+    <h2 id="ellipse-shape">Ellipse Shape <a class="docs-anchor" href="#ellipse-shape">#</a></h2>
+    <p id="ellipse-desc">The ellipse shape is useful for highlighting non-circular rounded elements.</p>
+    <button class="docs-demo__run" @onclick="StartEllipseTour" id="ellipse-run-btn">▶ Show Ellipse Example</button>
+    <div id="ellipse-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tourEllipse"" TourOptions=""ellipseOpts"">
+    <GuideFlowStep Element=""#ellipse-shape"" Title=""Ellipse"" Order=""0"">
+        <p>Elliptical highlight shape.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tourEllipse;
+    private TourOptions ellipseOpts = new() { HighlightShape = HighlightShape.Ellipse };
+    private async Task StartEllipseTour() { if (tourEllipse != null) await tourEllipse.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tourCircle" TourOptions="circleOpts">
+    <GuideFlowStep Element="#circle-shape" Title="Circle" Order="0">
+        <p>Circular highlight shape.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="tourRect" TourOptions="rectOpts">
+    <GuideFlowStep Element="#rectangle-shape" Title="Rectangle" Order="0">
+        <p>Rectangular highlight shape.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="tourEllipse" TourOptions="ellipseOpts">
+    <GuideFlowStep Element="#ellipse-shape" Title="Ellipse" Order="0">
+        <p>Elliptical highlight shape.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tourCircle, tourRect, tourEllipse;
+
+    private TourOptions circleOpts = new() { HighlightShape = HighlightShape.Circle };
+    private TourOptions rectOpts = new() { HighlightShape = HighlightShape.Rectangle };
+    private TourOptions ellipseOpts = new() { HighlightShape = HighlightShape.Ellipse };
+
+    private async Task StartCircleTour()
+    {
+        if (tourCircle != null) await tourCircle.DriveAsync();
+    }
+
+    private async Task StartRectTour()
+    {
+        if (tourRect != null) await tourRect.DriveAsync();
+    }
+
+    private async Task StartEllipseTour()
+    {
+        if (tourEllipse != null) await tourEllipse.DriveAsync();
+    }
+}

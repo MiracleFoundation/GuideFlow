@@ -1,0 +1,97 @@
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
+
+<div class="docs-layout">
+    <aside class="docs-sidebar @(sidebarOpen ? "open" : "")">
+        <div class="docs-sidebar__header">
+            <a href="/" class="docs-sidebar__logo">
+                <span class="docs-sidebar__logo-icon">▶</span>
+                <span class="docs-sidebar__logo-text">GuideFlow</span>
+            </a>
+            <span class="docs-sidebar__version">v1.0</span>
+        </div>
+
+        <nav class="docs-sidebar__nav">
+            @* === Introduction === *@
+            <div class="docs-sidebar__group">
+                <div class="docs-sidebar__group-title">Introduction</div>
+                <NavLink class="docs-sidebar__link" href="/docs" Match="NavLinkMatch.All">Getting Started</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/installation">Installation</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/configuration">Configuration</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/api">API Reference</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/theming">Theming</NavLink>
+            </div>
+
+            @* === Examples (matching Driver.js) === *@
+            <div class="docs-sidebar__group">
+                <div class="docs-sidebar__group-title">Examples</div>
+                <NavLink class="docs-sidebar__link" href="/docs/animated-tour">Animated Tour</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/static-tour">Static Tour</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/tour-progress">Tour Progress</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/popover-position">Popover Position</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/popover-buttons">Popover Buttons</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/styling-popover">Styling Popover</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/simple-highlight">Simple Highlight</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/async-tour">Async Tour</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/confirm-on-exit">Confirm on Exit</NavLink>
+            </div>
+
+            @* === GuideFlow Extensions === *@
+            <div class="docs-sidebar__group">
+                <div class="docs-sidebar__group-title">GuideFlow Extensions</div>
+                <NavLink class="docs-sidebar__link" href="/docs/modal-tour">Modal Tour</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/stage-overlay">Stage Overlay</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/highlight-shapes">Highlight Shapes</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/programmatic-tour">Programmatic Tour</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/i18n">Internationalization</NavLink>
+                <NavLink class="docs-sidebar__link" href="/docs/accessibility">Accessibility</NavLink>
+            </div>
+        </nav>
+
+        <div class="docs-sidebar__footer">
+            <a href="https://github.com/anthropics/claude-code" target="_blank" class="docs-sidebar__footer-link">GitHub</a>
+            <span class="docs-sidebar__footer-sep">&bull;</span>
+            <span>MIT License</span>
+        </div>
+    </aside>
+
+    <button class="docs-sidebar-toggle" @onclick="ToggleSidebar">
+        <span></span><span></span><span></span>
+    </button>
+
+    @if (sidebarOpen)
+    {
+        <div class="docs-sidebar-overlay visible" @onclick="ToggleSidebar"></div>
+    }
+
+    <main class="docs-main">
+        <div class="docs-main__content">
+            @Body
+        </div>
+    </main>
+
+    <aside class="docs-toc">
+        <div class="docs-toc__title">On this page</div>
+        <ul class="docs-toc__list"></ul>
+    </aside>
+</div>
+
+@code {
+    private bool sidebarOpen;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(200);
+        }
+        await JS.InvokeVoidAsync("GuideFlowDocs.initTOC");
+        await JS.InvokeVoidAsync("GuideFlowDocs.initCopyButtons");
+        await JS.InvokeVoidAsync("GuideFlowDocs.highlightAll");
+    }
+
+    private void ToggleSidebar()
+    {
+        sidebarOpen = !sidebarOpen;
+    }
+}

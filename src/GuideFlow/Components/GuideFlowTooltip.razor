@@ -1,0 +1,150 @@
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@namespace GuideFlow.Components
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@if (_isVisible)
+{
+    <div class="gf-step gf-step--visible gf-tooltip @(Mode == StepMode.Modal ? "gf-step--modal" : "") @ResolvedPopoverClass"
+         role="tooltip"
+         aria-label="@Title"
+         style="z-index:@ZIndex;position:fixed;"
+         @ref="tooltipElement">
+
+        @if (Mode != StepMode.Modal)
+        {
+            <GuideFlowArrow Visible="ShowArrow" Placement="@Side.ToString().ToLower()" />
+        }
+
+        <div class="gf-step__content">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <div class="gf-step__header">
+                    <h3 class="gf-step__title">@Title</h3>
+                    @if (ShowClose)
+                    {
+                        <button class="gf-step__close" @onclick="HideAsync" aria-label="Close">
+                            &times;
+                        </button>
+                    }
+                </div>
+            }
+
+            <div class="gf-step__body">
+                @if (ChildContent != null)
+                {
+                    @ChildContent
+                }
+                else if (!string.IsNullOrEmpty(Text))
+                {
+                    <p>@Text</p>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>CSS selector for the target element.
+    /// Driver.js: element</summary>
+    [Parameter] public string Element { get; set; } = string.Empty;
+
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Which side of the target element the tooltip appears on.
+    /// Driver.js: popover.side</summary>
+    [Parameter] public Placement Side { get; set; } = Placement.Bottom;
+
+    [Parameter] public StepMode Mode { get; set; } = StepMode.Bubble;
+    [Parameter] public bool ShowArrow { get; set; } = true;
+    [Parameter] public bool ShowClose { get; set; } = true;
+    [Parameter] public int ZIndex { get; set; } = 10001;
+    [Parameter] public int HighlightPadding { get; set; } = 8;
+    [Parameter] public bool SmoothScroll { get; set; } = true;
+
+    /// <summary>CSS class for the popover.
+    /// Driver.js: popover.popoverClass</summary>
+    [Parameter] public string? PopoverClass { get; set; }
+
+    [Parameter] public EventCallback OnShow { get; set; }
+    [Parameter] public EventCallback OnHide { get; set; }
+
+    private ElementReference tooltipElement;
+    private IJSObjectReference? _jsModule;
+    private bool _isVisible;
+
+    private string ResolvedPopoverClass => PopoverClass ?? string.Empty;
+
+    /// <summary>Show the tooltip.</summary>
+    public async Task ShowAsync()
+    {
+        if (_isVisible) return;
+        _isVisible = true;
+        StateHasChanged();
+        await OnShow.InvokeAsync();
+    }
+
+    /// <summary>Hide the tooltip.</summary>
+    public async Task HideAsync()
+    {
+        if (!_isVisible) return;
+        _isVisible = false;
+        StateHasChanged();
+        await OnHide.InvokeAsync();
+    }
+
+    /// <summary>Toggle the tooltip.</summary>
+    public async Task ToggleAsync()
+    {
+        if (_isVisible) await HideAsync();
+        else await ShowAsync();
+    }
+
+    public bool IsVisible => _isVisible;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                    "import", Constants.JsModulePath);
+            }
+            catch (JSDisconnectedException) { }
+            catch (InvalidOperationException) { }
+        }
+
+        if (_isVisible && _jsModule != null)
+        {
+            try
+            {
+                if (Mode == StepMode.Modal)
+                {
+                    await _jsModule.InvokeVoidAsync("scrollToElement", Element, "smooth");
+                }
+                else
+                {
+                    var placement = Side.ToString().ToLower();
+                    await _jsModule.InvokeAsync<object>(
+                        "positionStep", Element, tooltipElement, placement, HighlightPadding, 10, SmoothScroll);
+                }
+            }
+            catch (JSException) { }
+            catch (JSDisconnectedException) { }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null)
+        {
+            try { await _jsModule.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+            catch (InvalidOperationException) { }
+        }
+    }
+}

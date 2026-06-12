@@ -1,0 +1,56 @@
+@page "/docs/modal-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Modal Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="modal-tour-title">Modal Tour</h1>
+    <p class="docs-lead" id="modal-tour-lead">Center the popover in a full-screen modal overlay instead of anchoring it to a target element. Ideal for welcome screens, announcements, or steps that don't reference a specific UI element.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="modal-tour-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="modal-tour-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#modal-tour-title"" Title=""Modal Step 1"" Order=""0""
+                   Mode=""StepMode.Modal"">
+        <p>This step is displayed in modal mode.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#modal-tour-code"" Title=""Modal Step 2"" Order=""1""
+                   Mode=""StepMode.Modal"">
+        <p>Another modal step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#modal-tour-title" Title="Modal Step 1" Order="0"
+                   Mode="StepMode.Modal">
+        <p>This step is displayed in modal mode.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#modal-tour-code" Title="Modal Step 2" Order="1"
+                   Mode="StepMode.Modal">
+        <p>Another modal step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new() { };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

@@ -1,0 +1,119 @@
+@page "/docs/i18n"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Internationalization - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>Internationalization</h1>
+    <p class="docs-lead">Localize all popover text - button labels, progress counter, and skip prompt - using 8 built-in locales (EN, VI, JP, KO, ZH, FR, DE, ES) or provide your own custom strings for any language.</p>
+
+    <h2 id="built-in-locales">
+        Built-in Locales
+        <a class="docs-anchor" href="#built-in-locales">#</a>
+    </h2>
+
+    <p>Set the <code>Localization</code> property on <code>TourOptions</code>:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"// English (default)
+options.Localization = GuideFlowLocalization.English;
+
+// Vietnamese
+options.Localization = GuideFlowLocalization.Vietnamese;
+
+// Japanese
+options.Localization = GuideFlowLocalization.Japanese;
+
+// Korean
+options.Localization = GuideFlowLocalization.Korean;
+
+// Chinese
+options.Localization = GuideFlowLocalization.Chinese;
+
+// French
+options.Localization = GuideFlowLocalization.French;
+
+// German
+options.Localization = GuideFlowLocalization.German;
+
+// Spanish
+options.Localization = GuideFlowLocalization.Spanish;")" />
+
+    <h2 id="custom-strings">
+        Custom Strings
+        <a class="docs-anchor" href="#custom-strings">#</a>
+    </h2>
+
+    <p>Override individual button labels and templates:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+{
+    Localization = new GuideFlowLocalization
+    {
+        NextButton = ""Tiếp tục"",
+        BackButton = ""Quay lại"",
+        SkipButton = ""Bỏ qua"",
+        FinishButton = ""Hoàn thành"",
+        ProgressTemplate = ""Bước {0} / {1}"",
+    },
+};")" />
+
+    <h2 id="progress-template">
+        Progress Template
+        <a class="docs-anchor" href="#progress-template">#</a>
+    </h2>
+
+    <p>Use <code>{0}</code> and <code>{1}</code> placeholders in <code>ProgressTemplate</code>:</p>
+
+    <ul>
+        <li><code>"Step {0} of {1}"</code> → "Step 2 of 5"</li>
+        <li><code>"{0} / {1}"</code> → "2 / 5"</li>
+        <li><code>"Bước {0} trên {1}"</code> → "Bước 2 trên 5"</li>
+    </ul>
+
+    <h2 id="live-demo">
+        Live Demo
+        <a class="docs-anchor" href="#live-demo">#</a>
+    </h2>
+
+    <div class="docs-demo">
+        <div class="docs-demo__header">
+            <span class="docs-demo__label">Live Demo - Vietnamese</span>
+            <button class="docs-demo__run" @onclick="StartDemo">▶ Run Tour</button>
+        </div>
+        <div class="docs-demo__body" style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div id="i18n-el" style="padding:1rem;background:#f1f3f5;border:1px solid #e5e7eb;border-radius:10px;font-weight:600;">
+                🌍 Multilingual Support
+            </div>
+        </div>
+    </div>
+
+    <GuideFlowTour @ref="demoTour" TourOptions="demoOptions" OnComplete="OnEnd" OnCancel="OnEnd">
+        <GuideFlowStep Element="#i18n-el" Title="Xin chào!" Order="0" Side="Placement.Bottom">
+            <p>GuideFlow hỗ trợ <strong>8 ngôn ngữ</strong> sẵn sàng sử dụng.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#i18n-el" Title="Đa ngôn ngữ" Order="1" Side="Placement.Bottom" ShowSkip="false">
+            <p>Đặt <code>Localization</code> trong TourOptions hoặc tùy chỉnh từng chuỗi.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+</div>
+
+@code {
+    private GuideFlowTour? demoTour;
+    private bool busy;
+
+    private TourOptions demoOptions = new()
+    {
+        Overlay = true,
+        ShowProgress = true,
+        ShowProgressBar = true,
+        Localization = GuideFlowLocalization.Vietnamese,
+        AnimationType = AnimationType.Fade,
+    };
+
+    private async Task StartDemo()
+    {
+        if (demoTour != null && !busy) { busy = true; await demoTour.DriveAsync(); }
+    }
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

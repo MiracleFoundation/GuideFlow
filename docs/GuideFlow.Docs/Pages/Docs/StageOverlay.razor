@@ -1,0 +1,59 @@
+@page "/docs/stage-overlay"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Stage Overlay - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="stage-overlay-title">Stage Overlay</h1>
+    <p class="docs-lead" id="stage-overlay-lead">Replaces the SVG cutout mask with four semi-transparent panels around the target element, creating a "stage spotlight" effect. Unlike the default overlay, stage mode lets you see the rest of the page through the dimmed panels.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="stage-overlay-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="stage-overlay-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#stage-overlay-title"" Title=""Stage Step 1"" Order=""0""
+                   OverlayMode=""Stage"" StagePadding=""10"" StageRadius=""5"">
+        <p>This step uses stage overlay mode.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#stage-overlay-code"" Title=""Stage Step 2"" Order=""1""
+                   OverlayMode=""Stage"">
+        <p>Another stage step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#stage-overlay-title" Title="Stage Step 1" Order="0">
+        <p>This step uses stage overlay mode.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#stage-overlay-code" Title="Stage Step 2" Order="1">
+        <p>Another stage step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new()
+    {
+        OverlayMode = OverlayMode.Stage,
+        StagePadding = 10,
+        StageRadius = 5,
+    };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

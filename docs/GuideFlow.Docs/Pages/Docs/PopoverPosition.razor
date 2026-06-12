@@ -1,0 +1,64 @@
+@page "/docs/popover-position"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Popover Position - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="popover-position-title">Popover Position</h1>
+    <p class="docs-lead" id="popover-position-lead">Position the popover on any side of the highlighted element - top, bottom, left, or right - with fine-grained alignment control (start, center, end). GuideFlow auto-flips when there's not enough viewport space.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="popover-position-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="popover-position-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#popover-position-title"" Title=""Bottom Start"" Order=""0""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>Aligned to the start (left) of the bottom side.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#popover-position-code"" Title=""Right Center"" Order=""1""
+                   Side=""Placement.Right"" Align=""PopoverAlign.Center"">
+        <p>Centered on the right side.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#popover-position-run-btn"" Title=""Top End"" Order=""2""
+                   Side=""Placement.Top"" Align=""PopoverAlign.End"">
+        <p>Aligned to the end (right) of the top side.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#popover-position-title" Title="Bottom Start" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start">
+        <p>Aligned to the start (left) of the bottom side.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-position-code" Title="Right Center" Order="1"
+                   Side="Placement.Right" Align="PopoverAlign.Center">
+        <p>Centered on the right side.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-position-run-btn" Title="Top End" Order="2"
+                   Side="Placement.Top" Align="PopoverAlign.End">
+        <p>Aligned to the end (right) of the top side.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new() { };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

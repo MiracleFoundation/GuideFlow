@@ -1,0 +1,62 @@
+@page "/docs/async-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Async Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="async-tour-title">Async Tour</h1>
+    <p class="docs-lead" id="async-tour-lead">Fetch step content from an API or load it asynchronously as the user progresses. Useful when tour steps depend on user data, feature flags, or server-side configuration that isn't available at page load.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="async-tour-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="async-tour-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#async-tour-title"" Title=""Async Content"" Order=""0""
+                   Side=""Placement.Bottom""
+                   OnLoadContent=""LoadContent"">
+        <p>Loading content...</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+
+    private Task<string> LoadContent()
+    {
+        return Task.FromResult(""<p>Content loaded dynamically via <code>OnLoadContent</code>!</p>"");
+    }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#async-tour-title" Title="Async Content" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start"
+                   OnLoadContent="LoadContent">
+        <p>Loading content...</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new() { };
+
+    private Task<string> LoadContent()
+    {
+        // In real apps, fetch from API here
+        return Task.FromResult("<p>Content loaded dynamically via <code>OnLoadContent</code>!</p>");
+    }
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

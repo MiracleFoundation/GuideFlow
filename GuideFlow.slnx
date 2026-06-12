@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/docs/">
+    <Project Path="docs/GuideFlow.Docs/GuideFlow.Docs.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/GuideFlow/GuideFlow.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GuideFlow.Tests/GuideFlow.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,14 @@
+@namespace GuideFlow.Components
+
+@if (Visible)
+{
+    <div class="gf-arrow gf-arrow--@Placement.ToString().ToLower()" style="@ArrowStyle"></div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public string Placement { get; set; } = Constants.DefaultPlacement;
+    [Parameter] public int Size { get; set; } = 10;
+
+    private string ArrowStyle => $"--gf-arrow-size:{Size}px;";
+}

@@ -1,0 +1,73 @@
+@page "/docs/simple-highlight"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Simple Highlight - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1>Simple Highlight</h1>
+    <p class="docs-lead">Draw attention to a single UI element with an overlay cutout and optional popover - no multi-step tour needed. Great for feature callouts, "what's new" badges, or contextual help tooltips.</p>
+
+    @* --- Code Example --- *@
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <!-- No steps needed for simple highlight -->
+</GuideFlowTour>
+
+<button @onclick=""HighlightElement"">Highlight Target</button>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+
+    private async Task HighlightElement()
+    {
+        if (tour != null)
+        {
+            await tour.HighlightAsync(""#target-element"",
+                title: ""Target Element"",
+                description: ""This is a simple highlight with popover!"");
+        }
+    }
+}")" />
+
+    @* --- Live Demo --- *@
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+
+    <div class="docs-demo">
+        <div class="docs-demo__header">
+            <span class="docs-demo__label">Single element highlight</span>
+            <button class="docs-demo__run" @onclick="HighlightElement">▶ Highlight</button>
+        </div>
+        <div class="docs-demo__body" style="display:flex;justify-content:center;align-items:center;height:150px;">
+            <div id="target-element" style="padding:1rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;text-align:center;">
+                <div style="font-size:1.5rem;">🎯</div>
+                <div style="font-size:0.85rem;font-weight:600;margin-top:0.25rem;">Target Element</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@* --- Tour Definition --- *@
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#target-element" Title="Target Element" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Center">
+        <p>This is a simple highlight with popover, no tour needed!</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new() { };
+
+    private async Task HighlightElement()
+    {
+        if (tour != null)
+        {
+            await tour.DriveAsync();
+        }
+    }
+}

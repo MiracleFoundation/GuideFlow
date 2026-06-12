@@ -1,0 +1,104 @@
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@namespace GuideFlow.Components
+
+@if (Visible && Mode == OverlayMode.Cutout)
+{
+    <div class="gf-overlay @(Animating ? "gf-overlay--animating" : "")"
+         style="@OverlayStyle"
+         @onclick="OnOverlayClick"
+         @onclick:preventDefault>
+    </div>
+}
+@* Stage mode panels are created via JS interop in GuideFlowTour *@
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public double Opacity { get; set; } = 0.5;
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public int ZIndex { get; set; } = 10000;
+    [Parameter] public bool AnimateCutout { get; set; } = true;
+    [Parameter] public int AnimationDuration { get; set; } = 300;
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public OverlayMode Mode { get; set; } = OverlayMode.Cutout;
+    [Parameter] public HighlightShape Shape { get; set; } = HighlightShape.RoundedRect;
+
+    public double? HighlightLeft { get; set; }
+    public double? HighlightTop { get; set; }
+    public double? HighlightWidth { get; set; }
+    public double? HighlightHeight { get; set; }
+    public int HighlightPadding { get; set; } = 8;
+    public int HighlightRadius { get; set; } = 4;
+
+    private bool Animating { get; set; }
+
+    private string OverlayStyle
+    {
+        get
+        {
+            var baseStyle = $"z-index:{ZIndex};";
+
+            // Driver.js: overlayColor + overlayOpacity
+            var bgColor = string.IsNullOrEmpty(Color)
+                ? $"rgba(0,0,0,{Opacity})"
+                : Color;
+            baseStyle += $"background:{bgColor};opacity:{Opacity};";
+
+            if (HighlightLeft.HasValue && HighlightTop.HasValue &&
+                HighlightWidth.HasValue && HighlightHeight.HasValue)
+            {
+                var l = HighlightLeft.Value - HighlightPadding;
+                var t = HighlightTop.Value - HighlightPadding;
+                var w = HighlightWidth.Value + HighlightPadding * 2;
+                var h = HighlightHeight.Value + HighlightPadding * 2;
+                var r = GetShapeRadius();
+
+                var svgMask = $"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cdefs%3E%3Cmask id='cutout'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E%3Crect x='{l}px' y='{t}px' width='{w}px' height='{h}px' rx='{r}px' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='black' mask='url(%23cutout)'/%3E%3C/svg%3E\")";
+
+                baseStyle += $"mask-image:{svgMask};-webkit-mask-image:{svgMask};mask-size:100% 100%;-webkit-mask-size:100% 100%;";
+            }
+
+            if (AnimateCutout)
+            {
+                baseStyle += $"transition:mask-image {AnimationDuration}ms ease,-webkit-mask-image {AnimationDuration}ms ease;";
+            }
+
+            return baseStyle;
+        }
+    }
+
+    private string GetShapeRadius()
+    {
+        return Shape switch
+        {
+            HighlightShape.Rectangle => "0",
+            HighlightShape.Circle => "50%",
+            HighlightShape.Ellipse => "50%",
+            HighlightShape.RoundedRect => $"{HighlightRadius}px",
+            _ => $"{HighlightRadius}px"
+        };
+    }
+
+    public void SetHighlight(double left, double top, double width, double height)
+    {
+        HighlightLeft = left;
+        HighlightTop = top;
+        HighlightWidth = width;
+        HighlightHeight = height;
+        StateHasChanged();
+    }
+
+    public void ClearHighlight()
+    {
+        HighlightLeft = null;
+        HighlightTop = null;
+        HighlightWidth = null;
+        HighlightHeight = null;
+        StateHasChanged();
+    }
+
+    private async Task OnOverlayClick()
+    {
+        await OnClick.InvokeAsync();
+    }
+}

@@ -1,0 +1,68 @@
+@page "/docs/styling-popover"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Styling Popover - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="styling-popover-title">Styling Popover</h1>
+    <p class="docs-lead" id="styling-popover-lead">Override the default popover look with custom CSS classes or built-in themes. Control the popover's background, border, arrow style, and button appearance to match your application's design system.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="styling-popover-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="styling-popover-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#styling-popover-title"" Title=""Dark Theme"" Order=""0""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start""
+                   PopoverClass=""gf-theme-dark"">
+        <p>This step uses the built-in dark theme.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#styling-popover-code"" Title=""Custom Class"" Order=""1""
+                   Side=""Placement.Top""
+                   PopoverClass=""custom-popover"">
+        <p>This step uses a custom CSS class.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#styling-popover-title" Title="Dark Theme" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start"
+                   PopoverClass="gf-theme-dark">
+        <p>This step uses the built-in dark theme.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#styling-popover-code" Title="Custom Class" Order="1"
+                   Side="Placement.Top"
+                   PopoverClass="custom-popover">
+        <p>This step uses a custom CSS class.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new() { };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}
+
+<style>
+    .custom-popover {
+        background-color: #f3f4f6;
+        border: 2px solid #4b5563;
+        color: #1f2937;
+    }
+</style>

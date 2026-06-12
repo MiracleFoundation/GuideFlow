@@ -1,0 +1,442 @@
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@namespace GuideFlow.Components
+@implements IDisposable
+
+@* Only render when tour is active AND this step is current *@
+@if (_isVisible)
+{
+    <div class="gf-step gf-step--visible @(_isVisited ? "gf-step--visited" : "") @AnimationClass @ModeClass @ThemeClass @ResolvedPopoverClass"
+         role="dialog"
+         aria-label="@ResolvedAriaLabel"
+         aria-describedby="@($"gf-step-content-{_stepId}")"
+         data-gf-step-id="@_stepId"
+         style="@StepStyle"
+         @ref="stepElement">
+
+        @if (ResolvedMode != StepMode.Modal)
+        {
+            <GuideFlowArrow Visible="ShowArrow" Placement="@ResolvedSide.ToString().ToLower()" />
+        }
+
+        <div class="gf-step__content">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <div class="gf-step__header">
+                    <h3 class="gf-step__title">@Title</h3>
+                    @if (ShowClose)
+                    {
+                        <button class="gf-step__close" @onclick="HandleCloseClick" aria-label="@ResolvedCloseLabel">
+                            &times;
+                        </button>
+                    }
+                </div>
+            }
+
+            <div class="gf-step__body" id="@($"gf-step-content-{_stepId}")">
+                @if (_isLoadingContent)
+                {
+                    <div class="gf-step__loading">Loading...</div>
+                }
+                else if (_loadedContent != null)
+                {
+                    @((MarkupString)_loadedContent)
+                }
+                else if (ChildContent != null)
+                {
+                    @ChildContent
+                }
+                else if (!string.IsNullOrEmpty(Text))
+                {
+                    <p>@Text</p>
+                }
+            </div>
+
+            @if (ShowProgressBar && _tour?.TourOptions?.ShowProgressBar == true)
+            {
+                <div class="gf-step__progress-bar">
+                    <div class="gf-step__progress-bar-fill" style="width:@ProgressPercent%"></div>
+                </div>
+            }
+
+            <div class="gf-step__footer">
+                @if (ShowProgress)
+                {
+                    <span class="gf-step__progress">@ResolvedProgressText</span>
+                }
+
+                <div class="gf-step__buttons">
+                    @if (ButtonsContent != null)
+                    {
+                        @ButtonsContent
+                    }
+                    else
+                    {
+                        @if (ShowSkip && (_tour?.ActiveIndex ?? 0) < (_tour?.TotalSteps ?? 0) - 1)
+                        {
+                            <button class="gf-btn gf-btn--skip" @onclick="OnSkipClick">@ResolvedSkipText</button>
+                        }
+                        @if (ShowBack && (_tour?.ActiveIndex ?? 0) > 0)
+                        {
+                            <button class="gf-btn gf-btn--back" @onclick="HandleBackClick">@ResolvedBackText</button>
+                        }
+                        @if (ShowNext)
+                        {
+                            <button class="gf-btn gf-btn--next" @onclick="HandleNextClick" @ref="nextButton">
+                                @((_tour?.ActiveIndex ?? 0) >= (_tour?.TotalSteps ?? 0) - 1 ? ResolvedFinishText : ResolvedNextText)
+                            </button>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter] public GuideFlowTour? _tour { get; set; }
+
+    /// <summary>CSS selector for the target element to highlight.
+    /// Driver.js: element</summary>
+    [Parameter] public string Element { get; set; } = string.Empty;
+
+    /// <summary>Shepherd.js alias for Element (attachTo.element).</summary>
+    [Parameter] public string? AttachTo { get; set; }
+
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? Text { get; set; }
+
+    /// <summary>Driver.js / Shepherd.js alias for Text (popover.description).</summary>
+    [Parameter] public string? Description { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Which side of the target element the popover appears on.
+    /// Driver.js: popover.side</summary>
+    [Parameter] public Placement Side { get; set; } = Placement.Bottom;
+
+    /// <summary>Popover alignment relative to target: start, center, end.
+    /// Driver.js: popover.align</summary>
+    [Parameter] public PopoverAlign? Align { get; set; }
+
+    [Parameter] public StepMode? Mode { get; set; }
+    [Parameter] public AnimationType? Animation { get; set; }
+    [Parameter] public int Order { get; set; }
+    [Parameter] public string? StepId { get; set; }
+    [Parameter] public bool ShowBack { get; set; } = true;
+    [Parameter] public bool ShowNext { get; set; } = true;
+    [Parameter] public bool ShowSkip { get; set; }
+    [Parameter] public bool ShowClose { get; set; } = true;
+    [Parameter] public bool ShowArrow { get; set; } = true;
+    [Parameter] public bool ShowProgress { get; set; } = true;
+    [Parameter] public bool ShowProgressBar { get; set; } = true;
+
+    /// <summary>Progress text template for this step. Overrides TourOptions.ProgressText.
+    /// Driver.js: popover.progressText
+    /// Use {{current}} and {{total}} as placeholders.</summary>
+    [Parameter] public string? ProgressText { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>CSS class for the popover.
+    /// Driver.js: popover.popoverClass</summary>
+    [Parameter] public string? PopoverClass { get; set; }
+
+    /// <summary>Whether to disable interaction with the highlighted element.
+    /// Driver.js: disableActiveInteraction. Falls back to TourOptions.DisableActiveInteraction.</summary>
+    [Parameter] public bool? DisableActiveInteraction { get; set; }
+
+    [Parameter] public RenderFragment? ButtonsContent { get; set; }
+
+    // --- Driver.js showButtons / disableButtons ---
+    /// <summary>Driver.js: which buttons to show. Null = use ShowNext/ShowBack/ShowClose.</summary>
+    [Parameter] public string[]? ShowButtons { get; set; }
+
+    /// <summary>Driver.js: which buttons to disable (still visible but not clickable).</summary>
+    [Parameter] public string[]? DisableButtons { get; set; }
+
+    [Parameter] public string? NextBtnText { get; set; }
+    [Parameter] public string? PrevBtnText { get; set; }
+    [Parameter] public string? SkipBtnText { get; set; }
+    [Parameter] public string? DoneBtnText { get; set; }
+
+    [Parameter] public Func<Task<string>>? OnLoadContent { get; set; }
+    [Parameter] public string? ContentUrl { get; set; }
+    [Inject] private HttpClient? HttpClient { get; set; }
+
+    // --- Driver.js: onHighlightStarted / onHighlighted / onDeselected ---
+    /// <summary>Driver.js: onHighlightStarted. Called before step is shown. Receives TourContext.</summary>
+    [Parameter] public EventCallback<TourContext> OnBeforeShow { get; set; }
+
+    /// <summary>Driver.js: onHighlighted. Called after step is shown. Receives TourContext.</summary>
+    [Parameter] public EventCallback<TourContext> OnAfterShow { get; set; }
+
+    /// <summary>Called before step is hidden. Receives TourContext.</summary>
+    [Parameter] public EventCallback<TourContext> OnBeforeHide { get; set; }
+
+    /// <summary>Driver.js: onDeselected. Called after step is hidden. Receives TourContext.</summary>
+    [Parameter] public EventCallback<TourContext> OnAfterHide { get; set; }
+
+    /// <summary>Driver.js: onPopoverRender. Called after the popover is rendered in the DOM. Receives TourContext.</summary>
+    [Parameter] public EventCallback<TourContext> OnPopoverRender { get; set; }
+
+    // --- Driver.js: onNextClick / onPrevClick / onCloseClick ---
+    /// <summary>Driver.js: onNextClick. Called when the Next button is clicked. Receives TourContext.
+    /// Override prevents default navigation — call Driver.MoveNextAsync() manually.</summary>
+    [Parameter] public EventCallback<TourContext> OnNextClick { get; set; }
+
+    /// <summary>Driver.js: onPrevClick. Called when the Back/Previous button is clicked. Receives TourContext.
+    /// Override prevents default navigation — call Driver.MovePreviousAsync() manually.</summary>
+    [Parameter] public EventCallback<TourContext> OnPrevClick { get; set; }
+
+    /// <summary>Driver.js: onCloseClick. Called when the Close button is clicked. Receives TourContext.
+    /// Override prevents default close — call Driver.DestroyAsync() manually.</summary>
+    [Parameter] public EventCallback<TourContext> OnCloseClick { get; set; }
+
+    private ElementReference stepElement;
+    private ElementReference nextButton;
+    private string _stepId = Guid.NewGuid().ToString("N")[..8];
+    private bool _isVisible;
+    private bool _needsPositioning;
+    private bool _afterShowFired;
+    private bool _isLoadingContent;
+    private string? _loadedContent;
+
+    private StepMode ResolvedMode => Mode ?? _tour?.TourOptions?.StepMode ?? StepMode.Bubble;
+    private AnimationType ResolvedAnimation => Animation ?? _tour?.TourOptions?.AnimationType ?? AnimationType.Fade;
+
+    private string ResolvedNextText => NextBtnText ?? _tour?.TourOptions?.Localization?.NextButton ?? _tour?.TourOptions?.NextBtnText ?? "Next";
+    private string ResolvedBackText => PrevBtnText ?? _tour?.TourOptions?.Localization?.BackButton ?? _tour?.TourOptions?.PrevBtnText ?? "Back";
+    private string ResolvedSkipText => SkipBtnText ?? _tour?.TourOptions?.Localization?.SkipButton ?? _tour?.TourOptions?.SkipBtnText ?? "Skip";
+    private string ResolvedFinishText => DoneBtnText ?? _tour?.TourOptions?.Localization?.FinishButton ?? _tour?.TourOptions?.DoneBtnText ?? "Done";
+    private string ResolvedCloseLabel => _tour?.TourOptions?.Localization?.CloseLabel ?? "Close tour";
+    private string ResolvedAriaLabel => $"{_tour?.TourOptions?.Localization?.StepAriaLabel ?? "Tour step"}: {Title}";
+
+    private string ResolvedProgressText
+    {
+        get
+        {
+            var current = (_tour?.ActiveIndex ?? 0) + 1;
+            var total = _tour?.TotalSteps ?? 0;
+            // Step-level override (Driver.js: popover.progressText)
+            if (!string.IsNullOrEmpty(ProgressText))
+            {
+                return ProgressText!
+                    .Replace("{{current}}", current.ToString())
+                    .Replace("{{total}}", total.ToString());
+            }
+            // Tour-level (Driver.js: progressText)
+            if (!string.IsNullOrEmpty(_tour?.TourOptions?.ProgressText))
+            {
+                return _tour!.TourOptions!.ProgressText!
+                    .Replace("{{current}}", current.ToString())
+                    .Replace("{{total}}", total.ToString());
+            }
+            // Localization syntax: {0} of {1}
+            var template = _tour?.TourOptions?.Localization?.ProgressTemplate ?? "{0} of {1}";
+            return string.Format(template, current, total);
+        }
+    }
+
+    private Placement ResolvedSide => Side;
+
+    internal bool ResolvedDisableActiveInteraction =>
+        DisableActiveInteraction ?? _tour?.TourOptions?.DisableActiveInteraction ?? false;
+    private bool _isVisited => _tour?.IsStepVisited(this) == true;
+
+    /// <summary>Resolve the effective placement considering Side + Align.</summary>
+    internal Placement EffectivePlacement
+    {
+        get
+        {
+            if (!Align.HasValue) return Side;
+            return (Side, Align.Value) switch
+            {
+                (Placement.Top, PopoverAlign.Start) => Placement.TopStart,
+                (Placement.Top, PopoverAlign.Center) => Placement.Top,
+                (Placement.Top, PopoverAlign.End) => Placement.TopEnd,
+                (Placement.Bottom, PopoverAlign.Start) => Placement.BottomStart,
+                (Placement.Bottom, PopoverAlign.Center) => Placement.Bottom,
+                (Placement.Bottom, PopoverAlign.End) => Placement.BottomEnd,
+                (Placement.Left, PopoverAlign.Start) => Placement.LeftStart,
+                (Placement.Left, PopoverAlign.Center) => Placement.Left,
+                (Placement.Left, PopoverAlign.End) => Placement.LeftEnd,
+                (Placement.Right, PopoverAlign.Start) => Placement.RightStart,
+                (Placement.Right, PopoverAlign.Center) => Placement.Right,
+                (Placement.Right, PopoverAlign.End) => Placement.RightEnd,
+                _ => Side
+            };
+        }
+    }
+
+    private int ProgressPercent
+    {
+        get
+        {
+            var total = _tour?.TotalSteps ?? 1;
+            var current = (_tour?.ActiveIndex ?? 0) + 1;
+            return (int)Math.Round((double)current / total * 100);
+        }
+    }
+
+    private string AnimationClass => ResolvedAnimation switch
+    {
+        AnimationType.Slide => "gf-step--anim-slide",
+        AnimationType.Bounce => "gf-step--anim-bounce",
+        AnimationType.None => "gf-step--anim-none",
+        _ => string.Empty
+    };
+
+    private string ModeClass => ResolvedMode == StepMode.Modal ? "gf-step--modal" : string.Empty;
+    private string ThemeClass => _tour?.TourOptions?.PopoverClass ?? string.Empty;
+    private string ResolvedPopoverClass => PopoverClass ?? string.Empty;
+
+    private string StepStyle
+    {
+        get
+        {
+            var z = (_tour?.TourOptions?.ZIndex ?? 10000) + 1;
+            // Driver.js: position:fixed — popover stays in viewport
+            // Scroll handler repositions it to follow the target element
+            return $"z-index:{z};position:fixed;top:0;right:0;";
+        }
+    }
+
+    public ElementReference StepElement => stepElement;
+
+    protected override void OnInitialized()
+    {
+        _tour?.RegisterStep(this);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Resolve Driver.js / Shepherd.js aliases
+        if (!string.IsNullOrEmpty(AttachTo) && string.IsNullOrEmpty(Element))
+            Element = AttachTo;
+        if (!string.IsNullOrEmpty(Description) && string.IsNullOrEmpty(Text))
+            Text = Description;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var shouldBeVisible = _tour?.IsActive == true && _tour?.ActiveIndex == Order && !Disabled;
+
+        if (shouldBeVisible && !_isVisible)
+        {
+            // Step just became active — load content, then make visible
+            await LoadAsyncContent();
+            _isVisible = true;
+            _needsPositioning = true;
+            _afterShowFired = false;
+            StateHasChanged();
+            return; // Re-render to create DOM, then position in next pass
+        }
+
+        if (_isVisible && _needsPositioning && shouldBeVisible)
+        {
+            // DOM is ready, now position via JS
+            _needsPositioning = false;
+
+            if (_tour != null)
+            {
+                if (ResolvedMode != StepMode.Modal)
+                    await _tour.PositionStepAsync(this);
+                await _tour.SetupKeyboardAsync(this);
+            }
+
+            if (!_afterShowFired)
+            {
+                _afterShowFired = true;
+                await OnAfterShow.InvokeAsync();
+                await OnPopoverRender.InvokeAsync();
+            }
+        }
+
+        if (!shouldBeVisible && _isVisible)
+        {
+            _isVisible = false;
+            _needsPositioning = false;
+            _afterShowFired = false;
+            _loadedContent = null;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadAsyncContent()
+    {
+        if (OnLoadContent != null)
+        {
+            _isLoadingContent = true;
+            StateHasChanged();
+            try { _loadedContent = await OnLoadContent(); }
+            catch { _loadedContent = "<p>Failed to load content.</p>"; }
+            _isLoadingContent = false;
+        }
+        else if (!string.IsNullOrEmpty(ContentUrl) && HttpClient != null)
+        {
+            _isLoadingContent = true;
+            StateHasChanged();
+            try { _loadedContent = await HttpClient.GetStringAsync(ContentUrl); }
+            catch { _loadedContent = "<p>Failed to load content.</p>"; }
+            _isLoadingContent = false;
+        }
+    }
+
+    internal async Task FireOnBeforeShow() { await OnBeforeShow.InvokeAsync(_tour?.BuildContext()); }
+    internal async Task FireOnAfterShow() { await OnAfterShow.InvokeAsync(_tour?.BuildContext()); await OnPopoverRender.InvokeAsync(_tour?.BuildContext()); }
+    internal async Task FireOnBeforeHide() { await OnBeforeHide.InvokeAsync(_tour?.BuildContext()); }
+    internal async Task FireOnAfterHide() { await OnAfterHide.InvokeAsync(_tour?.BuildContext()); }
+
+    private async Task HandleNextClick()
+    {
+        // Driver.js: overriding onNextClick prevents default navigation.
+        // User must call moveNext() manually in their handler.
+        if (OnNextClick.HasDelegate)
+        {
+            await OnNextClick.InvokeAsync(_tour?.BuildContext());
+            return;
+        }
+        if (_tour?.OnNextClick.HasDelegate == true)
+        {
+            await _tour.OnNextClick.InvokeAsync(_tour?.BuildContext());
+            return;
+        }
+        if (_tour != null) await _tour.MoveNextAsync();
+    }
+
+    private async Task HandleBackClick()
+    {
+        // Driver.js: overriding onPrevClick prevents default navigation.
+        if (OnPrevClick.HasDelegate)
+        {
+            await OnPrevClick.InvokeAsync(_tour?.BuildContext());
+            return;
+        }
+        if (_tour?.OnPrevClick.HasDelegate == true)
+        {
+            await _tour.OnPrevClick.InvokeAsync(_tour?.BuildContext());
+            return;
+        }
+        if (_tour != null) await _tour.MovePreviousAsync();
+    }
+
+    private async Task OnSkipClick() { if (_tour != null) await _tour.SkipAsync(); }
+
+    private async Task HandleCloseClick()
+    {
+        // Driver.js: overriding onCloseClick prevents default close.
+        if (OnCloseClick.HasDelegate)
+        {
+            await OnCloseClick.InvokeAsync(_tour?.BuildContext());
+            return;
+        }
+        if (_tour?.OnCloseClick.HasDelegate == true)
+        {
+            await _tour.OnCloseClick.InvokeAsync(_tour?.BuildContext());
+            return;
+        }
+        if (_tour != null) await _tour.DestroyAsync();
+    }
+
+    public void Dispose() { _tour?.UnregisterStep(this); }
+}

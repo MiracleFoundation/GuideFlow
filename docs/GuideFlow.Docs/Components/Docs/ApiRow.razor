@@ -1,0 +1,26 @@
+<tr>
+    <td><code class="docs-inline-code">@ResolvedName</code></td>
+    <td><span class="docs-type">@Type</span></td>
+    <td><code class="docs-inline-code">@Default</code></td>
+    <td>@ResolvedDescription</td>
+</tr>
+
+@code {
+    /// <summary>Property name. Driver.js-style alias: Name</summary>
+    [Parameter] public string Property { get; set; } = "";
+
+    /// <summary>Alias for Property (Driver.js-style naming).</summary>
+    [Parameter] public string Name { get; set; } = "";
+
+    [Parameter] public string Type { get; set; } = "";
+    [Parameter] public string Default { get; set; } = "";
+
+    /// <summary>Description. Driver.js-style alias: Desc</summary>
+    [Parameter] public string Description { get; set; } = "";
+
+    /// <summary>Alias for Description (Driver.js-style naming).</summary>
+    [Parameter] public string Desc { get; set; } = "";
+
+    private string ResolvedName => !string.IsNullOrEmpty(Name) ? Name : Property;
+    private string ResolvedDescription => !string.IsNullOrEmpty(Desc) ? Desc : Description;
+}

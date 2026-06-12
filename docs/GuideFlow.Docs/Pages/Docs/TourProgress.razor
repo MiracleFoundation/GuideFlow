@@ -1,0 +1,72 @@
+@page "/docs/tour-progress"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Tour Progress - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="tour-progress-title">Tour Progress</h1>
+    <p class="docs-lead" id="tour-progress-lead">Show users where they are in the tour with a step counter ("2 of 5") or progress bar. Progress appears in the popover footer and updates automatically as users navigate between steps.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="tour-progress-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="tour-progress-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#tour-progress-title"" Title=""Step 1"" Order=""0""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>First step content.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#tour-progress-code"" Title=""Step 2"" Order=""1""
+                   Side=""Placement.Top"">
+        <p>Second step content.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#tour-progress-run-btn"" Title=""Step 3"" Order=""2""
+                   Side=""Placement.Right"">
+        <p>Third step content.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new()
+    {
+        ShowProgress = true,
+        ShowProgressBar = true,
+    };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#tour-progress-title" Title="Step 1" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start">
+        <p>First step content.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#tour-progress-code" Title="Step 2" Order="1"
+                   Side="Placement.Top">
+        <p>Second step content.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#tour-progress-run-btn" Title="Step 3" Order="2"
+                   Side="Placement.Right">
+        <p>Third step content.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new()
+    {
+        ShowProgress = true,
+        ShowProgressBar = true,
+    };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

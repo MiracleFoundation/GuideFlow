@@ -1,0 +1,23 @@
+.gf-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--gf-overlay-color, rgba(0, 0, 0, 0.5));
+    pointer-events: none;
+    user-select: none;
+}
+
+.gf-overlay--animating {
+    transition: mask-image var(--gf-animation-duration, 300ms) ease,
+                -webkit-mask-image var(--gf-animation-duration, 300ms) ease;
+}
+
+/* Click-through passthrough element (created via JS) */
+:global(.gf-click-through) {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}

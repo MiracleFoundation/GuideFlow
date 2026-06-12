@@ -1,0 +1,75 @@
+@page "/docs"
+
+<PageTitle>GuideFlow - Documentation</PageTitle>
+
+<div class="docs-content">
+    <h1>Getting Started</h1>
+    <p class="docs-lead">
+        GuideFlow is a Blazor component library for building accessible, animated guided tours.
+        Follow the steps below to add it to your project.
+    </p>
+
+    <h2 id="installation">
+        Installation
+        <a class="docs-anchor" href="#installation">#</a>
+    </h2>
+
+    <p>Install the NuGet package:</p>
+
+    <CodeBlock Language="bash" Code="dotnet add package GuideFlow" />
+
+    <h2 id="setup">
+        Setup
+        <a class="docs-anchor" href="#setup">#</a>
+    </h2>
+
+    <p>Register the service in <code>Program.cs</code>:</p>
+
+    <CodeBlock Language="razor" Code="builder.Services.AddGuideFlow();" />
+
+    <p>Add the CSS and JS to your <code>index.html</code> or <code>_Host.cshtml</code>:</p>
+
+    <CodeBlock Language="html" Code="@(@"<link href=""_content/GuideFlow/guideflow.css"" rel=""stylesheet"" />
+<script src=""_content/GuideFlow/guideflow.module.js""></script>")" />
+
+    <h2 id="first-tour">
+        Your First Tour
+        <a class="docs-anchor" href="#first-tour">#</a>
+    </h2>
+
+    <p>Wrap your page content with <code>GuideFlowTour</code> and add steps:</p>
+
+    <CodeBlock Language="razor" Code="@(@"<GuideFlowTour TourOptions=""@options"">
+    <GuideFlowStep Selector=""#step1"" Title=""Welcome!"" Order=""0"">
+        <p>This is the first step.</p>
+    </GuideFlowStep>
+
+    <GuideFlowStep Selector=""#step2"" Title=""Next"" Order=""1"">
+        <p>Click here to continue.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private TourOptions options = new()
+    {
+        Overlay = true,
+        ShowProgress = true,
+    };
+}")" />
+
+    <div class="docs-note docs-note--info">
+        <strong>💡 Two ways to build tours</strong> GuideFlow supports both <strong>declarative</strong> (Razor markup) and <strong>programmatic</strong> (C# fluent API) approaches. See <a href="/docs/programmatic-tour">Programmatic Tour</a> for details.
+    </div>
+
+    <h2 id="next-steps">
+        Next Steps
+        <a class="docs-anchor" href="#next-steps">#</a>
+    </h2>
+
+    <ul>
+        <li><a href="/docs/configuration">Configuration</a> - Tour options and customization</li>
+        <li><a href="/docs/api">API Reference</a> - Full component and service API</li>
+        <li><a href="/docs/theming">Theming</a> - Light, dark, and custom themes</li>
+        <li><a href="/docs/animated-tour">Animated Tour</a> - Interactive demo</li>
+    </ul>
+</div>

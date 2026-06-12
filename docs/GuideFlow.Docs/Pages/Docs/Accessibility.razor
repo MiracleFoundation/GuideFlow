@@ -1,0 +1,132 @@
+@page "/docs/accessibility"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Accessibility - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>Accessibility</h1>
+    <p class="docs-lead">Every tour step is fully accessible out of the box. Keyboard users can navigate with arrow keys and Tab, screen readers announce step content via ARIA live regions, and focus is trapped inside the popover to prevent interaction with background elements.</p>
+
+    <h2 id="keyboard-nav">
+        Keyboard Navigation
+        <a class="docs-anchor" href="#keyboard-nav">#</a>
+    </h2>
+
+    <p>When a tour is active, users can navigate with keyboard:</p>
+
+    <ul>
+        <li><strong>→</strong> or <strong>Enter</strong> - Next step</li>
+        <li><strong>←</strong> - Previous step</li>
+        <li><strong>Escape</strong> - Cancel/close tour</li>
+        <li><strong>Tab</strong> - Trapped within the popover (focus doesn't leak)</li>
+    </ul>
+
+    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+{
+    KeyboardNavigation = true,  // Enable arrow/Enter/Escape
+    ExitOnEsc = true,           // Escape cancels the tour
+    TrapFocus = true,                // Tab stays within popover
+};")" />
+
+    <h2 id="aria">
+        ARIA Attributes
+        <a class="docs-anchor" href="#aria">#</a>
+    </h2>
+
+    <p>GuideFlow automatically applies ARIA attributes to tour elements:</p>
+
+    <ul>
+        <li><code>role="dialog"</code> on the popover</li>
+        <li><code>aria-modal="true"</code> for modal steps</li>
+        <li><code>aria-describedby</code> linking to step content</li>
+        <li><code>aria-live</code> region for screen reader announcements</li>
+    </ul>
+
+    <h2 id="focus-management">
+        Focus Management
+        <a class="docs-anchor" href="#focus-management">#</a>
+    </h2>
+
+    <p>When a tour starts, focus moves to the popover. When it ends, focus returns to the previously focused element. This ensures screen reader users don't lose context.</p>
+
+    <h2 id="high-contrast">
+        High Contrast Theme
+        <a class="docs-anchor" href="#high-contrast">#</a>
+    </h2>
+
+    <p>The built-in high-contrast theme provides maximum readability:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+{
+    PopoverClass =""gf-theme-high-contrast"",
+    HighlightShape = HighlightShape.Rectangle,
+    AnimationType = AnimationType.None,
+    OverlayOpacity = 0.8,
+};")" />
+
+    <h2 id="best-practices">
+        Best Practices
+        <a class="docs-anchor" href="#best-practices">#</a>
+    </h2>
+
+    <ul>
+        <li>Always keep <code>KeyboardNavigation = true</code> and <code>TrapFocus = true</code></li>
+        <li>Use <code>ExitOnEsc = true</code> so users can exit at any time</li>
+        <li>Write descriptive <code>Title</code> and content for screen readers</li>
+        <li>Test with a screen reader (NVDA, VoiceOver, JAWS)</li>
+        <li>Use the high-contrast theme for users with visual impairments</li>
+        <li>Keep step content concise - long blocks are hard to follow via audio</li>
+    </ul>
+
+    <h2 id="live-demo">
+        Live Demo
+        <a class="docs-anchor" href="#live-demo">#</a>
+    </h2>
+
+    <div class="docs-demo">
+        <div class="docs-demo__header">
+            <span class="docs-demo__label">Live Demo - High Contrast</span>
+            <button class="docs-demo__run" @onclick="StartDemo">▶ Run Tour</button>
+        </div>
+        <div class="docs-demo__body" style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div id="a11y-el1" style="padding:1rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-weight:600;">
+                ♿ Accessible Element
+            </div>
+            <div id="a11y-el2" style="padding:1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-weight:600;">
+                ⌨️ Keyboard Friendly
+            </div>
+        </div>
+    </div>
+
+    <GuideFlowTour @ref="demoTour" TourOptions="demoOptions" OnComplete="OnEnd" OnCancel="OnEnd">
+        <GuideFlowStep Element="#a11y-el1" Title="High Contrast" Order="0" Side="Placement.Bottom">
+            <p><strong>High contrast</strong> theme for accessibility compliance.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#a11y-el2" Title="Keyboard Nav" Order="1" Side="Placement.Bottom" ShowSkip="false">
+            <p><strong>→</strong> Next &bull; <strong>←</strong> Back &bull; <strong>Esc</strong> Cancel &bull; <strong>Tab</strong> trapped</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+</div>
+
+@code {
+    private GuideFlowTour? demoTour;
+    private bool busy;
+
+    private TourOptions demoOptions = new()
+    {
+        Overlay = true,
+        OverlayOpacity = 0.8,
+        ShowProgress = true,
+        AllowClose = true,
+        PopoverClass ="gf-theme-high-contrast",
+        HighlightShape = HighlightShape.Rectangle,
+        AnimationType = AnimationType.None,
+    };
+
+    private async Task StartDemo()
+    {
+        if (demoTour != null && !busy) { busy = true; await demoTour.DriveAsync(); }
+    }
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

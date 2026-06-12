@@ -1,0 +1,98 @@
+@inject IJSRuntime JS
+
+<div class="docs-code-block">
+    <div class="docs-code-block__header">
+        <span class="docs-code-block__lang">@Language</span>
+        <button class="docs-code-block__copy" @onclick="CopyCode">
+            @(copied ? "✓ Copied!" : "Copy")
+        </button>
+    </div>
+    <pre class="docs-code-block__pre"><code @ref="codeElement" class="docs-code-block__code language-@PrismLang">@((MarkupString)HighlightedCode)</code></pre>
+</div>
+
+@code {
+    [Parameter] public string Code { get; set; } = string.Empty;
+    [Parameter] public string Language { get; set; } = "razor";
+
+    private bool copied;
+    private System.Threading.Timer? _timer;
+    private string HighlightedCode = string.Empty;
+    private ElementReference codeElement;
+    private bool _highlighted;
+
+    private string PrismLang => Language.ToLowerInvariant() switch
+    {
+        "razor" or "blazor" => "razor",
+        "cs" or "csharp" or "c#" => "csharp",
+        "js" or "javascript" => "javascript",
+        "css" => "css",
+        "json" => "json",
+        "bash" or "shell" or "sh" => "bash",
+        "html" or "xml" => "markup",
+        _ => "csharp"
+    };
+
+    protected override void OnParametersSet()
+    {
+        HighlightedCode = PrismHighlight(Code);
+        _highlighted = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_highlighted)
+        {
+            _highlighted = true;
+            try
+            {
+                await JS.InvokeVoidAsync("GuideFlowDocs.highlightBlock", codeElement);
+            }
+            catch (JSException) { }
+            catch (JSDisconnectedException) { }
+            catch (InvalidOperationException) { }
+        }
+    }
+
+    private string PrismHighlight(string code)
+    {
+        // Trim leading/trailing whitespace (Blazor @"..." preserves newlines)
+        var trimmed = code.Trim();
+
+        // Dedent: find minimum indentation and remove it
+        var lines = trimmed.Split('\n');
+        var minIndent = lines
+            .Where(l => l.Trim().Length > 0)
+            .Select(l => l.Length - l.TrimStart().Length)
+            .DefaultIfEmpty(0)
+            .Min();
+
+        if (minIndent > 0)
+        {
+            lines = lines.Select(l => l.Length >= minIndent ? l[minIndent..] : l).ToArray();
+        }
+
+        var dedented = string.Join("\n", lines).Trim();
+
+        // Escape HTML entities
+        var escaped = dedented
+            .Replace("&", "&amp;")
+            .Replace("<", "&lt;")
+            .Replace(">", "&gt;")
+            .Replace("\"", "&quot;");
+
+        return escaped;
+    }
+
+    private async Task CopyCode()
+    {
+        await JS.InvokeVoidAsync("GuideFlowDocs.copyToClipboard", Code);
+        copied = true;
+        StateHasChanged();
+        _timer?.Dispose();
+        _timer = new System.Threading.Timer(_ =>
+        {
+            copied = false;
+            InvokeAsync(StateHasChanged);
+        }, null, 2000, System.Threading.Timeout.Infinite);
+    }
+}

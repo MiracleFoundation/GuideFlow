@@ -1,0 +1,51 @@
+@page "/docs/programmatic-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Programmatic Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="programmatic-tour-title">Programmatic Tour</h1>
+    <p class="docs-lead" id="programmatic-tour-lead">Build and control tours entirely from C# code using the fluent <code>GuideFlowBuilder</code> API. Add steps, configure options, attach event handlers, and start tours programmatically - no Razor markup required.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="programmatic-tour-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="programmatic-tour-code">
+        <CodeBlock Language="razor" Code="@(@"<ProgrammaticTour @ref=""tour"" Builder=""builder"" />
+
+@code {
+    private ProgrammaticTour? tour;
+    private GuideFlowBuilder builder = new GuideFlowBuilder()
+        .WithName(""my-tour"")
+        .WithOptions(o => {
+            o.ShowProgress = true;
+        })
+        .AddStep(""#programmatic-tour-title"", ""Step 1"", ""Content for step 1."", Placement.Bottom)
+        .AddStep(""#programmatic-tour-code"", ""Step 2"", ""Content for step 2."", Placement.Top);
+
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+<ProgrammaticTour @ref="tour" Builder="builder" />
+
+@code {
+    private ProgrammaticTour? tour;
+
+    private GuideFlowBuilder builder = new GuideFlowBuilder()
+        .WithName("programmatic-demo")
+        .WithOptions(o => {
+            o.ShowProgress = true;
+        })
+        .AddStep("#programmatic-tour-title", "Step 1", "Content for step 1.", Placement.Bottom)
+        .AddStep("#programmatic-tour-code", "Step 2", "Content for step 2.", Placement.Top);
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}

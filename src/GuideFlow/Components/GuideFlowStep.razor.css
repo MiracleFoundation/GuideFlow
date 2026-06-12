@@ -1,0 +1,218 @@
+.gf-step {
+    all: unset;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    right: 0;
+    min-width: 250px;
+    max-width: var(--gf-popover-max-width, 320px);
+    background: var(--gf-popover-bg, #ffffff);
+    border-radius: var(--gf-popover-radius, 5px);
+    box-shadow: var(--gf-popover-shadow, 0 1px 10px rgba(0, 0, 0, 0.4));
+    font-family: var(--gf-font-family, "Helvetica Neue", Inter, ui-sans-serif, "Apple Color Emoji", Helvetica, Arial, sans-serif);
+    color: #2d2d2d;
+    padding: 15px;
+    z-index: 1000000000;
+    outline: none;
+    pointer-events: auto;
+}
+
+.gf-step--visible {
+    display: block;
+}
+
+/* Default animation: Fade */
+.gf-step--visible:not(.gf-step--anim-slide):not(.gf-step--anim-bounce):not(.gf-step--anim-none) {
+    animation: gf-step-fade-in var(--gf-animation-duration, 200ms) ease-in-out forwards;
+}
+
+/* Slide animation */
+.gf-step--anim-slide.gf-step--visible {
+    animation: gf-step-slide-in var(--gf-animation-duration, 200ms) ease forwards;
+}
+
+/* Bounce animation */
+.gf-step--anim-bounce.gf-step--visible {
+    animation: gf-step-bounce-in var(--gf-animation-duration, 200ms) ease forwards;
+}
+
+/* No animation */
+.gf-step--anim-none.gf-step--visible {
+    animation: none;
+}
+
+/* Modal mode */
+.gf-step--modal {
+    max-width: var(--gf-modal-max-width, 500px);
+    min-width: 320px;
+    border-radius: var(--gf-modal-radius, 12px);
+    box-shadow: var(--gf-modal-shadow, 0 8px 32px rgba(0, 0, 0, 0.2));
+}
+
+/* Loading indicator */
+.gf-step__loading {
+    text-align: center;
+    padding: 1rem;
+    color: var(--gf-text-color, #6b7280);
+    font-style: italic;
+}
+
+.gf-step__content {
+    padding: 0;
+}
+
+.gf-step__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 5px;
+    margin: 0;
+}
+
+.gf-step__title {
+    margin: 0;
+    font-size: var(--gf-title-size, 19px);
+    font-weight: 700;
+    color: var(--gf-title-color, #2d2d2d);
+    line-height: 1;
+}
+
+.gf-step__close {
+    all: unset;
+    box-sizing: border-box;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--gf-text-color, #2d2d2d);
+    padding: 0;
+    margin: 0;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+}
+
+.gf-step__close:hover {
+    opacity: 1;
+}
+
+.gf-step__body {
+    padding: 0;
+    margin: 0;
+    color: var(--gf-text-color, #2d2d2d);
+    font-size: var(--gf-text-size, 14px);
+    line-height: 1.5;
+}
+
+.gf-step__body p {
+    margin: 0;
+}
+
+.gf-step__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px 0 0;
+    gap: 4px;
+}
+
+.gf-step__progress {
+    font-size: 13px;
+    color: var(--gf-text-color, #2d2d2d);
+    opacity: 0.5;
+    white-space: nowrap;
+    margin-right: auto;
+}
+
+.gf-step__buttons {
+    display: flex;
+    gap: 4px;
+}
+
+/* Buttons */
+.gf-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--gf-btn-radius, 3px);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s, opacity 0.15s;
+    white-space: nowrap;
+    font-family: var(--gf-font-family, "Helvetica Neue", Inter, ui-sans-serif, "Apple Color Emoji", Helvetica, Arial, sans-serif);
+}
+
+.gf-btn:focus-visible {
+    outline: 2px solid var(--gf-btn-primary-bg, #4361ee);
+    outline-offset: 2px;
+}
+
+.gf-btn--next {
+    background-color: var(--gf-btn-primary-bg, #4361ee);
+    color: var(--gf-btn-primary-color, #ffffff);
+}
+
+.gf-btn--next:hover { opacity: 0.9; }
+
+.gf-btn--back {
+    background-color: var(--gf-btn-secondary-bg, #e9ecef);
+    color: var(--gf-btn-secondary-color, #495057);
+}
+
+.gf-btn--back:hover { opacity: 0.85; }
+
+.gf-btn--skip {
+    background: none;
+    color: var(--gf-text-color, #2d2d2d);
+    opacity: 0.5;
+    text-decoration: none;
+    padding: 6px 8px;
+}
+
+.gf-btn--skip:hover { opacity: 1; }
+
+/* Progress Bar */
+.gf-step__progress-bar {
+    height: 3px;
+    background: var(--gf-progress-bg, #e9ecef);
+    border-radius: 2px;
+    margin: 0 0 10px;
+    overflow: hidden;
+}
+
+.gf-step__progress-bar-fill {
+    height: 100%;
+    background: var(--gf-progress-color, #4361ee);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Visited step indicator */
+.gf-step--visited .gf-step__title::after {
+    content: '✓';
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.8em;
+    color: var(--gf-visited-color, #10b981);
+    opacity: 0.8;
+}
+
+/* Animations */
+@keyframes gf-step-fade-in {
+    0% { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes gf-step-slide-in {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes gf-step-bounce-in {
+    0% { opacity: 0; transform: scale(0.9); }
+    50% { transform: scale(1.03); }
+    100% { opacity: 1; transform: scale(1); }
+}

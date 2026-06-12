@@ -1,0 +1,76 @@
+@page "/docs/animated-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Animated Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="anim-title">Animated Tour</h1>
+    <p class="docs-lead" id="anim-lead">The default tour mode - smoothly animates the overlay and popover as users navigate between steps.</p>
+
+    @* --- Run button --- *@
+    <button class="docs-demo__run" @onclick="StartTour" id="anim-run-btn">▶ Show me the example</button>
+
+    @* --- Code Example --- *@
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="anim-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#my-header"" Title=""Welcome!"" Order=""0""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>Here is your dashboard header.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#my-sidebar"" Title=""Navigation"" Order=""1""
+                   Side=""Placement.Right"">
+        <p>Use this sidebar to navigate.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Title=""Happy Coding!"" Order=""2"">
+        <p>That's all - go build something great.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new()
+    {
+        ShowProgress = true,
+    };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+</div>
+
+@* --- Tour: highlight actual page elements --- *@
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Element="#anim-title" Title="Animated Tour" Order="0"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start">
+        <p>This is the page title. The tour highlights real page elements, not demo cards.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-lead" Title="Description" Order="1"
+                   Side="Placement.Bottom">
+        <p>The lead text describes the feature. Popover animates smoothly between steps.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-code" Title="Code Example" Order="2"
+                   Side="Placement.Top">
+        <p>The actual code example showing how to use this feature.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-run-btn" Title="Try It!" Order="3"
+                   Side="Placement.Right">
+        <p>This is the button you just clicked. That's all - happy coding!</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+
+    private TourOptions options = new()
+    {
+        ShowProgress = true,
+    };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}
