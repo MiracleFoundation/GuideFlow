@@ -43,31 +43,27 @@
 
 @* --- Tour: highlight actual page elements --- *@
 <GuideFlowTour @ref="tour" TourOptions="options">
-    <GuideFlowStep Element="#anim-code" Title="Animated Tour Example" Order="0"
-                   Side="Placement.Left" Align="PopoverAlign.Start">
-        <p>Here is the code example showing animated tour. Let's walk you through it.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element="#anim-code [data-line='1']" Title="Import the Component" Order="1"
+    <GuideFlowStep Element="#anim-title" Title="Animated Tour" Order="0"
                    Side="Placement.Bottom" Align="PopoverAlign.Start">
-        <p>Import the GuideFlow tour and step components into your Blazor page.</p>
+        <p>The default tour mode with smooth animations between steps.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#anim-code [data-line='2']" Title="Importing CSS" Order="2"
+    <GuideFlowStep Element="#anim-lead" Title="Description" Order="1"
                    Side="Placement.Bottom" Align="PopoverAlign.Start">
-        <p>Reference the GuideFlow CSS which gives you the default styling for popover and overlay.</p>
+        <p>This lead text explains what the animated tour does.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#anim-code [data-line='4']" Title="Create Tour" Order="3"
+    <GuideFlowStep Element="#anim-run-btn" Title="Try It" Order="2"
+                   Side="Placement.Right">
+        <p>Click this button to start the tour.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-code" Title="Code Example" Order="3"
                    Side="Placement.Left" Align="PopoverAlign.Start">
-        <p>Use @("@ref") to capture a reference to the GuideFlowTour component instance.</p>
+        <p>Here is the code showing how to set up an animated tour.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#anim-code [data-line='15']" Title="Start Tour" Order="4"
-                   Side="Placement.Top" Align="PopoverAlign.Start">
-        <p>Call DriveAsync() to start the tour and your tour will be started.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element="a[href='/docs/configuration']" Title="More Configuration" Order="5"
+    <GuideFlowStep Element="a[href='/docs/configuration']" Title="More Configuration" Order="4"
                    Side="Placement.Right" Align="PopoverAlign.Start">
         <p>Look at this page for all the configuration options you can pass.</p>
     </GuideFlowStep>
-    <GuideFlowStep Title="Happy Coding" Order="6">
+    <GuideFlowStep Title="Happy Coding" Order="5">
         <p>And that is all, go ahead and start adding tours to your applications.</p>
     </GuideFlowStep>
 </GuideFlowTour>
