@@ -29,7 +29,7 @@
 </GuideFlowTour>
 
 @code {
-    private TourOptions options = new() { Animate = false };
+    private TourOptions options = new() { Animate = false, AnimateCutout = false };
 }")" />
     </div>
 
@@ -52,7 +52,7 @@
 
 @code {
     private GuideFlowTour? tour;
-    private TourOptions options = new() { Animate = false };
+    private TourOptions options = new() { Animate = false, AnimateCutout = false };
 
     private async Task StartTour()
     {
