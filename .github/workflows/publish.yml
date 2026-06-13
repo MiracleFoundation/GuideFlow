@@ -8,12 +8,10 @@ on:
 
 permissions:
   contents: read
-  id-token: write # Required for Trusted Publishing (OIDC)
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: nuget
 
     steps:
       - uses: actions/checkout@v4
@@ -36,4 +34,4 @@ jobs:
         run: dotnet pack src/GuideFlow/GuideFlow.csproj -c Release --no-build -o ./nupkg
 
       - name: Push to NuGet
-        run: dotnet nuget push ./nupkg/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
