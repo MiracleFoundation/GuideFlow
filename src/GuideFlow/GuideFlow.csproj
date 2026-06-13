@@ -9,7 +9,7 @@
 
     <!-- NuGet Package Info -->
     <PackageId>GuideFlow</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>GuideFlow Contributors</Authors>
     <Description>Accessible, animated guided tour component library for Blazor</Description>
     <PackageTags>blazor;tour;guide;onboarding;walkthrough;accessibility</PackageTags>
