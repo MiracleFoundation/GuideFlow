@@ -31,10 +31,18 @@
 
     <p>Copy the skill file to your project's <code>.claude/skills/guideflow/</code> directory:</p>
 
+    <h3>Windows (PowerShell)</h3>
+    <CodeBlock Language="powershell" Code="@(@"# From your project root
+New-Item -ItemType Directory -Force -Path .claude\skills\guideflow
+
+# Download the skill file
+Invoke-WebRequest -Uri ""https://raw.githubusercontent.com/MiracleFoundation/GuideFlow/main/.claude/skills/guideflow/SKILL.md"" -OutFile .claude\skills\guideflow\SKILL.md")" />
+
+    <h3>Linux / macOS</h3>
     <CodeBlock Language="bash" Code="@(@"# From your project root
 mkdir -p .claude/skills/guideflow
 
-# Copy the skill file
+# Download the skill file
 curl -o .claude/skills/guideflow/SKILL.md \
   https://raw.githubusercontent.com/MiracleFoundation/GuideFlow/main/.claude/skills/guideflow/SKILL.md")" />
 
@@ -90,18 +98,4 @@ curl -o .claude/skills/guideflow/SKILL.md \
         </div>
     </div>
 
-    <h2 id="supported-ai-tools">
-        Supported AI Tools
-        <a class="docs-anchor" href="#supported-ai-tools">#</a>
-    </h2>
-
-    <ul>
-        <li><strong>Claude Code CLI</strong> - Terminal-based coding assistant</li>
-        <li><strong>Claude Code VS Code Extension</strong> - In-editor assistant</li>
-        <li><strong>Claude Code JetBrains Extension</strong> - Rider/IntelliJ support</li>
-    </ul>
-
-    <div class="docs-note docs-note--info">
-        <strong>Note</strong> The skill file uses the Claude Code skills format. Other AI tools that support custom instructions or system prompts can also use the content as reference material.
-    </div>
 </div>

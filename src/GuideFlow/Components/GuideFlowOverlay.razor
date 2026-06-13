@@ -15,4 +15,17 @@
     [Parameter] public EventCallback OnClick { get; set; }
     [Parameter] public OverlayMode Mode { get; set; } = OverlayMode.Cutout;
     [Parameter] public HighlightShape Shape { get; set; } = HighlightShape.RoundedRect;
+
+    // Internal highlight position (updated via SetHighlight)
+    private double _highlightLeft, _highlightTop, _highlightWidth, _highlightHeight;
+
+    /// <summary>Update the cutout highlight position around the target element.</summary>
+    public void SetHighlight(double left, double top, double width, double height)
+    {
+        _highlightLeft = left;
+        _highlightTop = top;
+        _highlightWidth = width;
+        _highlightHeight = height;
+        StateHasChanged();
+    }
 }
