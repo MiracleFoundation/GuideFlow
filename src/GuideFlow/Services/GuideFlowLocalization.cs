@@ -7,25 +7,25 @@ namespace GuideFlow.Services;
 public class GuideFlowLocalization
 {
     /// <summary>"Next" button text. Default: "Next"</summary>
-    public string NextButton { get; set; } = "Next";
+    public string NextButton { get; set; } = Constants.DefaultNextText;
 
     /// <summary>"Back" button text. Default: "Back"</summary>
-    public string BackButton { get; set; } = "Back";
+    public string BackButton { get; set; } = Constants.DefaultBackText;
 
     /// <summary>"Skip" button text. Default: "Skip"</summary>
-    public string SkipButton { get; set; } = "Skip";
+    public string SkipButton { get; set; } = Constants.DefaultSkipText;
 
     /// <summary>"Finish/Done" button text. Default: "Done"</summary>
-    public string FinishButton { get; set; } = "Done";
+    public string FinishButton { get; set; } = Constants.DefaultDoneText;
 
     /// <summary>"Close" button aria-label. Default: "Close tour"</summary>
-    public string CloseLabel { get; set; } = "Close tour";
+    public string CloseLabel { get; set; } = Constants.DefaultCloseLabel;
 
     /// <summary>Progress text template. {0}=current, {1}=total. Default: "{0} of {1}"</summary>
-    public string ProgressTemplate { get; set; } = "{0} of {1}";
+    public string ProgressTemplate { get; set; } = Constants.DefaultProgressTemplate;
 
     /// <summary>Step dialog aria-label prefix. Default: "Tour step"</summary>
-    public string StepAriaLabel { get; set; } = "Tour step";
+    public string StepAriaLabel { get; set; } = Constants.DefaultStepAriaLabel;
 
     // --- Factory methods for common locales ---
 

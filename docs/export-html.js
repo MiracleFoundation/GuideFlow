@@ -8,7 +8,6 @@ const OUTPUT_DIR = path.join(__dirname, 'GuideFlow.Docs', 'html-export');
 const PAGES = [
     { route: '/', file: 'index.html' },
     { route: '/docs', file: 'docs/index.html' },
-    { route: '/docs/installation', file: 'docs/installation.html' },
     { route: '/docs/configuration', file: 'docs/configuration.html' },
     { route: '/docs/api', file: 'docs/api.html' },
     { route: '/docs/theming', file: 'docs/theming.html' },

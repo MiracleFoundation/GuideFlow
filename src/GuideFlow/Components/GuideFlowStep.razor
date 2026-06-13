@@ -16,7 +16,7 @@
 
         @if (ResolvedMode != StepMode.Modal)
         {
-            <GuideFlowArrow Visible="ShowArrow" Placement="@ResolvedSide.ToString().ToLower()" />
+            <GuideFlowArrow Visible="ShowArrow" Placement="@ResolvedSide" />
         }
 
         <div class="gf-step__content">
@@ -149,10 +149,10 @@
 
     // --- Driver.js showButtons / disableButtons ---
     /// <summary>Driver.js: which buttons to show. Null = use ShowNext/ShowBack/ShowClose.</summary>
-    [Parameter] public string[]? ShowButtons { get; set; }
+    [Parameter] public ButtonType[]? ShowButtons { get; set; }
 
     /// <summary>Driver.js: which buttons to disable (still visible but not clickable).</summary>
-    [Parameter] public string[]? DisableButtons { get; set; }
+    [Parameter] public ButtonType[]? DisableButtons { get; set; }
 
     [Parameter] public string? NextBtnText { get; set; }
     [Parameter] public string? PrevBtnText { get; set; }

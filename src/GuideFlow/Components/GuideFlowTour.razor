@@ -403,8 +403,8 @@
                     "positionStepWithScrollConfig",
                     step.Element, step.StepElement, placement,
                     TourOptions.StagePadding, offset,
-                    TourOptions.ScrollBehavior.ToString().ToLower(),
-                    TourOptions.ScrollBlock);
+                    TourOptions.ScrollBehavior.ToCssString(),
+                    TourOptions.ScrollBlock.ToCssString());
             }
             else
             {

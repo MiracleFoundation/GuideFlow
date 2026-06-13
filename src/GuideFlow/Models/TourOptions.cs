@@ -122,10 +122,10 @@ public class TourOptions
     public ScrollBehavior ScrollBehavior { get; set; } = ScrollBehavior.Smooth;
 
     /// <summary>
-    /// ScrollIntoView block option: "center", "start", "end", "nearest".
-    /// Default: "center"
+    /// ScrollIntoView block option: Center, Start, End, Nearest.
+    /// Default: Center
     /// </summary>
-    public string ScrollBlock { get; set; } = Constants.DefaultScrollBlock;
+    public ScrollBlock ScrollBlock { get; set; } = ScrollBlock.Center;
 
     // === Stage / Highlight ===
 
@@ -242,16 +242,16 @@ public class TourOptions
     /// <summary>
     /// Array of buttons to show in the popover.
     /// Driver.js: showButtons
-    /// Default: ["next", "previous", "close"]
+    /// Default: [ButtonType.Next, ButtonType.Previous, ButtonType.Close]
     /// </summary>
-    public string[]? ShowButtons { get; set; }
+    public ButtonType[]? ShowButtons { get; set; }
 
     /// <summary>
     /// Array of buttons to disable (visible but not clickable).
     /// Driver.js: disableButtons
     /// Default: null
     /// </summary>
-    public string[]? DisableButtons { get; set; }
+    public ButtonType[]? DisableButtons { get; set; }
 
     // === Button Text ===
 
