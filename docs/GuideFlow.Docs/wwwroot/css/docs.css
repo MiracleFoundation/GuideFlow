@@ -160,6 +160,10 @@
     z-index: 100;
 }
 
+.docs-theme-toggle--sidebar {
+    margin-left: auto;
+}
+
 /* Landing topbar - groups GitHub + theme toggle */
 .landing-topbar {
     position: fixed;

@@ -104,12 +104,42 @@
 }")" />
     </div>
 
+    <h2 id="content-url">Content from URL <a class="docs-anchor" href="#content-url">#</a></h2>
+    <p>Use <code>ContentUrl</code> to fetch step content from a URL. Requires <code>HttpClient</code> to be registered in DI.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="content-url-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartContentUrlTour">Content from URL</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="content-url-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""From URL""
+               ContentUrl=""/demo-content.html"">
+    <p>Loading...</p>
+</GuideFlowStep>
+
+// Requires HttpClient in DI:
+// services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });")" />
+    </div>
+
 </div>
 
 <GuideFlowTour @ref="contentTour" TourOptions="contentOpts" OnComplete="OnContentEnd" OnCancel="OnContentEnd">
     <GuideFlowStep Element="#async-content-target" Title="Async Content" Order="0"
                    Side="Placement.Bottom" OnLoadContent="LoadContent">
         <p>Loading...</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="contentUrlTour" TourOptions="contentUrlOpts" OnComplete="OnContentUrlEnd" OnCancel="OnContentUrlEnd">
+    <GuideFlowStep Element="#content-url-target" Title="Content from URL" Order="0"
+                   Side="Placement.Bottom" ContentUrl="/demo-content.html">
+        <p>Loading from URL...</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
@@ -159,6 +189,15 @@
         ShowButtons = new[] { ButtonType.Close },
     };
 
+    // --- Content from URL demo ---
+    private GuideFlowTour? contentUrlTour;
+    private bool contentUrlBusy;
+
+    private TourOptions contentUrlOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
     private async Task<string> LoadContent()
     {
         await Task.Delay(1500); // simulate network delay
@@ -171,4 +210,12 @@
     }
 
     private void OnContentEnd() { contentBusy = false; StateHasChanged(); }
+
+    // --- Content from URL ---
+    private async Task StartContentUrlTour()
+    {
+        if (contentUrlTour != null && !contentUrlBusy) { contentUrlBusy = true; await contentUrlTour.DriveAsync(); }
+    }
+
+    private void OnContentUrlEnd() { contentUrlBusy = false; StateHasChanged(); }
 }

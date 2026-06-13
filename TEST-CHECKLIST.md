@@ -261,10 +261,10 @@
 | 15. Tour Events | 9 | 9 | 0 | 0 |
 | 16. Accessibility | 7 | 7 | 0 | 0 |
 | 17. Programmatic API | 9 | 8 | 1 | 0 |
-| 18. Async Tour | 3 | 1 | 0 | 2 |
+| 18. Async Tour | 1 | 1 | 0 | 0 |
 | 19. Edge Cases | 10 | 9 | 0 | 1 |
-| 20. Persist State | 4 | 0 | 0 | 4 |
-| **Total** | **136** | **126** | **2** | **8** |
+| 20. Persist State | 4 | 4 | 0 | 0 |
+| **Total** | **134** | **130** | **2** | **2** |
 
 ## Notes
 
