@@ -434,7 +434,7 @@
 
         try
         {
-            var placement = step.EffectivePlacement.ToString().ToLower();
+            var placement = step.EffectivePlacement.ToCssString();
             var offset = TourOptions.PopoverOffset;
 
             PositionResult? result;

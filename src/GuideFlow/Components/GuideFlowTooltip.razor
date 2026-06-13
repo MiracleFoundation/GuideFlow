@@ -125,7 +125,7 @@
                 }
                 else
                 {
-                    var placement = Side.ToString().ToLower();
+                    var placement = Side.ToCssString();
                     await _jsModule.InvokeAsync<object>(
                         "positionStep", Element, tooltipElement, placement, HighlightPadding, 10, SmoothScroll);
                 }
