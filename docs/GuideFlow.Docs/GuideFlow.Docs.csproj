@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorWasmPrerenderingDeleteLoadingContents>true</BlazorWasmPrerenderingDeleteLoadingContents>
     <BlazorWasmPrerenderingOutputStyle>AppendHtmlExtension</BlazorWasmPrerenderingOutputStyle>
+    <BlazorWasmPrerenderingUrlPathRegexToIgnore>^/docs</BlazorWasmPrerenderingUrlPathRegexToIgnore>
   </PropertyGroup>
 
   <!-- Default: base href = / (local dev). Override: dotnet publish -p:BaseHref=/GuideFlow/ -->
@@ -23,12 +24,9 @@
     <ProjectReference Include="..\..\src\GuideFlow\GuideFlow.csproj" />
   </ItemGroup>
 
-  <!-- Replace @@BASE_HREF@@ placeholder in index.html during build -->
-  <Target Name="SetBaseHref" BeforeTargets="CoreBuild">
-    <WriteLinesToFile
-      File="$(MSBuildThisFileDirectory)wwwroot\index.html"
-      Lines="$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)wwwroot\index.html').Replace('@@BASE_HREF@@', '$(BaseHref)'))"
-      Overwrite="true" />
+  <!-- Replace <base href="/"> with correct base href in published output after prerendering -->
+  <Target Name="SetBaseHref" AfterTargets="BlazorWasmPrerendering" Condition="'$(BaseHref)' != '/' AND '$(BaseHref)' != ''">
+    <Exec Command="sed -i 's|&lt;base href=&quot;/&quot;|&lt;base href=&quot;$(BaseHref)&quot;|g' '$(PublishDir)wwwroot/index.html'" />
   </Target>
 
 </Project>
