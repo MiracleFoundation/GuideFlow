@@ -27,7 +27,7 @@
 @code {
     private TourOptions options = new()
     {
-        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
     };
 }")" />
     </div>
@@ -56,7 +56,7 @@
 
 <GuideFlowTour @ref="allTour" TourOptions="allOpts" OnComplete="OnEnd" OnCancel="OnEnd">
     <GuideFlowStep Element="#popover-buttons-target-1" Title="All Buttons" Order="0" Side="Placement.Bottom">
-        <p>This step shows Next, Previous, and Close buttons.</p>
+        <p>This step shows all buttons: Next, Previous, Close, and Skip.</p>
     </GuideFlowStep>
     <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
         <p>Second step with all buttons.</p>
@@ -96,7 +96,7 @@
 
     private TourOptions allOpts = new()
     {
-        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
     };
     private TourOptions noCloseOpts = new()
     {
