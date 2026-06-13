@@ -53,6 +53,41 @@
     private HashSet<string> _visitedSteps = new();
     private bool _jsAvailable;
 
+    // --- Persistence helpers ---
+    private string StorageKey => TourOptions.StorageKey ?? $"gf-tour-{TourName}";
+
+    private async Task SavePersistedStateAsync()
+    {
+        if (!TourOptions.PersistState || !_jsAvailable) return;
+        try
+        {
+            var state = System.Text.Json.JsonSerializer.Serialize(new { index = ActiveIndex, visited = _visitedSteps.ToList() });
+            await JS.InvokeVoidAsync("localStorage.setItem", StorageKey, state);
+        }
+        catch { }
+    }
+
+    private async Task<int?> LoadPersistedStateAsync()
+    {
+        if (!TourOptions.PersistState || !_jsAvailable) return null;
+        try
+        {
+            var json = await JS.InvokeAsync<string?>("localStorage.getItem", StorageKey);
+            if (string.IsNullOrEmpty(json)) return null;
+            var doc = System.Text.Json.JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("index", out var idx))
+                return idx.GetInt32();
+        }
+        catch { }
+        return null;
+    }
+
+    private async Task ClearPersistedStateAsync()
+    {
+        if (!TourOptions.PersistState || !_jsAvailable) return;
+        try { await JS.InvokeVoidAsync("localStorage.removeItem", StorageKey); } catch { }
+    }
+
     public int ActiveIndex { get; private set; }
     public int TotalSteps => _steps.Count;
     public bool IsActive => _isActive;
@@ -124,6 +159,12 @@
     public async Task DriveAsync(int stepIndex)
     {
         if (_steps.Count == 0) return;
+
+        // Try to resume from persisted state
+        var savedIndex = await LoadPersistedStateAsync();
+        if (savedIndex.HasValue && savedIndex.Value >= 0 && savedIndex.Value < _steps.Count)
+            stepIndex = savedIndex.Value;
+
         if (stepIndex < 0 || stepIndex >= _steps.Count) stepIndex = 0;
 
         _isActive = true;
@@ -133,6 +174,7 @@
         StateHasChanged();
         await OnStart.InvokeAsync();
         await NotifyStepChanged(-1, ActiveIndex);
+        await SavePersistedStateAsync();
     }
 
     /// <summary>Driver.js: moveNext(). Moves to the next step.</summary>
@@ -153,6 +195,7 @@
 
         StateHasChanged();
         await NotifyStepChanged(previousIndex, ActiveIndex);
+        await SavePersistedStateAsync();
     }
 
     /// <summary>Driver.js: movePrevious(). Moves to the previous step.</summary>
@@ -173,6 +216,7 @@
 
         StateHasChanged();
         await NotifyStepChanged(previousIndex, ActiveIndex);
+        await SavePersistedStateAsync();
     }
 
     /// <summary>Driver.js: moveTo(index). Moves to a specific step.</summary>
@@ -188,6 +232,7 @@
         ActiveIndex = index;
         StateHasChanged();
         await NotifyStepChanged(previousIndex, ActiveIndex);
+        await SavePersistedStateAsync();
     }
 
     // === Skip (GuideFlow extension — Driver.js doesn't have skip) ===
@@ -307,6 +352,7 @@
         _isActive = false;
         await SetBodyClassesAsync(false);
         StateHasChanged();
+        await ClearPersistedStateAsync();
 
         await OnCancel.InvokeAsync();
         if (OnDestroyed.HasDelegate) await OnDestroyed.InvokeAsync(BuildContext());
@@ -318,6 +364,7 @@
         _isActive = false;
         await SetBodyClassesAsync(false);
         StateHasChanged();
+        await ClearPersistedStateAsync();
         await OnComplete.InvokeAsync();
     }
 

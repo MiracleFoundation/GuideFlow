@@ -16,8 +16,8 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 2.1 | Cutout mode (default) | Click "Cutout Mode" | SVG cutout highlights target element | |
-| 2.2 | Stage mode | Click "Stage Mode" | 4 panels surround target without overlapping | |
+| 2.1 | Cutout mode (default) | Click "Cutout Mode" | SVG cutout highlights target element | ✅ |
+| 2.2 | Stage mode | Click "Stage Mode" | 4 panels surround target without overlapping | ✅ |
 | 2.3 | Overlay opacity | Click Light/Medium/Dark buttons | Overlay opacity changes accordingly | ✅ |
 | 2.4 | Custom overlay color | Click Red/Blue/Yellow buttons | Overlay tints with custom color | ✅ |
 | 2.5 | Disable overlay | Click "No Overlay" | No overlay shown | ✅ |
@@ -194,15 +194,15 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 17.1 | Build tour with fluent API | Use `GuideFlowBuilder` | Tour works same as declarative | |
-| 17.2 | AddStep with options | Use `StepBuilder` | Step configured correctly | |
-| 17.3 | SetSteps at runtime | Call `SetSteps()` | Tour updates with new steps | |
-| 17.4 | MoveToAsync | Call `MoveToAsync(3)` | Jumps to step 3 | |
-| 17.5 | ResetAsync | Call `ResetAsync()` | Tour resets to initial state | |
-| 17.6 | HighlightAsync | Call `HighlightAsync("#el")` | Single element highlighted | |
-| 17.7 | ShowPopoverAsync | Call `ShowPopoverAsync()` | Popover shown without target | |
-| 17.8 | GetState | Call `GetState()` | Returns JSON with current state | |
-| 17.9 | GetConfig/SetConfig | Get and modify config | Config updates applied | |
+| 17.1 | Build tour with fluent API | Use `GuideFlowBuilder` | Tour works same as declarative | ✅ |
+| 17.2 | AddStep with options | Use `StepBuilder` | Step configured correctly | ✅ |
+| 17.3 | SetSteps at runtime | Call `SetSteps()` | Tour updates with new steps | ✅ |
+| 17.4 | MoveToAsync | Call `MoveToAsync(3)` | Jumps to step 3 | ✅ |
+| 17.5 | ResetAsync | Call `ResetAsync()` | Tour resets to initial state | ✅ |
+| 17.6 | HighlightAsync | Call `HighlightAsync("#el")` | Single element highlighted | ✅ |
+| 17.7 | ShowPopoverAsync | Call `ShowPopoverAsync()` | Popover shown without target | ❌ BUG |
+| 17.8 | GetState | Call `GetState()` | Returns JSON with current state | ✅ |
+| 17.9 | GetConfig/SetConfig | Get and modify config | Config updates applied | ✅ |
 
 ## 18. Async Tour
 
@@ -231,10 +231,10 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 20.1 | Enable persistence | Set `PersistState = true` | State saved to localStorage | |
-| 20.2 | Resume on reload | Start tour, refresh page | Tour resumes from last step | |
-| 20.3 | Custom storage key | Set `StorageKey = "my-tour"` | Uses custom key in localStorage | |
-| 20.4 | TrackVisited | Set `TrackVisited = true` | Visited steps tracked | |
+| 20.1 | Enable persistence | Click "Start Tour (Persist)", navigate to Step 2 | State saved to localStorage | ✅ |
+| 20.2 | Resume on reload | Refresh page, click "Start Tour (Persist)" again | Tour resumes from Step 2 | ✅ |
+| 20.3 | Custom storage key | Set `StorageKey = "gf-persist-demo"` | Uses custom key in localStorage | ✅ |
+| 20.4 | TrackVisited | Click "Track Visited Tour", go 1→2→1 | Step 1 marked as visited | ✅ |
 
 ---
 
@@ -245,7 +245,7 @@
 | Category | Total | Pass | Fail | Skip |
 |----------|-------|------|------|------|
 | 1. Tour Lifecycle | 7 | 7 | 0 | 0 |
-| 2. Overlay | 7 | 5 | 0 | 2 |
+| 2. Overlay | 7 | 7 | 0 | 0 |
 | 3. Popover Positioning | 13 | 13 | 0 | 0 |
 | 4. Arrow | 3 | 3 | 0 | 0 |
 | 5. Highlight Shapes | 6 | 6 | 0 | 0 |
@@ -260,11 +260,11 @@
 | 14. Step Lifecycle Events | 5 | 5 | 0 | 0 |
 | 15. Tour Events | 9 | 9 | 0 | 0 |
 | 16. Accessibility | 7 | 7 | 0 | 0 |
-| 17. Programmatic API | 9 | 0 | 0 | 9 |
+| 17. Programmatic API | 9 | 8 | 1 | 0 |
 | 18. Async Tour | 3 | 1 | 0 | 2 |
 | 19. Edge Cases | 10 | 9 | 0 | 1 |
 | 20. Persist State | 4 | 0 | 0 | 4 |
-| **Total** | **136** | **116** | **1** | **19** |
+| **Total** | **136** | **126** | **2** | **8** |
 
 ## Notes
 
