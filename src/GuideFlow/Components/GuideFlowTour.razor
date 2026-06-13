@@ -7,19 +7,7 @@
     @ChildContent
 </CascadingValue>
 
-@if (_isActive)
-{
-    <GuideFlowOverlay @ref="overlay"
-                      Visible="TourOptions.Overlay && TourOptions.OverlayMode == OverlayMode.Cutout"
-                      Opacity="TourOptions.OverlayOpacity"
-                      Color="TourOptions.OverlayColor"
-                      ZIndex="TourOptions.ZIndex"
-                      AnimateCutout="TourOptions.AnimateCutout"
-                      AnimationDuration="TourOptions.AnimationDuration"
-                      Mode="TourOptions.OverlayMode"
-                      Shape="TourOptions.HighlightShape"
-                      OnClick="OnOverlayClick" />
-}
+@* Overlay is now rendered and animated entirely via JS — no Blazor component needed *@
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -43,12 +31,12 @@
     [Parameter] public EventCallback<TourContext> OnCloseClick { get; set; }
 
     private List<GuideFlowStep> _steps = new();
-    private GuideFlowOverlay? overlay;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<GuideFlowTour>? _dotNetRef;
     private bool _isActive;
     private string? _activeSelector;
     private HashSet<string> _visitedSteps = new();
+    private bool _overlayCreated;
     private bool _jsAvailable;
 
     public int ActiveIndex { get; private set; }
@@ -418,15 +406,21 @@
             {
                 _activeSelector = step.Element;
 
-                if (TourOptions.OverlayMode == OverlayMode.Stage && TourOptions.Overlay)
+                if (TourOptions.Overlay)
                 {
-                    await SafeInvokeVoidAsync("createStageOverlay",
-                        step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
-                        TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
-                }
-                else
-                {
-                    overlay?.SetHighlight(result.TargetLeft, result.TargetTop, result.TargetWidth, result.TargetHeight);
+                    // Create overlay on first step, then animate to each target
+                    if (!_overlayCreated)
+                    {
+                        await SafeInvokeVoidAsync("createOverlay",
+                            TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef);
+                        _overlayCreated = true;
+                    }
+
+                    var isStage = TourOptions.OverlayMode == OverlayMode.Stage;
+                    var animDuration = TourOptions.Animate ? TourOptions.AnimationDuration : 0;
+                    await SafeInvokeVoidAsync("animateCutoutTo",
+                        step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
+                        animDuration, isStage, TourOptions.OverlayOpacity);
                 }
 
                 if (TourOptions.AutoReposition)
@@ -481,10 +475,16 @@
 
     // --- JS Callbacks ---
     [JSInvokable]
-    public void OnReposition(double targetLeft, double targetTop, double width, double height)
+    public async Task OnReposition(double targetLeft, double targetTop, double width, double height)
     {
-        if (TourOptions.OverlayMode == OverlayMode.Cutout)
-            overlay?.SetHighlight(targetLeft, targetTop, width, height);
+        if (TourOptions.Overlay && _activeSelector != null)
+        {
+            // Reposition overlay instantly (no animation) when scrolling/resizing
+            var isStage = TourOptions.OverlayMode == OverlayMode.Stage;
+            await SafeInvokeVoidAsync("animateCutoutTo",
+                _activeSelector, TourOptions.StagePadding, TourOptions.StageRadius,
+                0, isStage, TourOptions.OverlayOpacity);
+        }
     }
 
     [JSInvokable]
@@ -522,14 +522,13 @@
 
                 if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
                     await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);
-
-                if (TourOptions.OverlayMode == OverlayMode.Stage)
-                    await SafeInvokeVoidAsync("removeStageOverlay", _activeSelector);
             }
+            await SafeInvokeVoidAsync("removeOverlay");
             await SafeInvokeVoidAsync("destroy");
         }
         catch (JSException) { }
         _activeSelector = null;
+        _overlayCreated = false;
     }
 
     /// <summary>Add/remove body classes when tour starts/ends (Driver.js style).</summary>

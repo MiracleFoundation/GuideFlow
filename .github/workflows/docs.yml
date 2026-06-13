@@ -33,6 +33,7 @@ jobs:
         run: >
           dotnet publish docs/GuideFlow.Docs/GuideFlow.Docs.csproj
           -c Release
+          -p:BaseHref=/GuideFlow/
           -p:BlazorWasmPrerenderingPathBase=/GuideFlow/
 
       - name: Add .nojekyll

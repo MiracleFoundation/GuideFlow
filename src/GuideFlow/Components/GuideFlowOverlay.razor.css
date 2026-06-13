@@ -1,17 +1,9 @@
-.gf-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--gf-overlay-color, rgba(0, 0, 0, 0.5));
-    pointer-events: none;
-    user-select: none;
-}
+/* Overlay SVG is rendered via JS — no Blazor CSS needed */
 
-.gf-overlay--animating {
-    transition: mask-image var(--gf-animation-duration, 300ms) ease,
-                -webkit-mask-image var(--gf-animation-duration, 300ms) ease;
+/* Stage panels (4 divs around cutout, also managed by JS) */
+:global(.gf-stage-panel) {
+    pointer-events: auto;
+    user-select: none;
 }
 
 /* Click-through passthrough element (created via JS) */

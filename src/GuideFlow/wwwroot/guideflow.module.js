@@ -311,87 +311,237 @@ function updateArrow(stepElement, target, placement) {
 }
 
 // ============================================================
-// Stage Mode Overlay
+// Animated Overlay (driver.js-style requestAnimationFrame)
 // ============================================================
 
-const _stageOverlays = new Map();
+const SVG_NS = 'http://www.w3.org/2000/svg';
+let _overlaySvg = null;
+let _overlayCutoutRect = null;
+let _overlayDotNetRef = null;
+let _overlayAnimFrame = null;
+
+// Stage panels (4 divs around cutout)
+let _stagePanels = [];
+let _stageHandler = null;
 
 /**
- * Create 4 overlay panels around the target element (stage mode).
+ * Create the persistent SVG overlay with animated cutout.
+ * Called once when the tour starts; animateCutoutTo() moves the cutout.
  */
-export function createStageOverlay(selector, zIndex, opacity, borderRadius, padding, dotNetRef) {
-    removeStageOverlay(selector);
+export function createOverlay(zIndex, opacity, dotNetRef) {
+    removeOverlay();
+    _overlayDotNetRef = dotNetRef;
+
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('class', 'gf-overlay');
+    svg.setAttribute('xmlns', SVG_NS);
+    svg.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;z-index:${zIndex};`;
+
+    // Defs + mask
+    const defs = document.createElementNS(SVG_NS, 'defs');
+    const mask = document.createElementNS(SVG_NS, 'mask');
+    mask.setAttribute('id', 'gf-cutout');
+
+    // White = fully visible overlay
+    const maskBg = document.createElementNS(SVG_NS, 'rect');
+    maskBg.setAttribute('width', '100%');
+    maskBg.setAttribute('height', '100%');
+    maskBg.setAttribute('fill', 'white');
+
+    // Black = transparent cutout hole
+    const cutoutRect = document.createElementNS(SVG_NS, 'rect');
+    cutoutRect.setAttribute('x', '0');
+    cutoutRect.setAttribute('y', '0');
+    cutoutRect.setAttribute('width', '0');
+    cutoutRect.setAttribute('height', '0');
+    cutoutRect.setAttribute('rx', '0');
+    cutoutRect.setAttribute('fill', 'black');
+
+    mask.appendChild(maskBg);
+    mask.appendChild(cutoutRect);
+    defs.appendChild(mask);
+    svg.appendChild(defs);
+
+    // Semi-transparent overlay rect with mask applied
+    const overlayRect = document.createElementNS(SVG_NS, 'rect');
+    overlayRect.setAttribute('width', '100%');
+    overlayRect.setAttribute('height', '100%');
+    overlayRect.setAttribute('fill', `rgba(0,0,0,${opacity})`);
+    overlayRect.setAttribute('mask', 'url(#gf-cutout)');
+    svg.appendChild(overlayRect);
+
+    // Click handler on the overlay
+    svg.addEventListener('click', (e) => {
+        if (_overlayDotNetRef) _overlayDotNetRef.invokeMethodAsync('OnOverlayClick');
+    });
+
+    document.body.appendChild(svg);
+    _overlaySvg = svg;
+    _overlayCutoutRect = cutoutRect;
+}
+
+/**
+ * Animate the cutout to a new target element.
+ * Uses requestAnimationFrame with easeInOutCubic — identical feel to driver.js.
+ *
+ * @param {string} selector - CSS selector for target
+ * @param {number} padding - Padding around target
+ * @param {number} radius - Border radius
+ * @param {number} duration - Animation duration in ms (0 = instant)
+ * @param {boolean} stageMode - Also create/update 4 stage panels
+ * @param {number} stageOpacity - Background opacity for stage panels
+ */
+export function animateCutoutTo(selector, padding, radius, duration, stageMode, stageOpacity) {
+    if (!_overlayCutoutRect) return;
 
     const target = document.querySelector(selector);
     if (!target) return;
 
-    const update = () => {
-        const rect = target.getBoundingClientRect();
-        const vp = { w: window.innerWidth, h: window.innerHeight };
-
-        removeStagePanels(selector);
-
-        const baseStyle = `position:fixed;z-index:${zIndex};background:rgba(0,0,0,${opacity});pointer-events:auto;`;
-        const panels = [];
-
-        // Top panel
-        const top = document.createElement('div');
-        top.className = 'gf-stage-panel gf-stage-top';
-        top.style.cssText = `${baseStyle}left:0;top:0;width:100%;height:${Math.max(0, rect.top - padding)}px;`;
-        panels.push(top);
-
-        // Bottom panel
-        const bottom = document.createElement('div');
-        bottom.className = 'gf-stage-panel gf-stage-bottom';
-        bottom.style.cssText = `${baseStyle}left:0;top:${rect.bottom + padding}px;width:100%;height:${Math.max(0, vp.h - rect.bottom - padding)}px;`;
-        panels.push(bottom);
-
-        // Left panel
-        const left = document.createElement('div');
-        left.className = 'gf-stage-panel gf-stage-left';
-        left.style.cssText = `${baseStyle}left:0;top:${Math.max(0, rect.top - padding)}px;width:${Math.max(0, rect.left - padding)}px;height:${rect.height + padding * 2}px;`;
-        panels.push(left);
-
-        // Right panel
-        const right = document.createElement('div');
-        right.className = 'gf-stage-panel gf-stage-right';
-        right.style.cssText = `${baseStyle}left:${rect.right + padding}px;top:${Math.max(0, rect.top - padding)}px;width:${Math.max(0, vp.w - rect.right - padding)}px;height:${rect.height + padding * 2}px;`;
-        panels.push(right);
-
-        panels.forEach(p => {
-            p.addEventListener('click', (e) => {
-                if (dotNetRef) dotNetRef.invokeMethodAsync('OnOverlayClick');
-            });
-            document.body.appendChild(p);
-        });
-
-        _stageOverlays.set(selector, panels);
+    const targetRect = target.getBoundingClientRect();
+    const toRect = {
+        x: targetRect.left - padding,
+        y: targetRect.top - padding,
+        w: targetRect.width + padding * 2,
+        h: targetRect.height + padding * 2,
+        r: radius,
     };
 
-    update();
+    // Cancel any in-flight animation
+    if (_overlayAnimFrame) {
+        cancelAnimationFrame(_overlayAnimFrame);
+        _overlayAnimFrame = null;
+    }
 
-    // Auto-update on resize/scroll
-    const handler = () => requestAnimationFrame(update);
-    window.addEventListener('resize', handler, { passive: true });
-    document.addEventListener('scroll', handler, { passive: true });
+    const cr = _overlayCutoutRect;
+    const fromRect = {
+        x: parseFloat(cr.getAttribute('x')) || 0,
+        y: parseFloat(cr.getAttribute('y')) || 0,
+        w: parseFloat(cr.getAttribute('width')) || 0,
+        h: parseFloat(cr.getAttribute('height')) || 0,
+        r: parseFloat(cr.getAttribute('rx')) || 0,
+    };
 
-    const existing = _stageOverlays.get('__handler_' + selector);
-    if (existing) existing();
-    _stageOverlays.set('__handler_' + selector, () => {
-        window.removeEventListener('resize', handler);
-        document.removeEventListener('scroll', handler);
+    // First cutout (w=0) or no animation requested → jump instantly
+    if (duration <= 0 || fromRect.w === 0) {
+        applyCutoutRect(toRect);
+        if (stageMode) createStagePanels(toRect, stageOpacity);
+        return;
+    }
+
+    // Animate with requestAnimationFrame + easing
+    const startTime = performance.now();
+    function step(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const e = easeInOutCubic(t);
+
+        const current = {
+            x: fromRect.x + (toRect.x - fromRect.x) * e,
+            y: fromRect.y + (toRect.y - fromRect.y) * e,
+            w: fromRect.w + (toRect.w - fromRect.w) * e,
+            h: fromRect.h + (toRect.h - fromRect.h) * e,
+            r: fromRect.r + (toRect.r - fromRect.r) * e,
+        };
+        applyCutoutRect(current);
+        if (stageMode) createStagePanels(current, stageOpacity);
+
+        if (t < 1) {
+            _overlayAnimFrame = requestAnimationFrame(step);
+        } else {
+            _overlayAnimFrame = null;
+        }
+    }
+    _overlayAnimFrame = requestAnimationFrame(step);
+}
+
+function applyCutoutRect(r) {
+    if (!_overlayCutoutRect) return;
+    _overlayCutoutRect.setAttribute('x', r.x);
+    _overlayCutoutRect.setAttribute('y', r.y);
+    _overlayCutoutRect.setAttribute('width', Math.max(0, r.w));
+    _overlayCutoutRect.setAttribute('height', Math.max(0, r.h));
+    _overlayCutoutRect.setAttribute('rx', r.r);
+}
+
+// easeInOutCubic — same curve driver.js uses
+function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+/**
+ * Create 4 stage panels around the cutout rect (animated together with cutout).
+ */
+function createStagePanels(cutout, opacity) {
+    // Remove old panels
+    _stagePanels.forEach(p => p.remove());
+    _stagePanels = [];
+
+    const vp = { w: window.innerWidth, h: window.innerHeight };
+    const baseStyle = `position:fixed;background:rgba(0,0,0,${opacity});pointer-events:auto;`;
+
+    // Top
+    const top = document.createElement('div');
+    top.className = 'gf-stage-panel';
+    top.style.cssText = `${baseStyle}left:0;top:0;width:100%;height:${Math.max(0, cutout.y)}px;`;
+    _stagePanels.push(top);
+
+    // Bottom
+    const bottom = document.createElement('div');
+    bottom.className = 'gf-stage-panel';
+    bottom.style.cssText = `${baseStyle}left:0;top:${cutout.y + cutout.h}px;width:100%;height:${Math.max(0, vp.h - cutout.y - cutout.h)}px;`;
+    _stagePanels.push(bottom);
+
+    // Left
+    const left = document.createElement('div');
+    left.className = 'gf-stage-panel';
+    left.style.cssText = `${baseStyle}left:0;top:${Math.max(0, cutout.y)}px;width:${Math.max(0, cutout.x)}px;height:${cutout.h}px;`;
+    _stagePanels.push(left);
+
+    // Right
+    const right = document.createElement('div');
+    right.className = 'gf-stage-panel';
+    right.style.cssText = `${baseStyle}left:${cutout.x + cutout.w}px;top:${Math.max(0, cutout.y)}px;width:${Math.max(0, vp.w - cutout.x - cutout.w)}px;height:${cutout.h}px;`;
+    _stagePanels.push(right);
+
+    _stagePanels.forEach(p => {
+        p.style.zIndex = _overlaySvg ? (parseInt(_overlaySvg.style.zIndex) || 10000) - 1 : 9999;
+        p.addEventListener('click', () => {
+            if (_overlayDotNetRef) _overlayDotNetRef.invokeMethodAsync('OnOverlayClick');
+        });
+        document.body.appendChild(p);
     });
 }
 
-function removeStagePanels(selector) {
-    document.querySelectorAll('.gf-stage-panel').forEach(p => p.remove());
+/**
+ * Remove the overlay and all stage panels.
+ */
+export function removeOverlay() {
+    if (_overlayAnimFrame) {
+        cancelAnimationFrame(_overlayAnimFrame);
+        _overlayAnimFrame = null;
+    }
+    if (_overlaySvg) {
+        _overlaySvg.remove();
+        _overlaySvg = null;
+        _overlayCutoutRect = null;
+    }
+    _overlayDotNetRef = null;
+    removeStagePanels();
+}
+
+function removeStagePanels() {
+    _stagePanels.forEach(p => p.remove());
+    _stagePanels = [];
+}
+
+// Legacy aliases for backward compatibility
+export function createStageOverlay(selector, zIndex, opacity, borderRadius, padding, dotNetRef) {
+    createOverlay(zIndex, opacity, dotNetRef);
+    animateCutoutTo(selector, padding, borderRadius, 0, true, opacity);
 }
 
 export function removeStageOverlay(selector) {
-    removeStagePanels(selector);
-    const handlerCleanup = _stageOverlays.get('__handler_' + selector);
-    if (handlerCleanup) { handlerCleanup(); _stageOverlays.delete('__handler_' + selector); }
-    _stageOverlays.delete(selector);
+    removeOverlay();
 }
 
 // ============================================================
@@ -531,16 +681,10 @@ function cleanupStep() {
 export function destroy() {
     cleanupStep();
     disableAllClickThrough();
+    removeOverlay();
 
     for (const [key, cleanup] of _autoUpdateCleanups) cleanup();
     _autoUpdateCleanups.clear();
-
-    // Clean up stage overlays
-    for (const [key, val] of _stageOverlays) {
-        if (typeof val === 'function') val(); // handler cleanup
-        else if (Array.isArray(val)) val.forEach(p => p.remove());
-    }
-    _stageOverlays.clear();
 
     document.querySelectorAll('.gf-highlight-active').forEach(el => {
         el.classList.remove('gf-highlight-active');
@@ -555,35 +699,18 @@ export function highlightElement(selector, zIndex, opacity, padding, radius) {
     const target = document.querySelector(selector);
     if (!target) return;
 
-    const rect = target.getBoundingClientRect();
-    const overlay = document.createElement('div');
-    overlay.className = 'gf-single-highlight-overlay';
-    overlay.style.cssText = `
-        position:fixed;top:0;left:0;width:100%;height:100%;
-        z-index:${zIndex};background:rgba(0,0,0,${opacity});
-        pointer-events:none;
-    `;
-
-    // SVG mask with cutout
-    const l = rect.left + window.scrollX - padding;
-    const t = rect.top + window.scrollY - padding;
-    const w = rect.width + padding * 2;
-    const h = rect.height + padding * 2;
-    const svgMask = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cdefs%3E%3Cmask id='cutout'%3E%3Crect width='100%25' height='100%25' fill='white'/%3E%3Crect x='${l}px' y='${t}px' width='${w}px' height='${h}px' rx='${radius}px' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='black' mask='url(%23cutout)'/%3E%3C/svg%3E")`;
-    overlay.style.maskImage = svgMask;
-    overlay.style.webkitMaskImage = svgMask;
-    overlay.style.maskSize = '100% 100%';
-    overlay.style.webkitMaskSize = '100% 100%';
-
-    document.body.appendChild(overlay);
+    // Use the same animated overlay system
+    createOverlay(zIndex, opacity, null);
+    animateCutoutTo(selector, padding, radius, 0, false, 0);
 
     // Click overlay to dismiss
-    overlay.style.pointerEvents = 'auto';
-    overlay.addEventListener('click', () => {
-        overlay.remove();
-    }, { once: true });
+    if (_overlaySvg) {
+        _overlaySvg.addEventListener('click', () => {
+            removeOverlay();
+        }, { once: true });
+    }
 
-    return overlay;
+    return _overlaySvg;
 }
 
 // ============================================================

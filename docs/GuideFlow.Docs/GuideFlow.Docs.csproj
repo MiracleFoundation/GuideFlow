@@ -8,6 +8,11 @@
     <BlazorWasmPrerenderingOutputStyle>AppendHtmlExtension</BlazorWasmPrerenderingOutputStyle>
   </PropertyGroup>
 
+  <!-- Default: base href = / (local dev). Override: dotnet publish -p:BaseHref=/GuideFlow/ -->
+  <PropertyGroup Condition="'$(BaseHref)' == ''">
+    <BaseHref>/</BaseHref>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="BlazorWasmPreRendering.Build" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.27" />
@@ -17,5 +22,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\GuideFlow\GuideFlow.csproj" />
   </ItemGroup>
+
+  <!-- Replace @@BASE_HREF@@ placeholder in index.html during build -->
+  <Target Name="SetBaseHref" BeforeTargets="CoreBuild">
+    <WriteLinesToFile
+      File="$(MSBuildThisFileDirectory)wwwroot\index.html"
+      Lines="$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)wwwroot\index.html').Replace('@@BASE_HREF@@', '$(BaseHref)'))"
+      Overwrite="true" />
+  </Target>
 
 </Project>
