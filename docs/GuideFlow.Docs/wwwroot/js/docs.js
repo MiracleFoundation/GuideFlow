@@ -126,6 +126,44 @@
         localStorage.setItem('docs-theme', next);
     };
 
+    // ---- Fetch GitHub stars ----
+    function fetchGitHubStars() {
+        var countEl = document.getElementById('github-stars-count');
+        if (!countEl) return;
+
+        // Try cache first (1 hour)
+        var cached = null;
+        try {
+            cached = JSON.parse(localStorage.getItem('github-stars-cache'));
+        } catch (e) {}
+        if (cached && Date.now() - cached.ts < 3600000) {
+            countEl.textContent = formatStars(cached.count);
+            return;
+        }
+
+        fetch('https://api.github.com/repos/MiracleFoundation/GuideFlow')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.stargazers_count != null) {
+                    countEl.textContent = formatStars(data.stargazers_count);
+                    try {
+                        localStorage.setItem('github-stars-cache', JSON.stringify({
+                            count: data.stargazers_count,
+                            ts: Date.now()
+                        }));
+                    } catch (e) {}
+                }
+            })
+            .catch(function () {
+                countEl.textContent = '';
+            });
+    }
+
+    function formatStars(n) {
+        if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        return String(n);
+    }
+
     // ---- Expose for Blazor JS interop ----
     window.GuideFlowDocs = {
         copyToClipboard: function (text) {
@@ -158,6 +196,7 @@
         initCopyButtons();
         initSidebar();
         initTOC();
+        fetchGitHubStars();
     }
 
     if (document.readyState === 'loading') {

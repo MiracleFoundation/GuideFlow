@@ -160,6 +160,58 @@
     z-index: 100;
 }
 
+/* Landing topbar - groups GitHub + theme toggle */
+.landing-topbar {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* GitHub button with star count */
+.landing-github-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    background: none;
+    border: 1px solid var(--docs-border);
+    border-radius: var(--docs-radius-sm);
+    color: var(--docs-fg-secondary);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: background 0.15s var(--docs-ease), color 0.15s var(--docs-ease), border-color 0.15s var(--docs-ease);
+    font-family: var(--docs-font);
+}
+
+.landing-github-btn:hover {
+    background: var(--docs-border);
+    color: var(--docs-fg);
+    border-color: var(--docs-border);
+}
+
+.landing-github-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--docs-fg-secondary);
+}
+
+.landing-github-stars svg {
+    color: #e3b341;
+}
+
+#github-stars-count {
+    font-variant-numeric: tabular-nums;
+    min-width: 1.5em;
+    text-align: left;
+}
+
 /* Dark mode - sidebar / header / footer glass */
 [data-theme="dark"] .docs-sidebar {
     background: rgba(10, 10, 10, 0.8);
