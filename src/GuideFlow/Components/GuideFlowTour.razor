@@ -558,25 +558,9 @@
 
             if (TourOptions.Overlay)
             {
-                if (TourOptions.OverlayMode == OverlayMode.Stage)
-                {
-                    await SafeInvokeVoidAsync("createStageOverlay",
-                        step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
-                        TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
-                }
-                else
-                {
-                    await SafeInvokeVoidAsync("createOverlay",
-                        TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef);
-
-                    if (!string.IsNullOrEmpty(step.Element))
-                    {
-                        await SafeInvokeVoidAsync("animateCutoutTo",
-                            step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
-                            TourOptions.AnimateCutout ? TourOptions.AnimationDuration : 0,
-                            false, 0);
-                    }
-                }
+                // Modal: always full-screen overlay, no cutout (popover is centered)
+                await SafeInvokeVoidAsync("createOverlay",
+                    TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef);
             }
 
             if (TourOptions.TrackVisited)
