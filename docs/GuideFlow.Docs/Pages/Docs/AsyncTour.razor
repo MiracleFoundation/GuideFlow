@@ -71,7 +71,47 @@
         <strong>Note:</strong> When using <code>OnNextClick</code> at the step level, you override the default behavior of the next button. The driver will not move to the next step automatically. You must call <code>MoveNextAsync()</code> manually. When configured at the tour level, you control the navigation for all the steps. When configured at the step level, you control the navigation for that particular step only.
     </div>
 
+    <h2 id="async-content">Async Content <a class="docs-anchor" href="#async-content">#</a></h2>
+    <p>You can load step content dynamically using <code>OnLoadContent</code> (callback) or <code>ContentUrl</code> (HTTP fetch). The content is loaded before the step is shown.</p>
+    <ul>
+        <li><code>OnLoadContent</code> - A <code>Func&lt;Task&lt;string&gt;&gt;</code> that returns HTML content</li>
+        <li><code>ContentUrl</code> - A URL to fetch HTML content from (requires <code>HttpClient</code>)</li>
+    </ul>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="async-content-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartContentTour">Load Content Async</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="async-content-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""Async Content""
+               OnLoadContent=""LoadContent"">
+    <p>Loading...</p>
+</GuideFlowStep>
+
+@code {
+    private async Task<string> LoadContent()
+    {
+        // Simulate async data fetch
+        await Task.Delay(1000);
+        return ""<p>This content was <strong>loaded asynchronously</strong>!</p>"";
+    }
+}")" />
+    </div>
+
 </div>
+
+<GuideFlowTour @ref="contentTour" TourOptions="contentOpts" OnComplete="OnContentEnd" OnCancel="OnContentEnd">
+    <GuideFlowStep Element="#async-content-target" Title="Async Content" Order="0"
+                   Side="Placement.Bottom" OnLoadContent="LoadContent">
+        <p>Loading...</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 <GuideFlowTour @ref="tour" TourOptions="options">
     <GuideFlowStep Title="First Step" Order="0"
@@ -109,4 +149,26 @@
         _showDynamicElement = false;
         if (tour != null) await tour.DriveAsync();
     }
+
+    // --- Async Content demo ---
+    private GuideFlowTour? contentTour;
+    private bool contentBusy;
+
+    private TourOptions contentOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task<string> LoadContent()
+    {
+        await Task.Delay(1500); // simulate network delay
+        return "<p>This content was <strong>loaded asynchronously</strong> after a 1.5s delay!</p>";
+    }
+
+    private async Task StartContentTour()
+    {
+        if (contentTour != null && !contentBusy) { contentBusy = true; await contentTour.DriveAsync(); }
+    }
+
+    private void OnContentEnd() { contentBusy = false; StateHasChanged(); }
 }

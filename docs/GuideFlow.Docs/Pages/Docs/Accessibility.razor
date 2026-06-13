@@ -15,18 +15,46 @@
 
     <p>When a tour is active, users can navigate with keyboard:</p>
 
-    <ul>
-        <li><strong>→</strong> or <strong>Enter</strong> - Next step</li>
-        <li><strong>←</strong> - Previous step</li>
-        <li><strong>Escape</strong> - Cancel/close tour</li>
-        <li><strong>Tab</strong> - Trapped within the popover (focus doesn't leak)</li>
-    </ul>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Key</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>→</strong> or <strong>↓</strong></td><td>Next step</td></tr>
+            <tr><td><strong>←</strong> or <strong>↑</strong></td><td>Previous step</td></tr>
+            <tr><td><strong>Enter</strong></td><td>Next step</td></tr>
+            <tr><td><strong>Escape</strong></td><td>Close/cancel tour</td></tr>
+            <tr><td><strong>Tab</strong></td><td>Trapped within popover (focus doesn't leak)</td></tr>
+        </tbody>
+    </table>
 
-    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="kb-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="StartKbTour">Keyboard Enabled</button>
+            <button class="docs-btn" @onclick="StartKbDisabledTour">Keyboard Disabled</button>
+        </div>
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Test:</strong> Click "Keyboard Enabled" then try arrow keys, Enter, Escape, and Tab. Click "Keyboard Disabled" then try the same keys - they should do nothing.
+    </div>
+
+    <h3>Code</h3>
+    <CodeBlock Language="csharp" Code="@(@"// Keyboard enabled (default)
+private TourOptions options = new()
 {
-    KeyboardNavigation = true,  // Enable arrow/Enter/Escape
-    ExitOnEsc = true,           // Escape cancels the tour
-    TrapFocus = true,                // Tab stays within popover
+    AllowKeyboardControl = true,   // arrow keys, Enter, Escape work
+    TrapFocus = true,              // Tab stays within popover
+};
+
+// Keyboard disabled
+private TourOptions options = new()
+{
+    AllowKeyboardControl = false,  // keyboard does nothing
+    TrapFocus = false,             // Tab can leave popover
 };")" />
 
     <h2 id="aria">
@@ -99,6 +127,27 @@
         </div>
     </div>
 
+    <GuideFlowTour @ref="kbTour" TourOptions="kbOpts" OnComplete="OnKbEnd" OnCancel="OnKbEnd">
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 1 - Try Keyboard" Order="0" Side="Placement.Bottom">
+            <p><strong>→</strong> or <strong>Enter</strong> = Next &bull; <strong>←</strong> = Back &bull; <strong>Esc</strong> = Close</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 2 - Keep Trying" Order="1" Side="Placement.Bottom">
+            <p>Try <strong>Tab</strong> - focus stays trapped in this popover.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 3 - Done!" Order="2" Side="Placement.Bottom">
+            <p>Keyboard navigation works. Press <strong>Esc</strong> or click Close to exit.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+
+    <GuideFlowTour @ref="kbDisabledTour" TourOptions="kbDisabledOpts" OnComplete="OnKbEnd" OnCancel="OnKbEnd">
+        <GuideFlowStep Element="#kb-demo-target" Title="Keyboard Disabled" Order="0" Side="Placement.Bottom">
+            <p>Arrow keys, Enter, and Escape <strong>do nothing</strong>. Use the buttons to navigate.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 2" Order="1" Side="Placement.Bottom">
+            <p>Tab is also not trapped - focus can leave the popover.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+
     <GuideFlowTour @ref="demoTour" TourOptions="demoOptions" OnComplete="OnEnd" OnCancel="OnEnd">
         <GuideFlowStep Element="#a11y-el1" Title="High Contrast" Order="0" Side="Placement.Bottom">
             <p><strong>High contrast</strong> theme for accessibility compliance.</p>
@@ -129,4 +178,36 @@
         if (demoTour != null && !busy) { busy = true; await demoTour.DriveAsync(); }
     }
     private void OnEnd() { busy = false; StateHasChanged(); }
+
+    // --- Keyboard demo ---
+    private GuideFlowTour? kbTour, kbDisabledTour;
+    private bool kbBusy;
+
+    private TourOptions kbOpts = new()
+    {
+        AllowKeyboardControl = true,
+        TrapFocus = true,
+        ShowProgress = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions kbDisabledOpts = new()
+    {
+        AllowKeyboardControl = false,
+        TrapFocus = false,
+        ShowProgress = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private async Task StartKbTour()
+    {
+        if (kbTour != null && !kbBusy) { kbBusy = true; await kbTour.DriveAsync(); }
+    }
+
+    private async Task StartKbDisabledTour()
+    {
+        if (kbDisabledTour != null && !kbBusy) { kbBusy = true; await kbDisabledTour.DriveAsync(); }
+    }
+
+    private void OnKbEnd() { kbBusy = false; StateHasChanged(); }
 }

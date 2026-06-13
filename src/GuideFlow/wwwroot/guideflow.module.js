@@ -782,6 +782,7 @@ export function setupStep(stepElement, dotNetRef, trapFocus) {
                 dotNetRef.invokeMethodAsync('OnEscapePressed');
                 break;
             case 'ArrowRight':
+            case 'ArrowDown':
             case 'Enter':
                 if (document.activeElement?.tagName !== 'BUTTON') {
                     e.preventDefault();
@@ -789,6 +790,7 @@ export function setupStep(stepElement, dotNetRef, trapFocus) {
                 }
                 break;
             case 'ArrowLeft':
+            case 'ArrowUp':
                 if (document.activeElement?.tagName !== 'BUTTON') {
                     e.preventDefault();
                     dotNetRef.invokeMethodAsync('OnKeyboardBack');

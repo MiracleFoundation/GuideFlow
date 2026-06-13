@@ -78,12 +78,12 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 7.1 | Title + Text | Set Title and Text | Popover shows title and description | |
-| 7.2 | ChildContent (rich HTML) | Use `<ChildContent>` with HTML | HTML renders inside popover | |
-| 7.3 | Description alias | Use `Description` instead of `Text` | Same result as Text | |
-| 7.4 | AttachTo alias | Use `AttachTo` instead of `Element` | Same result as Element | |
-| 7.5 | Async content (OnLoadContent) | Set `OnLoadContent` callback | Content loads asynchronously | |
-| 7.6 | Content from URL | Set `ContentUrl` | Content fetched from URL | |
+| 7.1 | Title + Text | Set Title and Text | Popover shows title and description | ✅ |
+| 7.2 | ChildContent (rich HTML) | Use `<ChildContent>` with HTML | HTML renders inside popover | ✅ |
+| 7.3 | Description alias | Use `Description` instead of `Text` | Same result as Text | ✅ |
+| 7.4 | AttachTo alias | Use `AttachTo` instead of `Element` | Same result as Element | ✅ |
+| 7.5 | Async content (OnLoadContent) | Click "Load Content Async" on Async Tour page | Content loads with 1.5s delay | ✅ |
+| 7.6 | Content from URL | Set `ContentUrl` (requires HttpClient) | Content fetched from URL | |
 
 ## 8. Buttons
 
@@ -107,21 +107,21 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 9.1 | Progress text | Set `ShowProgress = true` | Shows "1 of 3" style text | |
-| 9.2 | Custom progress template | Set `ProgressText = "Step {{current}}/{{total}}"` | Shows "Step 1/3" | |
-| 9.3 | Progress bar | Set `ShowProgressBar = true` | Visual progress bar shown | |
-| 9.4 | Progress updates on navigate | Move between steps | Progress text/bar updates correctly | |
+| 9.1 | Progress text | Set `ShowProgress = true` | Shows "1 of 3" style text | ✅ |
+| 9.2 | Custom progress template | Set `ProgressText = "Step {{current}}/{{total}}"` | Shows "Step 1/3" | ✅ |
+| 9.3 | Progress bar | Set `ShowProgressBar = true` | Visual progress bar shown | ✅ |
+| 9.4 | Progress updates on navigate | Move between steps | Progress text/bar updates correctly | ✅ |
 
 ## 10. Keyboard Navigation
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 10.1 | Arrow Right / Down = Next | Press Right or Down arrow | Moves to next step | |
-| 10.2 | Arrow Left / Up = Previous | Press Left or Up arrow | Moves to previous step | |
-| 10.3 | Enter = Next | Press Enter | Moves to next step | |
-| 10.4 | Escape = Close | Press Escape | Tour closes | |
-| 10.5 | Tab = Focus trap | Press Tab repeatedly | Focus stays within popover | |
-| 10.6 | Disable keyboard | Set `AllowKeyboardControl = false` | Keyboard does nothing | |
+| 10.1 | Arrow Right / Down = Next | Click "Keyboard Enabled", press → or ↓ | Moves to next step | ✅ |
+| 10.2 | Arrow Left / Up = Previous | Press ← or ↑ | Moves to previous step | ✅ |
+| 10.3 | Enter = Next | Press Enter | Moves to next step | ✅ |
+| 10.4 | Escape = Close | Press Escape | Tour closes | ✅ |
+| 10.5 | Tab = Focus trap | Press Tab repeatedly | Focus stays within popover | ✅ |
+| 10.6 | Disable keyboard | Click "Keyboard Disabled", try arrow keys | Keyboard does nothing | ✅ |
 
 ## 11. Scrolling
 
@@ -250,10 +250,10 @@
 | 4. Arrow | 3 | 3 | 0 | 0 |
 | 5. Highlight Shapes | 6 | 6 | 0 | 0 |
 | 6. Animation | 8 | 8 | 0 | 0 |
-| 7. Step Content | 6 | | | |
+| 7. Step Content | 6 | 5 | 0 | 0 |
 | 8. Buttons | 13 | | | |
-| 9. Progress | 4 | | | |
-| 10. Keyboard Navigation | 6 | | | |
+| 9. Progress | 4 | 4 | 0 | 0 |
+| 10. Keyboard Navigation | 6 | 6 | 0 | 0 |
 | 11. Scrolling | 8 | | | |
 | 12. Themes | 5 | | | |
 | 13. Step Mode | 3 | | | |
@@ -264,7 +264,7 @@
 | 18. Async Tour | 3 | | | |
 | 19. Edge Cases | 10 | | | |
 | 20. Persist State | 4 | | | |
-| **Total** | **136** | **42** | **0** | **0** |
+| **Total** | **136** | **57** | **0** | **0** |
 
 ## Notes
 

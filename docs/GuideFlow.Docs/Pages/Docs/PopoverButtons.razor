@@ -37,17 +37,43 @@
 @* --- Tours (one per example, all attached to their own target) --- *@
 @foreach (var ex in _examples)
 {
-    <GuideFlowTour @ref="ex.Tour" TourOptions="ex.Options" OnComplete="OnEnd" OnCancel="OnEnd">
-        <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="0" Side="Placement.Bottom">
-            <p>Step 1 of 3 - the first step. The Previous button is hidden here.</p>
-        </GuideFlowStep>
-        <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="1" Side="Placement.Bottom">
-            <p>Step 2 of 3 - this middle step shows the Previous button alongside the others.</p>
-        </GuideFlowStep>
-        <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="2" Side="Placement.Bottom">
-            <p>Step 3 of 3 - the final step. Next becomes the finish button.</p>
-        </GuideFlowStep>
-    </GuideFlowTour>
+    if (ex.Anchor == "custom-buttons-content")
+    {
+        <GuideFlowTour @ref="ex.Tour" TourOptions="ex.Options" OnComplete="OnEnd" OnCancel="OnEnd">
+            <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="0" Side="Placement.Bottom">
+                <ButtonsContent>
+                    <button class="docs-btn" @onclick="() => {}">Approve</button>
+                    <button class="docs-btn" style="background:var(--docs-accent-red,#e74c3c)" @onclick="() => {}">Reject</button>
+                </ButtonsContent>
+                <ChildContent>
+                    <p>Step with custom <strong>ButtonsContent</strong> - default buttons are replaced with Approve/Reject.</p>
+                </ChildContent>
+            </GuideFlowStep>
+            <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="1" Side="Placement.Bottom">
+                <ButtonsContent>
+                    <button class="docs-btn" @onclick="() => {}">Approve</button>
+                    <button class="docs-btn" style="background:var(--docs-accent-red,#e74c3c)" @onclick="() => {}">Reject</button>
+                </ButtonsContent>
+                <ChildContent>
+                    <p>Step 2 - same custom buttons on every step.</p>
+                </ChildContent>
+            </GuideFlowStep>
+        </GuideFlowTour>
+    }
+    else
+    {
+        <GuideFlowTour @ref="ex.Tour" TourOptions="ex.Options" OnComplete="OnEnd" OnCancel="OnEnd">
+            <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="0" Side="Placement.Bottom">
+                <p>Step 1 of 3 - the first step. The Previous button is hidden here.</p>
+            </GuideFlowStep>
+            <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="1" Side="Placement.Bottom">
+                <p>Step 2 of 3 - this middle step shows the Previous button alongside the others.</p>
+            </GuideFlowStep>
+            <GuideFlowStep Element="@($"#{ex.TargetId}")" Title="@ex.Heading" Order="2" Side="Placement.Bottom">
+                <p>Step 3 of 3 - the final step. Next becomes the finish button.</p>
+            </GuideFlowStep>
+        </GuideFlowTour>
+    }
 }
 
 @code {
@@ -164,6 +190,39 @@
     PrevBtnText = ""Go Back"",
 };",
         },
+        new ButtonExample
+        {
+            Heading = "Disable Specific Buttons",
+            Anchor = "disable-buttons",
+            TargetId = "popover-target-disable",
+            Options = new()
+            {
+                ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+                DisableButtons = new[] { ButtonType.Previous },
+            },
+            Code = @"private TourOptions options = new()
+{
+    ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    DisableButtons = new[] { ButtonType.Previous },   // Previous is grayed out
+};",
+        },
+        new ButtonExample
+        {
+            Heading = "Custom ButtonsContent",
+            Anchor = "custom-buttons-content",
+            TargetId = "popover-target-custombtn",
+            Options = new()
+            {
+                ShowButtons = Array.Empty<ButtonType>(),
+            },
+            Code = @"<GuideFlowStep Element=""#target"" Title=""Step"">
+    <ButtonsContent>
+        <button class=""my-btn"" @onclick=""OnApprove"">Approve</button>
+        <button class=""my-btn"" @onclick=""OnReject"">Reject</button>
+    </ButtonsContent>
+    <p>Custom buttons replace the default ones.</p>
+</GuideFlowStep>",
+        },
     };
 
     private async Task RunExample(ButtonExample ex)
@@ -172,7 +231,9 @@
         {
             _busy = true;
             // Open on the middle step so the Previous button is visible.
-            await ex.Tour.DriveAsync(1);
+            // ButtonsContent example only has 2 steps, start from step 0.
+            var startStep = ex.Anchor == "custom-buttons-content" ? 0 : 1;
+            await ex.Tour.DriveAsync(startStep);
         }
     }
 
