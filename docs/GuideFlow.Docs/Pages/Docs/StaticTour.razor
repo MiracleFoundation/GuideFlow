@@ -14,17 +14,17 @@
 
     <div id="static-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#my-header"" Title=""Welcome!"" Order=""0""
-                   Side=""Placement.Bottom"">
-        <p>Instant transition - no animation.</p>
+    <GuideFlowStep Element=""#static-title"" Title=""Static Tour"" Order=""0""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>No animation - popover jumps instantly between elements.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#my-sidebar"" Title=""Navigation"" Order=""1""
-                   Side=""Placement.Right"">
-        <p>No smooth scroll either - jumps straight to the target.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element=""#my-footer"" Title=""Done!"" Order=""2""
+    <GuideFlowStep Element=""#static-code"" Title=""Code"" Order=""1""
                    Side=""Placement.Top"">
-        <p>Static tour complete.</p>
+        <p>Set <code>Animate = false</code> in TourOptions.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#static-run-btn"" Title=""Try It!"" Order=""2""
+                   Side=""Placement.Right"">
+        <p>That's it - static tour complete.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 

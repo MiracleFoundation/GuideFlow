@@ -311,11 +311,12 @@ function updateArrow(stepElement, target, placement) {
     if (isVertical) {
         // Horizontal position depends on start/end variant
         if (placement.endsWith('-start')) {
-            arrow.style.left = `${Math.max(16, Math.min(targetRect.left - stepRect.left + targetRect.width / 2, stepRect.width - 16))}px`;
+            // Point at target's start (left) edge
+            arrow.style.left = `${Math.max(16, Math.min(targetRect.left - stepRect.left + 4, stepRect.width - 16))}px`;
         } else if (placement.endsWith('-end')) {
-            // Must explicitly clear left so CSS "left: auto" takes effect
+            // Point at target's end (right) edge
             arrow.style.left = 'auto';
-            arrow.style.right = `${Math.max(16, Math.min(stepRect.right - targetRect.right + targetRect.width / 2, stepRect.width - 16))}px`;
+            arrow.style.right = `${Math.max(16, Math.min(stepRect.right - targetRect.right + 4, stepRect.width - 16))}px`;
         } else {
             // Center: point at target center
             const targetCenterX = targetRect.left + targetRect.width / 2;
@@ -325,11 +326,12 @@ function updateArrow(stepElement, target, placement) {
     } else {
         // Vertical position depends on start/end variant
         if (placement.endsWith('-start')) {
-            arrow.style.top = `${Math.max(16, Math.min(targetRect.top - stepRect.top + targetRect.height / 2, stepRect.height - 16))}px`;
+            // Point at target's start (top) edge
+            arrow.style.top = `${Math.max(16, Math.min(targetRect.top - stepRect.top + 4, stepRect.height - 16))}px`;
         } else if (placement.endsWith('-end')) {
-            // Must explicitly clear top so CSS "top: auto" takes effect
+            // Point at target's end (bottom) edge
             arrow.style.top = 'auto';
-            arrow.style.bottom = `${Math.max(16, Math.min(stepRect.bottom - targetRect.bottom + targetRect.height / 2, stepRect.height - 16))}px`;
+            arrow.style.bottom = `${Math.max(16, Math.min(stepRect.bottom - targetRect.bottom + 4, stepRect.height - 16))}px`;
         } else {
             // Center: point at target center
             const targetCenterY = targetRect.top + targetRect.height / 2;

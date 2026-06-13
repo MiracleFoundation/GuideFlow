@@ -234,15 +234,15 @@
 }
 
 [data-theme="dark"] .docs-note--info {
-    background: #1a1a1a;
-    border-color: #333;
-    color: #999;
+    background: #1a1f2e;
+    border-color: #2d3a50;
+    color: #c5cdd8;
 }
 
 [data-theme="dark"] .docs-note--tip {
-    background: #1a1a1a;
-    border-color: #333;
-    color: #999;
+    background: #1a2e1a;
+    border-color: #2d502d;
+    color: #c5d8c5;
 }
 
 [data-theme="dark"] .docs-note--warning {
