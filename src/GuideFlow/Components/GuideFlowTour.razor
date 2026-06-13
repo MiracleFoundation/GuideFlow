@@ -433,15 +433,22 @@
 
                 _activeSelector = step.Element;
 
-                if (TourOptions.OverlayMode == OverlayMode.Stage && TourOptions.Overlay)
+                if (TourOptions.Overlay)
                 {
-                    await SafeInvokeVoidAsync("createStageOverlay",
-                        step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
-                        TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
-                }
-                else
-                {
-                    overlay?.SetHighlight(result.TargetLeft, result.TargetTop, result.TargetWidth, result.TargetHeight);
+                    if (TourOptions.OverlayMode == OverlayMode.Stage)
+                    {
+                        await SafeInvokeVoidAsync("createStageOverlay",
+                            step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
+                            TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
+                    }
+                    else
+                    {
+                        // Animate SVG cutout to new step's target element
+                        await SafeInvokeVoidAsync("animateCutoutTo",
+                            step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
+                            TourOptions.AnimateCutout ? TourOptions.AnimationDuration : 0,
+                            false, 0);
+                    }
                 }
 
                 if (TourOptions.AutoReposition)
