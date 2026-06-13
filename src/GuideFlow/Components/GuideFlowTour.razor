@@ -142,10 +142,15 @@
         var currentStep = _steps.ElementAtOrDefault(ActiveIndex);
         if (currentStep != null) await currentStep.FireOnBeforeHide();
 
-        if (ActiveIndex >= _steps.Count - 1) { await CompleteAsync(); return; }
-
         var previousIndex = ActiveIndex;
         ActiveIndex++;
+
+        // Skip disabled steps
+        while (ActiveIndex < _steps.Count && _steps.ElementAtOrDefault(ActiveIndex)?.Disabled == true)
+            ActiveIndex++;
+
+        if (ActiveIndex >= _steps.Count) { await CompleteAsync(); return; }
+
         StateHasChanged();
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
@@ -159,6 +164,13 @@
 
         var previousIndex = ActiveIndex;
         ActiveIndex--;
+
+        // Skip disabled steps
+        while (ActiveIndex >= 0 && _steps.ElementAtOrDefault(ActiveIndex)?.Disabled == true)
+            ActiveIndex--;
+
+        if (ActiveIndex < 0) { ActiveIndex = 0; return; }
+
         StateHasChanged();
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
@@ -190,6 +202,18 @@
         Placement side = Placement.Bottom, PopoverAlign align = PopoverAlign.Center)
     {
         if (!_jsAvailable || _jsModule == null) return;
+
+        // Clean up any existing state without firing tour events
+        await CleanupCurrentStep();
+        _isActive = false;
+        ActiveIndex = 0;
+        _visitedSteps.Clear();
+        _steps.Clear();
+        _activeSelector = null;
+        await SetBodyClassesAsync(false);
+        StateHasChanged();
+        // Force JS cleanup to ensure overlay is fully removed
+        try { await SafeInvokeVoidAsync("destroy"); } catch (JSException) { }
 
         if (!string.IsNullOrEmpty(title) || !string.IsNullOrEmpty(description))
         {
@@ -232,7 +256,18 @@
     {
         if (!_jsAvailable || _jsModule == null) return;
 
+        // Clean up any existing state without firing tour events
+        await CleanupCurrentStep();
+        _isActive = false;
+        ActiveIndex = 0;
+        _visitedSteps.Clear();
         _steps.Clear();
+        _activeSelector = null;
+        await SetBodyClassesAsync(false);
+        StateHasChanged();
+        // Force JS cleanup to ensure overlay is fully removed
+        try { await SafeInvokeVoidAsync("destroy"); } catch (JSException) { }
+
 #pragma warning disable BL0005
         var step = new GuideFlowStep
         {
@@ -513,10 +548,8 @@
                         step.Element, TourOptions.ZIndex);
                 }
 
-                // Only apply CSS highlight class when overlay is off or in stage mode.
-                // Cutout mode already has SVG overlay with cutout hole - no need for CSS highlight.
-                if (!string.IsNullOrEmpty(TourOptions.HighlightClass)
-                    && (!TourOptions.Overlay || TourOptions.OverlayMode == OverlayMode.Stage))
+                // Apply CSS highlight class to target element
+                if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
                 {
                     await SafeInvokeVoidAsync("addHighlightClass",
                         step.Element, TourOptions.HighlightClass);
@@ -531,12 +564,13 @@
         }
         catch (JSException)
         {
-            // Position failed — step remains visible at fallback position (centered).
+            // Position failed (target element not found) — skip to next step
             if (TourOptions.TrackVisited)
             {
                 var stepId = step.StepId ?? step.Order.ToString();
                 _visitedSteps.Add(stepId);
             }
+            _ = MoveNextAsync();
         }
     }
 
@@ -571,13 +605,9 @@
             if (TourOptions.Overlay)
             {
                 // Modal: always full-screen overlay, no cutout (popover is centered).
-                // Only create if overlay doesn't exist yet to avoid flicker between modal steps.
-                var overlayAlreadyExists = await SafeInvokeAsync<bool>("overlayExists");
-                if (!overlayAlreadyExists)
-                {
-                    await SafeInvokeVoidAsync("createOverlay",
-                        TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
-                }
+                // Always recreate to ensure no cutout from a previous highlight remains.
+                await SafeInvokeVoidAsync("createOverlay",
+                    TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
             }
 
             if (TourOptions.TrackVisited)

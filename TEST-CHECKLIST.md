@@ -216,16 +216,16 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 19.1 | Target element not found | Use invalid CSS selector | Step skipped or graceful error | |
-| 19.2 | Window resize | Resize browser during tour | Popover repositions (AutoReposition) | |
-| 19.3 | Scroll during tour | Scroll page while tour active | Popover follows target | |
+| 19.1 | Target element not found | Click "Missing Target Tour" | Step 1 skipped, Step 2 shows | ✅ |
+| 19.2 | Window resize | Start "Resize Test Tour", resize browser | Popover follows target | ✅ |
+| 19.3 | Scroll during tour | Start any tour, scroll page | Popover follows target | ✅ |
 | 19.4 | Z-index conflicts | Page has high z-index elements | Tour stays on top (ZIndex=10000) | |
-| 19.5 | Disabled step | Set `Disabled = true` on a step | Step skipped | |
-| 19.6 | Single step tour | Tour with only 1 step | Works correctly, no Previous | |
-| 19.7 | Many steps (10+) | Tour with many steps | Performance OK, progress correct | |
-| 19.8 | DisableActiveInteraction | Set `DisableActiveInteraction = true` | Cannot click target element | |
-| 19.9 | HighlightClass | Set custom `HighlightClass` | Class added to target element | |
-| 19.10 | LazyRender | Set `LazyRender = true` | Content only renders when active | |
+| 19.5 | Disabled step | Click "Disabled Step Tour" | Step 2 skipped, goes 1→3 | ✅ |
+| 19.6 | Single step tour | Click "Single Step Tour" | Only 1 step, no Previous, Done button | ✅ |
+| 19.7 | Many steps (10+) | Click "12 Steps Tour" | Performance OK, progress shows "1 of 12" | ✅ |
+| 19.8 | DisableActiveInteraction | Click "Block Interaction Tour", try click button | Button click blocked during tour | ✅ |
+| 19.9 | HighlightClass | Click "Highlight Class Tour", inspect element | Target has class `my-custom-highlight` | ✅ |
+| 19.10 | LazyRender | Click "Lazy Render Tour" | Content renders only when step active | ✅ |
 
 ## 20. Persist State (localStorage)
 
@@ -262,9 +262,9 @@
 | 16. Accessibility | 7 | 7 | 0 | 0 |
 | 17. Programmatic API | 9 | 0 | 0 | 9 |
 | 18. Async Tour | 3 | 1 | 0 | 2 |
-| 19. Edge Cases | 10 | 0 | 0 | 10 |
+| 19. Edge Cases | 10 | 9 | 0 | 1 |
 | 20. Persist State | 4 | 0 | 0 | 4 |
-| **Total** | **136** | **117** | **1** | **18** |
+| **Total** | **136** | **116** | **1** | **19** |
 
 ## Notes
 
