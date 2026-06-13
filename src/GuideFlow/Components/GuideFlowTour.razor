@@ -513,7 +513,10 @@
                         step.Element, TourOptions.ZIndex);
                 }
 
-                if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
+                // Only apply CSS highlight class when overlay is off or in stage mode.
+                // Cutout mode already has SVG overlay with cutout hole - no need for CSS highlight.
+                if (!string.IsNullOrEmpty(TourOptions.HighlightClass)
+                    && (!TourOptions.Overlay || TourOptions.OverlayMode == OverlayMode.Stage))
                 {
                     await SafeInvokeVoidAsync("addHighlightClass",
                         step.Element, TourOptions.HighlightClass);

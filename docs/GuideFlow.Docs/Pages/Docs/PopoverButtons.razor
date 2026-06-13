@@ -6,15 +6,18 @@
 
 <div class="docs-content">
     <h1 id="popover-buttons-title">Popover Buttons</h1>
-    <p class="docs-lead" id="popover-buttons-lead">You can use the <code>ShowButtons</code> option to choose which buttons to show in the popover. The default value is <code>Next</code>, <code>Previous</code>, <code>Close</code>.</p>
+    <p class="docs-lead" id="popover-buttons-lead">You can use the <code>ShowButtons</code> option to choose which buttons to show in the popover. The default value is <code>['next', 'previous', 'close']</code>.</p>
 
     <div class="docs-callout docs-callout--info">
         <strong>Note:</strong> When using the <code>HighlightAsync</code> method to highlight a single element, the only button shown is the close button. However, you can use the <code>ShowButtons</code> option to show other buttons as well. But the buttons won't do anything. You will have to use the <code>OnNextClick</code> and <code>OnPrevClick</code> callbacks to implement the functionality.
     </div>
 
-    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+    @* --- Show All Buttons --- *@
+    <h2 id="show-all">Show All Buttons <a class="docs-anchor" href="#show-all">#</a></h2>
 
-    <div id="popover-buttons-code">
+    <button class="docs-demo__run" @onclick="ShowAllButtons" id="popover-all-run">Run Example</button>
+
+    <div id="popover-all-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
     <GuideFlowStep Element=""#first-element"" Title=""Popover Title"" Order=""0"">
         <p>Popover Description</p>
@@ -27,76 +30,169 @@
 @code {
     private TourOptions options = new()
     {
-        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
     };
+    private async Task ShowAllButtons() { if (tour != null) await tour.DriveAsync(); }
 }")" />
     </div>
 
-    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
-    <p>Use the buttons below to run examples with different button configurations.</p>
+    @* --- No Close Button --- *@
+    <h2 id="no-close">No Close Button <a class="docs-anchor" href="#no-close">#</a></h2>
 
-    <div class="popover-demo">
-        <div class="popover-demo__target" id="popover-buttons-target-1">
-            <span>First Element</span>
-        </div>
+    <button class="docs-demo__run" @onclick="NoCloseButton" id="popover-noclose-run">Run Example</button>
 
-        <div class="popover-demo__target" id="popover-buttons-target-2" style="margin-top: 1rem;">
-            <span>Second Element</span>
-        </div>
+    <div id="popover-noclose-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowButtons = new[] { ButtonType.Next, ButtonType.Previous },
+};")" />
+    </div>
 
-        <div class="popover-demo__buttons" style="margin-top: 1.5rem;">
-            <button class="docs-btn" @onclick="ShowAllButtons">Show All Buttons</button>
-            <button class="docs-btn" @onclick="NoCloseButton">No Close Button</button>
-            <button class="docs-btn" @onclick="OnlyNext">Only Next</button>
-            <button class="docs-btn" @onclick="WithSkip">With Skip Button</button>
-        </div>
+    @* --- Only Next --- *@
+    <h2 id="only-next">Only Next Button <a class="docs-anchor" href="#only-next">#</a></h2>
+
+    <button class="docs-demo__run" @onclick="OnlyNext" id="popover-onlynext-run">Run Example</button>
+
+    <div id="popover-onlynext-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowButtons = new[] { ButtonType.Next },
+};")" />
+    </div>
+
+    @* --- Only Previous --- *@
+    <h2 id="only-previous">Only Previous Button <a class="docs-anchor" href="#only-previous">#</a></h2>
+
+    <button class="docs-demo__run" @onclick="OnlyPrevious" id="popover-onlyprev-run">Run Example</button>
+
+    <div id="popover-onlyprev-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowButtons = new[] { ButtonType.Previous },
+};")" />
+    </div>
+
+    @* --- With Skip --- *@
+    <h2 id="with-skip">With Skip Button <a class="docs-anchor" href="#with-skip">#</a></h2>
+
+    <button class="docs-demo__run" @onclick="WithSkip" id="popover-skip-run">Run Example</button>
+
+    <div id="popover-skip-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
+};")" />
+    </div>
+
+    @* --- No Buttons --- *@
+    <h2 id="no-buttons">No Buttons <a class="docs-anchor" href="#no-buttons">#</a></h2>
+
+    <button class="docs-demo__run" @onclick="NoButtons" id="popover-nobtn-run">Run Example</button>
+
+    <div id="popover-nobtn-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowButtons = Array.Empty<ButtonType>(),
+};")" />
+    </div>
+
+    @* --- Custom Button Text --- *@
+    <h2 id="custom-text">Custom Button Text <a class="docs-anchor" href="#custom-text">#</a></h2>
+
+    <button class="docs-demo__run" @onclick="CustomText" id="popover-custom-run">Run Example</button>
+
+    <div id="popover-custom-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    NextBtnText = ""Continue"",
+    PrevBtnText = ""Go Back"",
+};")" />
     </div>
 
 </div>
 
+@* --- Demo targets --- *@
+<div class="popover-demo" style="margin-top:2rem;">
+    <div class="popover-demo__target" id="popover-btn-target-1">
+        <span>First Element</span>
+    </div>
+    <div class="popover-demo__target" id="popover-btn-target-2" style="margin-top:1rem;">
+        <span>Second Element</span>
+    </div>
+</div>
+
+@* --- Tours --- *@
 <GuideFlowTour @ref="allTour" TourOptions="allOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#popover-buttons-target-1" Title="All Buttons" Order="0" Side="Placement.Bottom">
-        <p>This step shows all buttons: Next, Previous, Close, and Skip.</p>
+    <GuideFlowStep Element="#popover-btn-target-1" Title="All Buttons" Order="0" Side="Placement.Bottom">
+        <p>This step shows all buttons: Next, Previous, and Close.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
-        <p>Second step with all buttons.</p>
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with all buttons visible.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 <GuideFlowTour @ref="noCloseTour" TourOptions="noCloseOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#popover-buttons-target-1" Title="No Close Button" Order="0" Side="Placement.Bottom">
-        <p>This step hides the Close button.</p>
+    <GuideFlowStep Element="#popover-btn-target-1" Title="No Close Button" Order="0" Side="Placement.Bottom">
+        <p>This step hides the Close button. Use Next/Previous to navigate.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
         <p>Second step without close button.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 <GuideFlowTour @ref="onlyNextTour" TourOptions="onlyNextOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#popover-buttons-target-1" Title="Only Next" Order="0" Side="Placement.Bottom">
+    <GuideFlowStep Element="#popover-btn-target-1" Title="Only Next" Order="0" Side="Placement.Bottom">
         <p>This step only shows the Next button.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
         <p>Second step with only next.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
-<GuideFlowTour @ref="skipTour" TourOptions="skipOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#popover-buttons-target-1" Title="With Skip" Order="0" Side="Placement.Bottom">
-        <p>This step includes a Skip button.</p>
+<GuideFlowTour @ref="onlyPrevTour" TourOptions="onlyPrevOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-btn-target-1" Title="Only Previous" Order="0" Side="Placement.Bottom">
+        <p>This step only shows the Previous button.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with only previous.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="skipTour" TourOptions="skipOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-btn-target-1" Title="With Skip" Order="0" Side="Placement.Bottom">
+        <p>This step includes a Skip button to skip the tour.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
         <p>Second step with skip button.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
+<GuideFlowTour @ref="noBtnTour" TourOptions="noBtnOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-btn-target-1" Title="No Buttons" Order="0" Side="Placement.Bottom">
+        <p>This step has no buttons at all.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with no buttons.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="customTour" TourOptions="customOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-btn-target-1" Title="Custom Text" Order="0" Side="Placement.Bottom">
+        <p>Buttons with custom text: Continue and Go Back.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-btn-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with custom button text.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
 @code {
-    private GuideFlowTour? allTour, noCloseTour, onlyNextTour, skipTour;
+    private GuideFlowTour? allTour, noCloseTour, onlyNextTour, onlyPrevTour, skipTour, noBtnTour, customTour;
     private bool busy;
 
     private TourOptions allOpts = new()
     {
-        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
     };
     private TourOptions noCloseOpts = new()
     {
@@ -106,14 +202,31 @@
     {
         ShowButtons = new[] { ButtonType.Next },
     };
+    private TourOptions onlyPrevOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Previous },
+    };
     private TourOptions skipOpts = new()
     {
         ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
+    };
+    private TourOptions noBtnOpts = new()
+    {
+        ShowButtons = Array.Empty<ButtonType>(),
+    };
+    private TourOptions customOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+        NextBtnText = "Continue",
+        PrevBtnText = "Go Back",
     };
 
     private async Task ShowAllButtons() { if (allTour != null && !busy) { busy = true; await allTour.DriveAsync(); } }
     private async Task NoCloseButton() { if (noCloseTour != null && !busy) { busy = true; await noCloseTour.DriveAsync(); } }
     private async Task OnlyNext() { if (onlyNextTour != null && !busy) { busy = true; await onlyNextTour.DriveAsync(); } }
+    private async Task OnlyPrevious() { if (onlyPrevTour != null && !busy) { busy = true; await onlyPrevTour.DriveAsync(); } }
     private async Task WithSkip() { if (skipTour != null && !busy) { busy = true; await skipTour.DriveAsync(); } }
+    private async Task NoButtons() { if (noBtnTour != null && !busy) { busy = true; await noBtnTour.DriveAsync(); } }
+    private async Task CustomText() { if (customTour != null && !busy) { busy = true; await customTour.DriveAsync(); } }
     private void OnEnd() { busy = false; StateHasChanged(); }
 }
