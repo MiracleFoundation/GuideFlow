@@ -370,6 +370,14 @@ export function createOverlay(zIndex, opacity, dotNetRef) {
     overlayRect.setAttribute('mask', 'url(#gf-cutout)');
     svg.appendChild(overlayRect);
 
+    // Transparent full-viewport rect to capture clicks everywhere,
+    // including the cutout area where the mask makes the overlay invisible.
+    const clickCatcher = document.createElementNS(SVG_NS, 'rect');
+    clickCatcher.setAttribute('width', '100%');
+    clickCatcher.setAttribute('height', '100%');
+    clickCatcher.setAttribute('fill', 'transparent');
+    svg.appendChild(clickCatcher);
+
     // Click handler on the overlay
     svg.addEventListener('click', (e) => {
         if (_overlayDotNetRef) _overlayDotNetRef.invokeMethodAsync('OnOverlayClick');

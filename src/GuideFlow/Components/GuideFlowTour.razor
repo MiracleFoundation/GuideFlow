@@ -558,7 +558,18 @@
     private async Task NotifyStepChanged(int previousIndex, int currentIndex)
     {
         var prevStep = _steps.ElementAtOrDefault(previousIndex);
-        if (prevStep != null) await prevStep.FireOnAfterHide();
+        if (prevStep != null)
+        {
+            // Remove highlight class from the previous element before showing the new step
+            if (!string.IsNullOrEmpty(prevStep.Element) && !string.IsNullOrEmpty(TourOptions.HighlightClass))
+                await SafeInvokeVoidAsync("removeHighlightClass", prevStep.Element, TourOptions.HighlightClass);
+
+            // Disable click-through on the previous element
+            if (!string.IsNullOrEmpty(prevStep.Element))
+                await SafeInvokeVoidAsync("disableClickThrough", prevStep.Element);
+
+            await prevStep.FireOnAfterHide();
+        }
 
         var step = _steps.ElementAtOrDefault(currentIndex);
         if (step != null)
