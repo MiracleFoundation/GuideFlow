@@ -130,15 +130,6 @@
         ActiveIndex = stepIndex;
         _visitedSteps.Clear();
         await SetBodyClassesAsync(true);
-
-        // Create the SVG overlay once when the tour starts (cutout mode).
-        // Must happen before any step calls animateCutoutTo().
-        if (TourOptions.Overlay && TourOptions.OverlayMode != OverlayMode.Stage)
-        {
-            await SafeInvokeVoidAsync("createOverlay",
-                TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
-        }
-
         StateHasChanged();
         await OnStart.InvokeAsync();
         await NotifyStepChanged(-1, ActiveIndex);
@@ -491,6 +482,9 @@
                     }
                     else
                     {
+                        // Ensure SVG overlay exists before animating cutout
+                        await SafeInvokeVoidAsync("createOverlay",
+                            TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
                         // Animate SVG cutout to new step's target element
                         await SafeInvokeVoidAsync("animateCutoutTo",
                             step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
