@@ -41,8 +41,12 @@
     animation: none;
 }
 
-/* Modal mode */
+/* Modal mode - centered on screen */
 .gf-step--modal {
+    left: 50% !important;
+    top: 50% !important;
+    right: auto !important;
+    transform: translate(-50%, -50%);
     max-width: var(--gf-modal-max-width, 500px);
     min-width: 320px;
     border-radius: var(--gf-modal-radius, 12px);

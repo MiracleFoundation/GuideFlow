@@ -288,8 +288,12 @@
         get
         {
             var z = (_tour?.TourOptions?.ZIndex ?? 10000) + 1;
-            // position:fixed - popover stays in viewport
-            // Scroll handler repositions it to follow the target element
+            if (ResolvedMode == StepMode.Modal)
+            {
+                // Modal mode: centered via CSS, only set z-index
+                return $"z-index:{z};position:fixed;";
+            }
+            // Bubble mode: positioned by JS relative to target element
             return $"z-index:{z};position:fixed;top:0;right:0;";
         }
     }
@@ -333,7 +337,14 @@
             if (_tour != null)
             {
                 if (ResolvedMode != StepMode.Modal)
+                {
                     await _tour.PositionStepAsync(this);
+                }
+                else
+                {
+                    // Modal mode: still need overlay and keyboard setup
+                    await _tour.SetupModalOverlayAsync(this);
+                }
                 await _tour.SetupKeyboardAsync(this);
             }
 

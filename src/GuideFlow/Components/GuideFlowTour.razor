@@ -418,6 +418,19 @@
 
             if (result != null)
             {
+                // Clean up previous step's highlight, click-through, and auto-update before switching
+                if (_activeSelector != null && _activeSelector != step.Element)
+                {
+                    if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
+                        await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);
+
+                    await SafeInvokeVoidAsync("disableClickThrough", _activeSelector);
+
+                    var prevStep = _steps.FirstOrDefault(s => s.Element == _activeSelector);
+                    if (prevStep != null)
+                        await SafeInvokeVoidAsync("stopAutoUpdate", _activeSelector, prevStep.StepElement);
+                }
+
                 _activeSelector = step.Element;
 
                 if (TourOptions.OverlayMode == OverlayMode.Stage && TourOptions.Overlay)
@@ -473,6 +486,60 @@
     {
         if (!_jsAvailable || _jsModule == null || !TourOptions.AllowKeyboardControl) return;
         await SafeInvokeVoidAsync("setupStep", step.StepElement, _dotNetRef, TourOptions.TrapFocus);
+    }
+
+    /// <summary>Set up overlay for modal steps (no JS positioning, but overlay still needed).</summary>
+    public async Task SetupModalOverlayAsync(GuideFlowStep step)
+    {
+        if (!_jsAvailable || _jsModule == null) return;
+
+        try
+        {
+            // Clean up previous step's highlight class and auto-update
+            if (_activeSelector != null)
+            {
+                if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
+                    await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);
+
+                await SafeInvokeVoidAsync("disableClickThrough", _activeSelector);
+
+                var prevStep = _steps.FirstOrDefault(s => s.Element == _activeSelector);
+                if (prevStep != null)
+                    await SafeInvokeVoidAsync("stopAutoUpdate", _activeSelector, prevStep.StepElement);
+            }
+
+            _activeSelector = step.Element;
+
+            if (TourOptions.Overlay)
+            {
+                if (TourOptions.OverlayMode == OverlayMode.Stage)
+                {
+                    await SafeInvokeVoidAsync("createStageOverlay",
+                        step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
+                        TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
+                }
+                else
+                {
+                    await SafeInvokeVoidAsync("createOverlay",
+                        TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef);
+
+                    if (!string.IsNullOrEmpty(step.Element))
+                    {
+                        await SafeInvokeVoidAsync("animateCutoutTo",
+                            step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
+                            TourOptions.AnimateCutout ? TourOptions.AnimationDuration : 0,
+                            false, 0);
+                    }
+                }
+            }
+
+            if (TourOptions.TrackVisited)
+            {
+                var stepId = step.StepId ?? step.Order.ToString();
+                _visitedSteps.Add(stepId);
+            }
+        }
+        catch (JSException) { }
     }
 
     public bool IsStepVisited(GuideFlowStep step)
