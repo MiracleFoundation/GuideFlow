@@ -16,16 +16,28 @@
 
     <div id="anim-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#my-header"" Title=""Welcome!"" Order=""0""
+    <GuideFlowStep Element=""#anim-title"" Title=""Animated Tour"" Order=""0""
                    Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
-        <p>Here is your dashboard header.</p>
+        <p>The default tour mode with smooth animations between steps.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#my-sidebar"" Title=""Navigation"" Order=""1""
+    <GuideFlowStep Element=""#anim-lead"" Title=""Description"" Order=""1""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>This lead text explains what the animated tour does.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#anim-run-btn"" Title=""Try It"" Order=""2""
                    Side=""Placement.Right"">
-        <p>Use this sidebar to navigate.</p>
+        <p>Click this button to start the tour.</p>
     </GuideFlowStep>
-    <GuideFlowStep Title=""Happy Coding!"" Order=""2"">
-        <p>That's all - go build something great.</p>
+    <GuideFlowStep Element=""#anim-code"" Title=""Code Example"" Order=""3""
+                   Side=""Placement.Left"" Align=""PopoverAlign.Start"">
+        <p>Here is the code showing how to set up an animated tour.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""a[href='docs/configuration']"" Title=""More Configuration"" Order=""4""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>Look at this page for all the configuration options you can pass.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Title=""Happy Coding"" Order=""5"">
+        <p>And that is all, go ahead and start adding tours to your applications.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
@@ -59,8 +71,8 @@
                    Side="Placement.Left" Align="PopoverAlign.Start">
         <p>Here is the code showing how to set up an animated tour.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="a[href='/docs/configuration']" Title="More Configuration" Order="4"
-                   Side="Placement.Right" Align="PopoverAlign.Start">
+    <GuideFlowStep Element="a[href='docs/configuration']" Title="More Configuration" Order="4"
+                   Side="Placement.Bottom" Align="PopoverAlign.Start">
         <p>Look at this page for all the configuration options you can pass.</p>
     </GuideFlowStep>
     <GuideFlowStep Title="Happy Coding" Order="5">

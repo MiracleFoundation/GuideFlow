@@ -72,11 +72,14 @@
             TargetId = "popover-target-all",
             Options = new() { ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } },
             Code = @"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#first-element"" Title=""Popover Title"" Order=""0"">
-        <p>Popover Description</p>
+    <GuideFlowStep Element=""#popover-target-all"" Title=""Show All Buttons"" Order=""0"">
+        <p>Step 1 of 3 - the first step. The Previous button is hidden here.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#second-element"" Title=""Popover Title"" Order=""1"">
-        <p>Popover Description</p>
+    <GuideFlowStep Element=""#popover-target-all"" Title=""Show All Buttons"" Order=""1"">
+        <p>Step 2 of 3 - this middle step shows the Previous button alongside the others.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#popover-target-all"" Title=""Show All Buttons"" Order=""2"">
+        <p>Step 3 of 3 - the final step. Next becomes the finish button.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 

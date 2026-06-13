@@ -19,11 +19,9 @@
 
     <div id="styling-popover-css-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#my-element"" Title=""Style However You Want""
+    <GuideFlowStep Element=""#styling-demo-target"" Title=""Default Theme""
                    Order=""0"" Side=""Placement.Bottom"">
-        <p>You can use the default class names and override the styles
-           or you can pass a custom class name to the PopoverClass option
-           either globally or per step.</p>
+        <p>This uses the default light theme with no custom styling.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
@@ -81,8 +79,8 @@
 
     <div id="styling-dom-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#my-element"" Title=""Custom DOM""
-                   Order=""0"" OnPopoverRender=""OnPopoverRender"">
+    <GuideFlowStep Element=""#styling-dom-target"" Title=""Custom DOM""
+                   Order=""0"" Side=""Placement.Bottom"" OnPopoverRender=""OnPopoverRender"">
         <p>This popover has a custom badge added via DOM manipulation.</p>
     </GuideFlowStep>
 </GuideFlowTour>

@@ -29,12 +29,16 @@
     <div id="confirm-on-exit-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options""
              OnDestroyStarted=""OnDestroyStarted"">
-    <GuideFlowStep Element=""#my-element"" Title=""Step 1"" Order=""0""
-                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
-        <p>Try to close this tour.</p>
+    <GuideFlowStep Element=""#confirm-destroy-example"" Title=""Animated Tour Example"" Order=""0""
+                   Side=""Placement.Left"" Align=""PopoverAlign.Start"">
+        <p>Here is the code example showing the confirm on exit feature.</p>
     </GuideFlowStep>
-    <GuideFlowStep Title=""Step 2"" Order=""1"">
-        <p>Another step.</p>
+    <GuideFlowStep Element=""#confirm-on-exit-code"" Title=""The Code"" Order=""1""
+                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+        <p>This is where you define the OnDestroyStarted callback.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Title=""Happy Coding"" Order=""2"">
+        <p>And that is all, go ahead and start adding tours to your applications.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 

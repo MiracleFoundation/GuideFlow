@@ -1398,6 +1398,50 @@ body {
 }
 
 /* ============================================
+   Generic Table
+   ============================================ */
+
+.docs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 1rem 0 1.5rem;
+    border: 1px solid var(--docs-border);
+    border-radius: var(--docs-radius-lg);
+    overflow: hidden;
+    background: var(--docs-surface);
+}
+
+.docs-table th {
+    text-align: left;
+    padding: 0.6rem 1rem;
+    background: var(--docs-bg);
+    border-bottom: 1px solid var(--docs-border);
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--docs-fg-secondary);
+}
+
+.docs-table td {
+    padding: 0.55rem 1rem;
+    border-bottom: 1px solid var(--docs-border-subtle);
+    vertical-align: top;
+    line-height: 1.55;
+    color: var(--docs-fg-secondary);
+}
+
+.docs-table tr:last-child td {
+    border-bottom: none;
+}
+
+.docs-table code {
+    background: rgba(13, 148, 136, 0.06);
+    padding: 0.15em 0.35em;
+    border-radius: 3px;
+    font-size: 0.85em;
+}
+
+/* ============================================
    Popover Position Demo
    ============================================ */
 

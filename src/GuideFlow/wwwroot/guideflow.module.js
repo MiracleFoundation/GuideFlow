@@ -410,7 +410,7 @@ export function createOverlay(zIndex, opacity, dotNetRef, color) {
     clickCatcher.setAttribute('width', '100%');
     clickCatcher.setAttribute('height', '100%');
     clickCatcher.setAttribute('fill', 'transparent');
-    clickCatcher.style.pointerEvents = 'auto';
+    clickCatcher.setAttribute('pointer-events', 'all');
     svg.appendChild(clickCatcher);
 
     // Click handler directly on the click catcher for reliable event capture

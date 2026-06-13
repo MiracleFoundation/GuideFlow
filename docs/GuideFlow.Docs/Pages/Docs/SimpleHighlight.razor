@@ -23,7 +23,7 @@
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
     <GuideFlowStep Element=""#highlight-me"" Title=""This is a title"" Order=""0""
                    Side=""Placement.Bottom"">
-        <p>This is a description</p>
+        <p>This is a description.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
@@ -35,8 +35,7 @@
     {
         PopoverClass = ""gf-theme-dark"",
         StagePadding = 4,
-        ShowBack = false,
-        ShowNext = false,
+        ShowButtons = new[] { ButtonType.Close },
     };
 
     private async Task HighlightElement()
