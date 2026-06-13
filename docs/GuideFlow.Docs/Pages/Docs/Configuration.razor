@@ -83,6 +83,35 @@
         <ApiRow Name="ScrollBlock" Type="string" Default="center" Desc="ScrollIntoView block position." />
     </ApiTable>
 
+    <h2 id="scrolling-demo">Scrolling Demo <a class="docs-anchor" href="#scrolling-demo">#</a></h2>
+    <p>When the target element is off-screen, GuideFlow scrolls it into view. Use <code>ScrollBehavior</code> to control how, and <code>ScrollBlock</code> to control where in the viewport it lands.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__buttons" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="popover-demo__group">
+                <h4>Scroll Behavior</h4>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Center)">Smooth</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Instant, ScrollBlock.Center)">Instant</button>
+            </div>
+            <div class="popover-demo__group">
+                <h4>Scroll Block</h4>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Center)">Center</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Start)">Start</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.End)">End</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Nearest)">Nearest</button>
+            </div>
+        </div>
+    </div>
+
+    @* Spacer to push the target off-screen *@
+    <div style="height: 80vh;"></div>
+
+    <div id="scroll-target" class="popover-demo__target" style="margin: 0 auto;">
+        <span>Scroll Target (off-screen above)</span>
+    </div>
+
+    <div style="height: 2rem;"></div>
+
     <h2 id="popover">
         Popover
         <a class="docs-anchor" href="#popover">#</a>
@@ -128,3 +157,40 @@
         <ApiRow Name="LazyRender" Type="bool" Default="false" Desc="Lazy render step content." />
     </ApiTable>
 </div>
+
+<GuideFlowTour @ref="scrollTour" TourOptions="scrollOpts" OnComplete="OnScrollEnd" OnCancel="OnScrollEnd">
+    <GuideFlowStep Element="#scroll-target" Title="Scroll Demo" Order="0" Side="Placement.Top">
+        <p>Behavior: <strong>@_scrollBehavior</strong> &bull; Block: <strong>@_scrollBlock</strong></p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? scrollTour;
+    private bool scrollBusy;
+    private string _scrollBehavior = "Smooth";
+    private string _scrollBlock = "Center";
+
+    private TourOptions scrollOpts = new()
+    {
+        SmoothScroll = true,
+        ScrollBehavior = ScrollBehavior.Smooth,
+        ScrollBlock = ScrollBlock.Center,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task ShowScrollAsync(ScrollBehavior behavior, ScrollBlock block)
+    {
+        if (scrollTour == null || scrollBusy) return;
+        scrollBusy = true;
+        _scrollBehavior = behavior.ToString();
+        _scrollBlock = block.ToString();
+        scrollOpts.SmoothScroll = behavior != ScrollBehavior.None;
+        scrollOpts.ScrollBehavior = behavior;
+        scrollOpts.ScrollBlock = block;
+        StateHasChanged();
+        await scrollTour.ResetAsync();
+        await scrollTour.DriveAsync();
+    }
+
+    private void OnScrollEnd() { scrollBusy = false; StateHasChanged(); }
+}

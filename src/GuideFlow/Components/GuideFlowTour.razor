@@ -438,22 +438,15 @@
             var offset = TourOptions.PopoverOffset;
 
             PositionResult? result;
-            if (TourOptions.ScrollBehavior == ScrollBehavior.None || TourOptions.ScrollBehavior == ScrollBehavior.Instant)
-            {
-                result = await SafeInvokeAsync<PositionResult>(
-                    "positionStepWithScrollConfig",
-                    step.Element, step.StepElement, placement,
-                    TourOptions.StagePadding, offset,
-                    TourOptions.ScrollBehavior.ToString().ToLower(),
-                    TourOptions.ScrollBlock);
-            }
-            else
-            {
-                result = await SafeInvokeAsync<PositionResult>(
-                    "positionStep",
-                    step.Element, step.StepElement, placement,
-                    TourOptions.StagePadding, offset, TourOptions.SmoothScroll);
-            }
+            var scrollBehaviorStr = TourOptions.ScrollBehavior == ScrollBehavior.None
+                ? "none"
+                : TourOptions.ScrollBehavior.ToString().ToLower();
+            result = await SafeInvokeAsync<PositionResult>(
+                "positionStepWithScrollConfig",
+                step.Element, step.StepElement, placement,
+                TourOptions.StagePadding, offset,
+                scrollBehaviorStr,
+                TourOptions.ScrollBlock.ToString().ToLower());
 
             if (result != null)
             {

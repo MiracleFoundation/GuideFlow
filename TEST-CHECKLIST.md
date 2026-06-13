@@ -89,19 +89,19 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 8.1 | Next button visible | Default | Next button shown | |
-| 8.2 | Previous button visible | Default | Previous button shown | |
-| 8.3 | Close button visible | Default | Close (X) button shown | |
-| 8.4 | Hide Next | Set `ShowNext = false` | Next button hidden | |
-| 8.5 | Hide Previous | Set `ShowBack = false` | Previous button hidden | |
-| 8.6 | Hide Close | Set `ShowClose = false` | Close button hidden | |
-| 8.7 | Show Skip | Set `ShowSkip = true` | Skip button appears | |
-| 8.8 | Custom button text | Set `NextBtnText = "Continue"`, etc. | Custom text on buttons | |
-| 8.9 | Done button on last step | Navigate to last step | "Done" button replaces "Next" | |
-| 8.10 | Custom Done text | Set `DoneBtnText = "Finish!"` | Custom Done text on last step | |
-| 8.11 | Disable specific buttons | Set `DisableButtons = [Previous]` | Previous button grayed out | |
-| 8.12 | Show only specific buttons | Set `ShowButtons = [Next, Close]` | Only Next and Close visible | |
-| 8.13 | Custom ButtonsContent | Use `ButtonsContent` render fragment | Custom buttons render | |
+| 8.1 | Next button visible | Default | Next button shown | ✅ |
+| 8.2 | Previous button visible | Default | Previous button shown | ✅ |
+| 8.3 | Close button visible | Default | Close (X) button shown | ✅ |
+| 8.4 | Hide Next | Set `ShowNext = false` | Next button hidden | ✅ |
+| 8.5 | Hide Previous | Set `ShowBack = false` | Previous button hidden | ✅ |
+| 8.6 | Hide Close | Set `ShowClose = false` | Close button hidden | ✅ |
+| 8.7 | Show Skip | Set `ShowSkip = true` | Skip button appears | ✅ |
+| 8.8 | Custom button text | Set `NextBtnText = "Continue"`, etc. | Custom text on buttons | ✅ |
+| 8.9 | Done button on last step | Navigate to last step | "Done" button replaces "Next" | ✅ |
+| 8.10 | Custom Done text | Set `DoneBtnText = "Finish!"` | Custom Done text on last step | ✅ |
+| 8.11 | Disable specific buttons | Set `DisableButtons = [Previous]` | Previous button grayed out | ❌ BUG |
+| 8.12 | Show only specific buttons | Set `ShowButtons = [Next, Close]` | Only Next and Close visible | ✅ |
+| 8.13 | Custom ButtonsContent | Use `ButtonsContent` render fragment | Custom buttons render | ✅ |
 
 ## 9. Progress
 
@@ -127,32 +127,32 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 11.1 | Auto scroll to target | Target element is off-screen | Page scrolls to target | |
-| 11.2 | Smooth scroll | Set `SmoothScroll = true` | Animated scroll | |
-| 11.3 | Scroll behavior Smooth | Set `ScrollBehavior = Smooth` | Smooth scrolling | |
-| 11.4 | Scroll behavior Instant | Set `ScrollBehavior = Instant` | Instant jump | |
-| 11.5 | Scroll block Center | Set `ScrollBlock = Center` | Target centered in viewport | |
-| 11.6 | Scroll block Start | Set `ScrollBlock = Start` | Target at top of viewport | |
-| 11.7 | Scroll block End | Set `ScrollBlock = End` | Target at bottom of viewport | |
-| 11.8 | Scroll block Nearest | Set `ScrollBlock = Nearest` | Minimal scroll needed | |
+| 11.1 | Auto scroll to target | Click any button on Scrolling Demo | Page scrolls down to target | |
+| 11.2 | Smooth scroll | Click "Smooth" | Animated smooth scroll | |
+| 11.3 | Scroll behavior Smooth | Click "Smooth" | Smooth scrolling animation | |
+| 11.4 | Scroll behavior Instant | Click "Instant" | Instant jump, no animation | |
+| 11.5 | Scroll block Center | Click "Center" | Target centered in viewport | |
+| 11.6 | Scroll block Start | Click "Start" | Target at top of viewport | |
+| 11.7 | Scroll block End | Click "End" | Target at bottom of viewport | |
+| 11.8 | Scroll block Nearest | Click "Nearest" | Minimal scroll needed | |
 
 ## 12. Themes
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 12.1 | Default theme | No PopoverClass set | Default light theme | |
-| 12.2 | Light theme | Set `PopoverClass = "gf-theme-light"` | Light styled popover | |
-| 12.3 | Dark theme | Set `PopoverClass = "gf-theme-dark"` | Dark styled popover | |
-| 12.4 | High contrast theme | Set `PopoverClass = "gf-theme-high-contrast"` | High contrast colors | |
-| 12.5 | Custom CSS variables | Override CSS custom properties | Custom styling applied | |
+| 12.1 | Default theme | No PopoverClass set | Default light theme | ✅ |
+| 12.2 | Light theme | Set `PopoverClass = "gf-theme-light"` | Light styled popover | ✅ |
+| 12.3 | Dark theme | Set `PopoverClass = "gf-theme-dark"` | Dark styled popover | ✅ |
+| 12.4 | High contrast theme | Set `PopoverClass = "gf-theme-high-contrast"` | High contrast colors | ✅ |
+| 12.5 | Custom CSS variables | Override CSS custom properties | Custom styling applied | ✅ |
 
 ## 13. Step Mode
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 13.1 | Bubble mode (default) | Default settings | Popover near target element | |
-| 13.2 | Modal mode | Set `Mode = StepMode.Modal` | Popover centered on screen | |
-| 13.3 | Mix modes | Some steps Bubble, some Modal | Each step uses its own mode | |
+| 13.1 | Bubble mode (default) | Default settings | Popover near target element | ✅ |
+| 13.2 | Modal mode | Set `Mode = StepMode.Modal` | Popover centered on screen | ✅ |
+| 13.3 | Mix modes | Some steps Bubble, some Modal | Each step uses its own mode | ✅ |
 
 ## 14. Step Lifecycle Events
 
@@ -251,12 +251,12 @@
 | 5. Highlight Shapes | 6 | 6 | 0 | 0 |
 | 6. Animation | 8 | 8 | 0 | 0 |
 | 7. Step Content | 6 | 5 | 0 | 0 |
-| 8. Buttons | 13 | | | |
+| 8. Buttons | 13 | 12 | 1 | 0 |
 | 9. Progress | 4 | 4 | 0 | 0 |
 | 10. Keyboard Navigation | 6 | 6 | 0 | 0 |
 | 11. Scrolling | 8 | | | |
-| 12. Themes | 5 | | | |
-| 13. Step Mode | 3 | | | |
+| 12. Themes | 5 | 5 | 0 | 0 |
+| 13. Step Mode | 3 | 3 | 0 | 0 |
 | 14. Step Lifecycle Events | 5 | | | |
 | 15. Tour Events | 9 | | | |
 | 16. Accessibility | 7 | | | |
@@ -264,7 +264,7 @@
 | 18. Async Tour | 3 | | | |
 | 19. Edge Cases | 10 | | | |
 | 20. Persist State | 4 | | | |
-| **Total** | **136** | **57** | **0** | **0** |
+| **Total** | **136** | **74** | **1** | **0** |
 
 ## Notes
 
