@@ -7,6 +7,7 @@
     <BlazorWasmPrerenderingDeleteLoadingContents>true</BlazorWasmPrerenderingDeleteLoadingContents>
     <BlazorWasmPrerenderingOutputStyle>AppendHtmlExtension</BlazorWasmPrerenderingOutputStyle>
     <BlazorWasmPrerenderingUrlPathRegexToIgnore>^/docs</BlazorWasmPrerenderingUrlPathRegexToIgnore>
+    <BlazorWasmPrerenderingUrlPathRegexToIgnore Condition="'$(BlazorWasmPrerenderingPathBase)' != ''">^/$|^/docs</BlazorWasmPrerenderingUrlPathRegexToIgnore>
   </PropertyGroup>
 
   <!-- Default: base href = / (local dev). Override: dotnet publish -p:BaseHref=/GuideFlow/ -->
