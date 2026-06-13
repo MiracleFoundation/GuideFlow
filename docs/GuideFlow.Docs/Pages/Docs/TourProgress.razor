@@ -6,54 +6,98 @@
 
 <div class="docs-content">
     <h1 id="tour-progress-title">Tour Progress</h1>
-    <p class="docs-lead" id="tour-progress-lead">Show users where they are in the tour with a step counter ("2 of 5") or progress bar. Progress appears in the popover footer and updates automatically as users navigate between steps.</p>
+    <p class="docs-lead" id="tour-progress-lead">Show users where they are in the tour with a step counter or progress bar. Progress appears in the popover footer and updates automatically as users navigate between steps.</p>
 
-    <button class="docs-demo__run" @onclick="StartTour" id="tour-progress-run-btn">▶ Show me the example</button>
+    <h2 id="step-counter">Step Counter <a class="docs-anchor" href="#step-counter">#</a></h2>
+    <p>Use the <code>ShowProgress</code> option to show a step counter like "2 of 5" in the popover footer. This helps users understand how many steps are left in the tour.</p>
 
-    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+    <div id="step-counter-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowProgress = true,
+};")" />
+    </div>
 
+    <h2 id="progress-bar">Progress Bar <a class="docs-anchor" href="#progress-bar">#</a></h2>
+    <p>Use the <code>ShowProgressBar</code> option to show a visual progress bar above the buttons. The bar fills automatically as the user progresses through the tour.</p>
+
+    <div id="progress-bar-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowProgress = true,
+    ShowProgressBar = true,
+};")" />
+    </div>
+
+    <h2 id="custom-text">Custom Progress Text <a class="docs-anchor" href="#custom-text">#</a></h2>
+    <p>Use the <code>ProgressText</code> option to customize the progress text template. Use <code>{{current}}</code> and <code>{{total}}</code> as placeholders for the current step number and total steps.</p>
+
+    <div id="custom-text-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    ShowProgress = true,
+    ProgressText = ""Step {{current}} of {{total}}"",
+};
+
+// You can also override per step:
+<GuideFlowStep ProgressText=""Part {{current}}/{{total}}"" ...>
+    <p>Step content.</p>
+</GuideFlowStep>")" />
+    </div>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Click the button below to see the progress indicators in action.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="tour-progress-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div style="text-align:center;margin-top:1rem;">
+            <button class="docs-btn" @onclick="StartTour" id="tour-progress-run-btn">Show me the example</button>
+        </div>
+    </div>
+
+    <h3>Code for the above example</h3>
     <div id="tour-progress-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#tour-progress-title"" Title=""Step 1"" Order=""0""
-                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
+    <GuideFlowStep Element=""#target"" Title=""Step 1"" Order=""0""
+                   Side=""Placement.Bottom"">
         <p>First step content.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#tour-progress-code"" Title=""Step 2"" Order=""1""
+    <GuideFlowStep Element=""#target"" Title=""Step 2"" Order=""1""
                    Side=""Placement.Top"">
         <p>Second step content.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#tour-progress-run-btn"" Title=""Step 3"" Order=""2""
+    <GuideFlowStep Element=""#target"" Title=""Step 3"" Order=""2""
                    Side=""Placement.Right"">
         <p>Third step content.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 @code {
-    private GuideFlowTour? tour;
     private TourOptions options = new()
     {
         ShowProgress = true,
         ShowProgressBar = true,
         ProgressText = ""Step {{current}} of {{total}}"",
     };
-    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
 }")" />
     </div>
 
 </div>
 
 <GuideFlowTour @ref="tour" TourOptions="options">
-    <GuideFlowStep Element="#tour-progress-title" Title="Step 1" Order="0"
+    <GuideFlowStep Element="#tour-progress-demo-target" Title="Step 1" Order="0"
                    Side="Placement.Bottom" Align="PopoverAlign.Start">
-        <p>First step content.</p>
+        <p>Notice the progress text and bar in the footer.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#tour-progress-code" Title="Step 2" Order="1"
+    <GuideFlowStep Element="#tour-progress-demo-target" Title="Step 2" Order="1"
                    Side="Placement.Top">
-        <p>Second step content.</p>
+        <p>The progress updates automatically as you navigate.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#tour-progress-run-btn" Title="Step 3" Order="2"
+    <GuideFlowStep Element="#tour-progress-demo-target" Title="Step 3" Order="2"
                    Side="Placement.Right">
-        <p>Third step content.</p>
+        <p>That's it - tour complete!</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
