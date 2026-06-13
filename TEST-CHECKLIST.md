@@ -28,38 +28,38 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 3.1 | Placement Bottom | Set `Side = Bottom` | Popover appears below target | |
-| 3.2 | Placement Top | Set `Side = Top` | Popover appears above target | |
-| 3.3 | Placement Left | Set `Side = Left` | Popover appears left of target | |
-| 3.4 | Placement Right | Set `Side = Right` | Popover appears right of target | |
-| 3.5 | Placement TopStart/TopEnd | Test start/end variants | Popover aligned to start/end edge | |
-| 3.6 | Placement BottomStart/BottomEnd | Test start/end variants | Popover aligned to start/end edge | |
-| 3.7 | Placement LeftStart/LeftEnd | Test start/end variants | Popover aligned to start/end edge | |
-| 3.8 | Placement RightStart/RightEnd | Test start/end variants | Popover aligned to start/end edge | |
-| 3.9 | Placement Auto | Set `Side = Auto` | Popover auto-flips to stay in viewport | |
-| 3.10 | Align Start | Set `Align = Start` | Popover aligned to start edge of target | |
-| 3.11 | Align Center | Set `Align = Center` | Popover centered on target | |
-| 3.12 | Align End | Set `Align = End` | Popover aligned to end edge of target | |
-| 3.13 | Popover offset | Set `PopoverOffset = 20` | 20px gap between popover and target | |
+| 3.1 | Placement Bottom | Set `Side = Bottom` | Popover appears below target | ✅ |
+| 3.2 | Placement Top | Set `Side = Top` | Popover appears above target | ✅ |
+| 3.3 | Placement Left | Set `Side = Left` | Popover appears left of target | ✅ |
+| 3.4 | Placement Right | Set `Side = Right` | Popover appears right of target | ✅ |
+| 3.5 | Placement TopStart/TopEnd | Test start/end variants | Popover aligned to start/end edge | ✅ |
+| 3.6 | Placement BottomStart/BottomEnd | Test start/end variants | Popover aligned to start/end edge | ✅ |
+| 3.7 | Placement LeftStart/LeftEnd | Test start/end variants | Popover aligned to start/end edge | ✅ |
+| 3.8 | Placement RightStart/RightEnd | Test start/end variants | Popover aligned to start/end edge | ✅ |
+| 3.9 | Placement Auto | Click "Auto Flip" button | Popover auto-flips to stay in viewport | ✅ |
+| 3.10 | Align Start | Set `Align = Start` | Popover aligned to start edge of target | ✅ |
+| 3.11 | Align Center | Set `Align = Center` | Popover centered on target | ✅ |
+| 3.12 | Align End | Set `Align = End` | Popover aligned to end edge of target | ✅ |
+| 3.13 | Popover offset | Click 5px/10px/30px buttons | Gap between popover and target changes | ✅ |
 
 ## 4. Arrow
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 4.1 | Arrow visible (default) | Start tour, `ShowArrow = true` | Arrow points from popover to target | |
-| 4.2 | Arrow hidden | Set `ShowArrow = false` | No arrow shown | |
-| 4.3 | Arrow direction follows placement | Change Side between Top/Bottom/Left/Right | Arrow rotates to point correctly | |
+| 4.1 | Arrow visible (default) | Start tour, `ShowArrow = true` | Arrow points from popover to target | ✅ |
+| 4.2 | Arrow hidden | Set `ShowArrow = false` | No arrow shown | ✅ |
+| 4.3 | Arrow direction follows placement | Change Side between Top/Bottom/Left/Right | Arrow rotates to point correctly | ✅ |
 
 ## 5. Highlight Shapes
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 5.1 | RoundedRect (default) | Default settings | Rounded rectangle cutout | |
-| 5.2 | Rectangle | Set `HighlightShape = Rectangle` | Sharp-corner rectangle cutout | |
-| 5.3 | Circle | Set `HighlightShape = Circle` | Circular cutout | |
-| 5.4 | Ellipse | Set `HighlightShape = Ellipse` | Elliptical cutout | |
-| 5.5 | Stage padding | Set `StagePadding = 20` | 20px padding around target | |
-| 5.6 | Stage radius | Set `StageRadius = 15` | Rounded corners with 15px radius | |
+| 5.1 | RoundedRect (default) | Default settings | Rounded rectangle cutout | ✅ |
+| 5.2 | Rectangle | Set `HighlightShape = Rectangle` | Sharp-corner rectangle cutout | ❌ BUG |
+| 5.3 | Circle | Set `HighlightShape = Circle` | Circular cutout | ❌ BUG |
+| 5.4 | Ellipse | Set `HighlightShape = Ellipse` | Elliptical cutout | ❌ BUG |
+| 5.5 | Stage padding | Set `StagePadding = 20` | 20px padding around target | (chưa có demo) |
+| 5.6 | Stage radius | Set `StageRadius = 15` | Rounded corners with 15px radius | (chưa có demo) |
 
 ## 6. Animation ✅
 
@@ -245,10 +245,10 @@
 | Category | Total | Pass | Fail | Skip |
 |----------|-------|------|------|------|
 | 1. Tour Lifecycle | 7 | 7 | 0 | 0 |
-| 2. Overlay | 7 | 2 | 0 | 0 |
-| 3. Popover Positioning | 13 | | | |
-| 4. Arrow | 3 | | | |
-| 5. Highlight Shapes | 6 | | | |
+| 2. Overlay | 7 | 5 | 0 | 0 |
+| 3. Popover Positioning | 13 | 13 | 0 | 0 |
+| 4. Arrow | 3 | 3 | 0 | 0 |
+| 5. Highlight Shapes | 6 | 1 | 3 | 0 |
 | 6. Animation | 8 | 8 | 0 | 0 |
 | 7. Step Content | 6 | | | |
 | 8. Buttons | 13 | | | |
@@ -264,7 +264,7 @@
 | 18. Async Tour | 3 | | | |
 | 19. Edge Cases | 10 | | | |
 | 20. Persist State | 4 | | | |
-| **Total** | **136** | **17** | **0** | **0** |
+| **Total** | **136** | **37** | **3** | **0** |
 
 ## Notes
 

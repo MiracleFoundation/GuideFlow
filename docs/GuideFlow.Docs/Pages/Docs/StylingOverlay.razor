@@ -20,8 +20,21 @@
     </div>
 
     <div class="docs-callout docs-callout--info">
-        <strong>Stage mode</strong> uses 4 separate panels (top, bottom, left, right) that surround the target without overlapping it. The panels sit outside the target area. Think of it like a spotlight on a stage - the light shines on the target while the surrounding area stays dark.
+        <strong>Stage mode</strong> uses 4 separate panels (top, bottom, left, right) that surround the target without overlapping it. The panels sit outside the target area, leaving a clear gap controlled by <code>StagePadding</code>. Think of it like a spotlight on a stage - the light shines on the target while the surrounding area stays dark.
     </div>
+
+    <pre style="background: var(--docs-code-bg); padding: 1rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.6; color: var(--docs-code-text); overflow-x: auto;">
+┌───────────────────────────────┐
+│          Panel Top            │
+├───────┬───────────────┬───────┤
+│       │               │       │
+│ Panel │    TARGET     │ Panel │
+│ Left  │    ELEMENT    │ Right │
+│       │               │       │
+├───────┴───────────────┴───────┤
+│         Panel Bottom          │
+└───────────────────────────────┘
+    </pre>
 
     <table class="docs-table">
         <thead>
@@ -29,6 +42,7 @@
         </thead>
         <tbody>
             <tr><td>How it works</td><td>SVG mask cuts a hole</td><td>4 panels surround target</td></tr>
+            <tr><td>Overlay structure</td><td>1 layer with a cutout hole</td><td>4 separate panels (top, bottom, left, right)</td></tr>
             <tr><td>Target visibility</td><td>Inside the overlay hole</td><td>Between the 4 panels</td></tr>
             <tr><td>Target clickable?</td><td>Yes (through the hole)</td><td>Yes (not covered by panels)</td></tr>
             <tr><td>Customization</td><td><code>StagePadding</code>, <code>StageRadius</code></td><td><code>StagePadding</code>, <code>StageRadius</code></td></tr>
@@ -65,35 +79,21 @@ private TourOptions stageOpts = new()
 
     <h2 id="overlay-disable">Disable Overlay <a class="docs-anchor" href="#overlay-disable">#</a></h2>
     <p>Set <code>Overlay = false</code> to hide the overlay completely. The tour step will still show but without the dark background.</p>
-    <p>When overlay is disabled, you can still control whether clicking outside the popover closes the tour using <code>AllowClose</code>:</p>
-    <ul>
-        <li><strong>No Overlay</strong> - Overlay hidden, but clicking outside still closes the tour (<code>AllowClose = true</code>)</li>
-        <li><strong>No Overlay + Lock</strong> - Overlay hidden, and clicking outside does nothing. User must use the Close button (<code>AllowClose = false</code>)</li>
-    </ul>
+
     <div class="popover-demo">
         <div class="popover-demo__target" id="overlay-disable-target">
             <span>Target Element</span>
         </div>
-        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
             <button class="docs-btn" @onclick="ShowNoOverlay">No Overlay</button>
-            <button class="docs-btn" @onclick="ShowNoOverlayLock">No Overlay + Lock</button>
         </div>
     </div>
 
     <h3>Code</h3>
     <div id="overlay-disable-code">
-        <CodeBlock Language="razor" Code="@(@"// No overlay - click outside to close
-private TourOptions opts = new()
+        <CodeBlock Language="razor" Code="@(@"private TourOptions opts = new()
 {
     Overlay = false,
-    AllowClose = true,    // default
-};
-
-// No overlay + lock - must use Close button
-private TourOptions opts = new()
-{
-    Overlay = false,
-    AllowClose = false,   // cannot close by clicking outside
 };")" />
     </div>
 
@@ -248,12 +248,6 @@ private TourOptions noneOpts = new()
     </GuideFlowStep>
 </GuideFlowTour>
 
-<GuideFlowTour @ref="noOverlayLockTour" TourOptions="noOverlayLockOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#overlay-disable-target" Title="No Overlay + Lock" Order="0" Side="Placement.Bottom">
-        <p>Overlay is disabled and AllowClose is false. Cannot close by clicking outside. Use the Close button.</p>
-    </GuideFlowStep>
-</GuideFlowTour>
-
 <GuideFlowTour @ref="clickCloseTour" TourOptions="clickCloseOpts" OnComplete="OnEnd" OnCancel="OnEnd">
     <GuideFlowStep Element="#overlay-click-target" Title="Click to Close" Order="0" Side="Placement.Bottom">
         <p>Click on the overlay area to close this tour (default behavior).</p>
@@ -280,7 +274,7 @@ private TourOptions noneOpts = new()
 
 @code {
     private GuideFlowTour? redTour, blueTour, yellowTour, lightTour, mediumTour, darkOverlayTour;
-    private GuideFlowTour? cutoutTour, stageTour, noOverlayTour, noOverlayLockTour;
+    private GuideFlowTour? cutoutTour, stageTour, noOverlayTour;
     private GuideFlowTour? clickCloseTour, clickNextTour, clickNoneTour;
     private bool busy;
 
@@ -294,7 +288,6 @@ private TourOptions noneOpts = new()
     private TourOptions cutoutOpts = new() { OverlayMode = OverlayMode.Cutout, ShowButtons = new[] { ButtonType.Close } };
     private TourOptions stageOpts = new() { OverlayMode = OverlayMode.Stage, StagePadding = 10, StageRadius = 5, ShowButtons = new[] { ButtonType.Close } };
     private TourOptions noOverlayOpts = new() { Overlay = false, ShowButtons = new[] { ButtonType.Close } };
-    private TourOptions noOverlayLockOpts = new() { Overlay = false, AllowClose = false, ShowButtons = new[] { ButtonType.Close } };
     private TourOptions clickCloseOpts = new() { OverlayClickBehavior = OverlayClickBehavior.Close, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
     private TourOptions clickNextOpts = new() { OverlayClickBehavior = OverlayClickBehavior.NextStep, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
     private TourOptions clickNoneOpts = new() { OverlayClickBehavior = OverlayClickBehavior.None, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
@@ -309,7 +302,6 @@ private TourOptions noneOpts = new()
     private async Task ShowCutout() { if (cutoutTour != null && !busy) { busy = true; await cutoutTour.DriveAsync(); } }
     private async Task ShowStage() { if (stageTour != null && !busy) { busy = true; await stageTour.DriveAsync(); } }
     private async Task ShowNoOverlay() { if (noOverlayTour != null && !busy) { busy = true; await noOverlayTour.DriveAsync(); } }
-    private async Task ShowNoOverlayLock() { if (noOverlayLockTour != null && !busy) { busy = true; await noOverlayLockTour.DriveAsync(); } }
     private async Task ShowClickClose() { if (clickCloseTour != null && !busy) { busy = true; await clickCloseTour.DriveAsync(); } }
     private async Task ShowClickNext() { if (clickNextTour != null && !busy) { busy = true; await clickNextTour.DriveAsync(); } }
     private async Task ShowClickNone() { if (clickNoneTour != null && !busy) { busy = true; await clickNoneTour.DriveAsync(); } }
