@@ -9,32 +9,27 @@ public class StepOptions
 {
     /// <summary>
     /// CSS selector for the target element to highlight.
-    /// Driver.js: element
     /// </summary>
     public string Element { get; set; } = string.Empty;
 
     /// <summary>
     /// Title displayed in the step popover header.
-    /// Driver.js: popover.title
     /// </summary>
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// Text content of the step. For simple text only; use ChildContent for rich content.
-    /// Driver.js: popover.description
     /// </summary>
     public string? Text { get; set; }
 
     /// <summary>
     /// Which side of the target element the popover appears on.
-    /// Driver.js: popover.side
     /// Default: Bottom
     /// </summary>
     public Placement Side { get; set; } = Placement.Bottom;
 
     /// <summary>
     /// Popover alignment relative to the target edge.
-    /// Driver.js: popover.align
     /// Default: null (uses Center)
     /// </summary>
     public PopoverAlign? Align { get; set; }
@@ -70,7 +65,6 @@ public class StepOptions
 
     /// <summary>
     /// CSS class for the popover.
-    /// Driver.js: popover.popoverClass
     /// </summary>
     public string? PopoverClass { get; set; }
 
@@ -81,7 +75,6 @@ public class StepOptions
 
     /// <summary>
     /// Whether to disable interaction with the highlighted element.
-    /// Driver.js: disableActiveInteraction
     /// </summary>
     public bool DisableActiveInteraction { get; set; }
 }

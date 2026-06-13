@@ -3,7 +3,6 @@ namespace GuideFlow.Enums;
 /// <summary>
 /// Controls the alignment of the popover relative to the target element.
 /// Used with Side to determine exact popover positioning.
-/// Driver.js: popover.align
 /// </summary>
 public enum PopoverAlign
 {

@@ -1,6 +1,6 @@
 # GuideFlow — Missing Features Roadmap
 
-So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | ⚠️ Có nhưng thiếu | ✅ Đã có
+So sánh với Shepherd.js, Intro.js. Trạng thái: ❌ Chưa có | ⚠️ Có nhưng thiếu | ✅ Đã có
 
 ---
 
@@ -8,19 +8,19 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 
 ### 1. Responsive Reposition ✅
 - **Mô tả:** Tự reposition popover khi user resize window hoặc scroll
-- **JS tham khảo:** Shepherd.js `autoUpdate`, Driver.js auto-reposition
+- **JS tham khảo:** Shepherd.js `autoUpdate`
 - **Cách implement:** Lắng nghe `window.resize` + `scroll` events trong JS module, gọi lại `computePosition` và cập nhật `stepElement.style.left/top`
 - **Files cần sửa:** `guideflow.module.js`, `GuideFlowTour.razor`
 
 ### 2. Overlay Click-Through (Element Passthrough) ✅
 - **Mô tả:** Cho phép user click vào element được highlight xuyên qua overlay, thay vì bị overlay chặn
-- **JS tham khảo:** Shepherd.js, Intro.js, Driver.js đều có
+- **JS tham khảo:** Shepherd.js, Intro.js đều có
 - **Cách implement:** Dùng `pointer-events: none` trên overlay, tạo vùng click-through bằng cách đặt một `div` trong suốt đúng vị trí highlight với `pointer-events: auto`, hoặc dùng `elementFromPoint` trick
 - **Files cần sửa:** `GuideFlowOverlay.razor`, `GuideFlowOverlay.razor.css`
 
 ### 3. Destroy on Complete / Cleanup ✅
 - **Mô tả:** Khi tour kết thúc (complete/cancel), remove overlay và step elements khỏi DOM hoàn toàn, cleanup event listeners
-- **JS tham khảo:** Shepherd.js `tour.complete()`, Driver.js `driver.destroy()`
+- **JS tham khảo:** Shepherd.js `tour.complete()`
 - **Cách implement:** Thêm `destroy()` method vào `GuideFlowTour`, gọi `DisposeAsync` đúng cách, cleanup JS event listeners
 - **Files cần sửa:** `GuideFlowTour.razor`, `guideflow.module.js`
 
@@ -33,13 +33,13 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
       .Build();
   await tour.StartAsync();
   ```
-- **JS tham khảo:** Shepherd.js `tour.addStep()`, Intro.js `steps[]`, Driver.js `steps[]`
+- **JS tham khảo:** Shepherd.js `tour.addStep()`, Intro.js `steps[]`
 - **Cách implement:** Tạo `GuideFlowBuilder` class + `ProgrammaticTour` component tự render steps từ code
 - **Files cần tạo:** `Services/GuideFlowBuilder.cs`, `Components/ProgrammaticTour.razor`
 
 ### 5. Per-Step Lifecycle Hooks (Hoạt động đúng) ✅
 - **Mô tả:** `OnBeforeShow`, `OnAfterShow`, `OnBeforeHide`, `OnAfterHide` cho từng step, có thể cancel
-- **JS tham khảo:** Shepherd.js `when.show()`, Driver.js `onHighlight`, `onDeselected`
+- **JS tham khảo:** Shepherd.js `when.show()`
 - **Cách implement:** Wire up EventCallback trong `GuideFlowStep`, gọi từ `GuideFlowTour` khi chuyển step
 - **Files cần sửa:** `GuideFlowStep.razor`, `GuideFlowTour.razor`
 
@@ -51,7 +51,7 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 
 ### 7. Multiple Tours Support ✅
 - **Mô tả:** Nhiều tour trên cùng 1 page, tour queue (tour B đợi tour A xong mới bắt đầu)
-- **JS tham khảo:** Shepherd.js nhiều instances, Driver.js `driver.defineSteps()`
+- **JS tham khảo:** Shepherd.js nhiều instances
 - **Cách implement:** Mỗi `<GuideFlowTour>` có `TourName` riêng, service quản lý active tour, queue mechanism
 - **Files cần sửa:** `GuideFlowService.cs`, `GuideFlowTour.razor`
 
@@ -75,7 +75,7 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 
 ### 9. Auto-Placement (Viewport Collision Detection) ✅
 - **Mô tả:** Tự chọn placement tốt nhất khi placement hiện tại bị tràn viewport
-- **JS tham khảo:** Shepherd.js `autoPlacement` middleware, Driver.js auto-flip
+- **JS tham khảo:** Shepherd.js `autoPlacement` middleware
 - **Cách implement:** Trong `computePosition`, kiểm tra nếu popover tràn viewport → thử placement khác (bottom → top → right → left)
 - **Files cần sửa:** `guideflow.module.js`
 
@@ -87,37 +87,37 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 
 ### 11. Step Highlight Styles ✅
 - **Mô tả:** Thêm border, pulse, glow effect cho target element đang được highlight
-- **JS tham khảo:** Intro.js `highlightClass`, Driver.js `activeClass`
+- **JS tham khảo:** Intro.js `highlightClass`
 - **Cách implement:** Thêm CSS class vào target element qua JS interop khi step active, remove khi step deactivate
 - **Files cần sửa:** `guideflow.module.js`, thêm CSS class `gf-highlight-active`
 
 ### 12. Floating Overlay (Stage Mode) ✅
 - **Mô tả:** Overlay chỉ bao quanh target element thay vì full-screen, tạo hiệu ứng spotlight
-- **JS tham khảo:** Driver.js `stage` mode
+- **JS tham khảo:** Stage mode overlay
 - **Cách implement:** Thay vì 1 overlay full-screen, render 4 overlay panels xung quanh target (top, bottom, left, right)
 - **Files cần sửa:** `GuideFlowOverlay.razor`
 
 ### 13. Progress Bar Visual ✅
 - **Mô tả:** Thanh progress bar ngang, không chỉ text "2 of 5"
-- **JS tham khảo:** Intro.js `showProgress`, Driver.js progress
+- **JS tham khảo:** Intro.js `showProgress`
 - **Cách implement:** Thêm `<div class="gf-progress-bar">` với width tính theo `currentStep/totalSteps * 100%`
 - **Files cần sửa:** `GuideFlowStep.razor`, `GuideFlowStep.razor.css`
 
 ### 14. Scroll Behavior Config ✅
 - **Mô tả:** Cấu hình chi tiết scroll: `off`, `element`, `window`, custom `scrollIntoViewOptions`
-- **JS tham khảo:** Shepherd.js `scrollTo: { behavior, block }`, Driver.js `scrollIntoViewOptions`
+- **JS tham khảo:** Shepherd.js `scrollTo: { behavior, block }`
 - **Cách implement:** Đổi `SmoothScroll` từ `bool` thành `ScrollBehavior` enum/object
 - **Files cần sửa:** `TourOptions.cs`, `guideflow.module.js`
 
 ### 15. Backdrop Padding/Shape Config ✅
 - **Mô tả:** Cấu hình padding bo tròn, hình dạng cutout (chữ nhật, ellipse, custom)
-- **JS tham khảo:** Driver.js `stagePadding`, `stageRadius`, Intro.js `hintBorderRadius`
+- **JS tham khảo:** Intro.js `hintBorderRadius`
 - **Cách implement:** Thêm `HighlightShape` enum (Rectangle, RoundedRect, Circle, Ellipse), tính toán SVG path tương ứng
 - **Files cần sửa:** `TourOptions.cs`, `GuideFlowOverlay.razor`
 
 ### 16. z-Index Management ✅
 - **Mô tả:** Tự quản lý z-index khi có nhiều overlay/tour trên cùng page
-- **JS tham khảo:** Driver.js
+- **JS tham khảo:** z-index management patterns
 - **Cách implement:** Service track active z-index counter, mỗi overlay/tour tăng z-index
 - **Files cần sửa:** `GuideFlowService.cs`
 
@@ -139,13 +139,13 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 
 ### 19. Bubble vs Modal Mode ✅
 - **Mô tả:** Popover nổi cạnh target (bubble) vs centered trên màn hình (modal)
-- **JS tham khảo:** Driver.js `popover` config
+- **JS tham khảo:** Popover display modes
 - **Cách implement:** Thêm `StepMode` enum (Bubble, Modal), khi Modal thì center popover
 - **Files cần sửa:** `GuideFlowStep.razor`, `guideflow.module.js`
 
 ### 20. Step Animation Types ✅
 - **Mô tả:** Nhiều loại animation: fade, slide, bounce, none
-- **JS tham khảo:** Driver.js `animate` option
+- **JS tham khảo:** Animation options
 - **Cách implement:** Thêm `AnimationType` enum, CSS animation classes tương ứng
 - **Files cần sửa:** `TourOptions.cs`, `GuideFlowStep.razor.css`
 
@@ -157,13 +157,13 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 
 ### 22. Tour Replay ✅
 - **Mô tả:** Restart tour từ đầu sau khi complete, hoặc replay từ step cụ thể
-- **JS tham khảo:** Intro.js `introJs().start()`, Driver.js re-define
+- **JS tham khảo:** Intro.js `introJs().start()`
 - **Cách implement:** `tour.ResetAsync()` → reset state, gọi `StartAsync()` lại
 - **Files cần sửa:** `GuideFlowTour.razor`
 
 ### 24. Tooltip Mode (Standalone Highlight) ✅
 - **Mô tả:** Dùng như tooltip library, highlight 1 element mà không cần tour
-- **JS tham khảo:** Driver.js `driver.highlight(selector)`
+- **JS tham khảo:** Standalone highlight
 - **Cách implement:** `<GuideFlowTooltip>` component standalone, không cần `<GuideFlowTour>`
 - **Files cần tạo:** `Components/GuideFlowTooltip.razor`
 

@@ -1,6 +1,5 @@
 /**
  * GuideFlow - Blazor Guided Tour JS Interop Module
- * API aligned with Driver.js
  */
 
 // ============================================================
@@ -16,7 +15,7 @@ const PLACEMENTS = ['top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bo
  * @param {HTMLElement} floating - Popover element
  * @param {string} placement - Placement string (e.g., 'bottom-start')
  * @param {number} padding - Stage padding around target
- * @param {number} offset - Distance between popover and target (Driver.js: popoverOffset)
+ * @param {number} offset - Distance between popover and target
  */
 function computePosition(reference, floating, placement, padding = 0, offset = 10) {
     const refRect = reference.getBoundingClientRect();
@@ -131,7 +130,7 @@ const _autoUpdateCleanups = new Map();
  * @param {HTMLElement} stepElement - Popover element
  * @param {string} placement - Preferred placement
  * @param {number} padding - Stage padding
- * @param {number} offset - Popover offset (Driver.js: popoverOffset)
+ * @param {number} offset - Popover offset
  * @param {object} dotNetRef - Blazor .NET reference
  */
 export function startAutoUpdate(selector, stepElement, placement, padding, offset, dotNetRef) {
@@ -190,7 +189,7 @@ export function stopAutoUpdate(selector, stepElement) {
  * @param {HTMLElement} stepElement - Popover element
  * @param {string} placement - Preferred placement
  * @param {number} padding - Stage padding
- * @param {number} offset - Popover offset (Driver.js: popoverOffset)
+ * @param {number} offset - Popover offset
  * @param {boolean} smoothScroll - Whether to smooth scroll
  */
 export function positionStep(selector, stepElement, placement, padding, offset, smoothScroll) {
@@ -236,7 +235,7 @@ export function positionStep(selector, stepElement, placement, padding, offset, 
  * @param {HTMLElement} stepElement - Popover element
  * @param {string} placement - Preferred placement
  * @param {number} padding - Stage padding
- * @param {number} offset - Popover offset (Driver.js: popoverOffset)
+ * @param {number} offset - Popover offset
  * @param {string} scrollBehavior - 'smooth' | 'instant' | 'none'
  * @param {string} scrollBlock - 'center' | 'start' | 'end' | 'nearest'
  */
@@ -311,7 +310,7 @@ function updateArrow(stepElement, target, placement) {
 }
 
 // ============================================================
-// Animated Overlay (driver.js-style requestAnimationFrame)
+// Animated Overlay
 // ============================================================
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -390,7 +389,7 @@ export function createOverlay(zIndex, opacity, dotNetRef) {
 
 /**
  * Animate the cutout to a new target element.
- * Uses requestAnimationFrame with easeInOutCubic — identical feel to driver.js.
+ * Uses requestAnimationFrame with easeInOutCubic.
  *
  * @param {string} selector - CSS selector for target
  * @param {number} padding - Padding around target
@@ -471,7 +470,7 @@ function applyCutoutRect(r) {
     _overlayCutoutRect.setAttribute('rx', r.r);
 }
 
-// easeInOutCubic — same curve driver.js uses
+// easeInOutCubic
 function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
@@ -700,7 +699,7 @@ export function destroy() {
 }
 
 // ============================================================
-// Single Element Highlight (Driver.js-style)
+// Single Element Highlight
 // ============================================================
 
 export function highlightElement(selector, zIndex, opacity, padding, radius) {
@@ -766,7 +765,7 @@ export function scanDataSteps() {
 }
 
 // ============================================================
-// Body Classes (Driver.js: .driver-active, .driver-fade, .driver-simple)
+// Body Classes
 // ============================================================
 
 export function addBodyClass(className) {

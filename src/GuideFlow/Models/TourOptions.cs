@@ -4,7 +4,6 @@ namespace GuideFlow.Models;
 
 /// <summary>
 /// Configuration options for a guided tour.
-/// API aligned with Driver.js for easy migration.
 /// </summary>
 public class TourOptions
 {
@@ -12,35 +11,30 @@ public class TourOptions
 
     /// <summary>
     /// Whether to show a semi-transparent overlay behind the active step.
-    /// Driver.js: overlay
     /// Default: true
     /// </summary>
     public bool Overlay { get; set; } = true;
 
     /// <summary>
     /// Opacity of the overlay (0.0 to 1.0).
-    /// Driver.js: overlayOpacity
     /// Default: 0.5
     /// </summary>
     public double OverlayOpacity { get; set; } = 0.5;
 
     /// <summary>
     /// Color of the overlay backdrop.
-    /// Driver.js: overlayColor
     /// Default: null (uses black)
     /// </summary>
     public string? OverlayColor { get; set; }
 
     /// <summary>
     /// Whether clicking the overlay or close button is allowed.
-    /// Driver.js: allowClose
     /// Default: true
     /// </summary>
     public bool AllowClose { get; set; } = true;
 
     /// <summary>
     /// Action when the overlay backdrop is clicked.
-    /// Driver.js: overlayClickBehavior
     /// Default: Close
     /// </summary>
     public OverlayClickBehavior OverlayClickBehavior { get; set; } = OverlayClickBehavior.Close;
@@ -49,7 +43,6 @@ public class TourOptions
 
     /// <summary>
     /// Whether to enable keyboard navigation (Arrow keys, Enter, Escape).
-    /// Driver.js: allowKeyboardControl
     /// Default: true
     /// </summary>
     public bool AllowKeyboardControl { get; set; } = true;
@@ -58,14 +51,12 @@ public class TourOptions
 
     /// <summary>
     /// Whether to show a progress indicator (e.g., "2 of 5").
-    /// Driver.js: showProgress
     /// Default: false
     /// </summary>
     public bool ShowProgress { get; set; } = false;
 
     /// <summary>
     /// Template for progress text. Use {{current}} and {{total}} as placeholders.
-    /// Driver.js: progressText
     /// Default: "{{current}} of {{total}}"
     /// </summary>
     public string ProgressText { get; set; } = "{{current}} of {{total}}";
@@ -80,7 +71,6 @@ public class TourOptions
 
     /// <summary>
     /// Whether to animate the tour (transitions between steps).
-    /// Driver.js: animate
     /// Default: true
     /// </summary>
     public bool Animate { get; set; } = true;
@@ -108,14 +98,12 @@ public class TourOptions
 
     /// <summary>
     /// Whether to smooth scroll to the highlighted element.
-    /// Driver.js: smoothScroll
     /// Default: false
     /// </summary>
     public bool SmoothScroll { get; set; } = false;
 
     /// <summary>
     /// How to scroll to the target element. Smooth, Instant, or None.
-    /// Extended control beyond Driver.js smoothScroll bool.
     /// Default: Smooth
     /// </summary>
     public ScrollBehavior ScrollBehavior { get; set; } = ScrollBehavior.Smooth;
@@ -130,14 +118,12 @@ public class TourOptions
 
     /// <summary>
     /// Padding around the highlighted element in pixels.
-    /// Driver.js: stagePadding
     /// Default: 10
     /// </summary>
     public int StagePadding { get; set; } = 10;
 
     /// <summary>
     /// Border radius of the highlighted area in pixels.
-    /// Driver.js: stageRadius
     /// Default: 5
     /// </summary>
     public int StageRadius { get; set; } = 5;
@@ -151,7 +137,6 @@ public class TourOptions
 
     /// <summary>
     /// Overlay rendering mode: Cutout (SVG mask) or Stage (4 panels).
-    /// Extended: Driver.js only has Cutout.
     /// Default: Cutout
     /// </summary>
     public OverlayMode OverlayMode { get; set; } = OverlayMode.Cutout;
@@ -166,7 +151,6 @@ public class TourOptions
 
     /// <summary>
     /// CSS theme class applied to the tour popover.
-    /// Driver.js: popoverClass
     /// Built-in: "gf-theme-light", "gf-theme-dark", "gf-theme-high-contrast".
     /// Default: null (uses CSS custom properties)
     /// </summary>
@@ -174,14 +158,12 @@ public class TourOptions
 
     /// <summary>
     /// Distance between the popover and the target element in pixels.
-    /// Driver.js: popoverOffset
     /// Default: 10
     /// </summary>
     public int PopoverOffset { get; set; } = 10;
 
     /// <summary>
     /// Default display mode for steps: Bubble (near target) or Modal (centered).
-    /// Extended: Driver.js only has Bubble.
     /// Default: Bubble
     /// </summary>
     public StepMode StepMode { get; set; } = StepMode.Bubble;
@@ -199,7 +181,6 @@ public class TourOptions
     /// <summary>
     /// Whether to disable interaction with the highlighted element globally.
     /// Can be overridden per step.
-    /// Driver.js: disableActiveInteraction
     /// Default: false
     /// </summary>
     public bool DisableActiveInteraction { get; set; } = false;
@@ -240,14 +221,12 @@ public class TourOptions
 
     /// <summary>
     /// Array of buttons to show in the popover.
-    /// Driver.js: showButtons
     /// Default: [ButtonType.Next, ButtonType.Previous, ButtonType.Close]
     /// </summary>
     public ButtonType[]? ShowButtons { get; set; }
 
     /// <summary>
     /// Array of buttons to disable (visible but not clickable).
-    /// Driver.js: disableButtons
     /// Default: null
     /// </summary>
     public ButtonType[]? DisableButtons { get; set; }
@@ -256,14 +235,12 @@ public class TourOptions
 
     /// <summary>
     /// Default text for the "Next" button.
-    /// Driver.js: nextBtnText
     /// Default: "Next"
     /// </summary>
     public string NextBtnText { get; set; } = "Next";
 
     /// <summary>
     /// Default text for the "Previous" button.
-    /// Driver.js: prevBtnText
     /// Default: "Back"
     /// </summary>
     public string PrevBtnText { get; set; } = "Back";
@@ -276,7 +253,6 @@ public class TourOptions
 
     /// <summary>
     /// Default text for the "Done" button on the last step.
-    /// Driver.js: doneBtnText
     /// Default: "Done"
     /// </summary>
     public string DoneBtnText { get; set; } = "Done";

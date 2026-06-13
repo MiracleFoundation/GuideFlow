@@ -46,16 +46,14 @@
 }
 
 @code {
-    /// <summary>CSS selector for the target element.
-    /// Driver.js: element</summary>
+    /// <summary>CSS selector for the target element.</summary>
     [Parameter] public string Element { get; set; } = string.Empty;
 
     [Parameter] public string Title { get; set; } = string.Empty;
     [Parameter] public string? Text { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Which side of the target element the tooltip appears on.
-    /// Driver.js: popover.side</summary>
+    /// <summary>Which side of the target element the tooltip appears on.</summary>
     [Parameter] public Placement Side { get; set; } = Placement.Bottom;
 
     [Parameter] public StepMode Mode { get; set; } = StepMode.Bubble;
@@ -65,8 +63,7 @@
     [Parameter] public int HighlightPadding { get; set; } = 8;
     [Parameter] public bool SmoothScroll { get; set; } = true;
 
-    /// <summary>CSS class for the popover.
-    /// Driver.js: popover.popoverClass</summary>
+    /// <summary>CSS class for the popover.</summary>
     [Parameter] public string? PopoverClass { get; set; }
 
     [Parameter] public EventCallback OnShow { get; set; }

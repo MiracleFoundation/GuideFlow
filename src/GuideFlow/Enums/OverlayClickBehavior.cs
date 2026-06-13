@@ -2,7 +2,6 @@ namespace GuideFlow.Enums;
 
 /// <summary>
 /// Controls what happens when the user clicks the overlay backdrop.
-/// Driver.js: overlayClickBehavior
 /// </summary>
 public enum OverlayClickBehavior
 {

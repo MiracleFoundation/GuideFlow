@@ -96,8 +96,7 @@
 @code {
     [CascadingParameter] public GuideFlowTour? _tour { get; set; }
 
-    /// <summary>CSS selector for the target element to highlight.
-    /// Driver.js: element</summary>
+    /// <summary>CSS selector for the target element to highlight.</summary>
     [Parameter] public string Element { get; set; } = string.Empty;
 
     /// <summary>Shepherd.js alias for Element (attachTo.element).</summary>
@@ -106,17 +105,15 @@
     [Parameter] public string Title { get; set; } = string.Empty;
     [Parameter] public string? Text { get; set; }
 
-    /// <summary>Driver.js / Shepherd.js alias for Text (popover.description).</summary>
+    /// <summary>Alias for Text (popover.description).</summary>
     [Parameter] public string? Description { get; set; }
 
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Which side of the target element the popover appears on.
-    /// Driver.js: popover.side</summary>
+    /// <summary>Which side of the target element the popover appears on.</summary>
     [Parameter] public Placement Side { get; set; } = Placement.Bottom;
 
-    /// <summary>Popover alignment relative to target: start, center, end.
-    /// Driver.js: popover.align</summary>
+    /// <summary>Popover alignment relative to target: start, center, end.</summary>
     [Parameter] public PopoverAlign? Align { get; set; }
 
     [Parameter] public StepMode? Mode { get; set; }
@@ -132,26 +129,24 @@
     [Parameter] public bool ShowProgressBar { get; set; } = true;
 
     /// <summary>Progress text template for this step. Overrides TourOptions.ProgressText.
-    /// Driver.js: popover.progressText
     /// Use {{current}} and {{total}} as placeholders.</summary>
     [Parameter] public string? ProgressText { get; set; }
     [Parameter] public bool Disabled { get; set; }
 
-    /// <summary>CSS class for the popover.
-    /// Driver.js: popover.popoverClass</summary>
+    /// <summary>CSS class for the popover.</summary>
     [Parameter] public string? PopoverClass { get; set; }
 
     /// <summary>Whether to disable interaction with the highlighted element.
-    /// Driver.js: disableActiveInteraction. Falls back to TourOptions.DisableActiveInteraction.</summary>
+    /// Falls back to TourOptions.DisableActiveInteraction.</summary>
     [Parameter] public bool? DisableActiveInteraction { get; set; }
 
     [Parameter] public RenderFragment? ButtonsContent { get; set; }
 
-    // --- Driver.js showButtons / disableButtons ---
-    /// <summary>Driver.js: which buttons to show. Null = use ShowNext/ShowBack/ShowClose.</summary>
+    // --- Button visibility ---
+    /// <summary>Which buttons to show. Null = use ShowNext/ShowBack/ShowClose.</summary>
     [Parameter] public ButtonType[]? ShowButtons { get; set; }
 
-    /// <summary>Driver.js: which buttons to disable (still visible but not clickable).</summary>
+    /// <summary>Which buttons to disable (still visible but not clickable).</summary>
     [Parameter] public ButtonType[]? DisableButtons { get; set; }
 
     [Parameter] public string? NextBtnText { get; set; }
@@ -163,33 +158,33 @@
     [Parameter] public string? ContentUrl { get; set; }
     [Inject] private HttpClient? HttpClient { get; set; }
 
-    // --- Driver.js: onHighlightStarted / onHighlighted / onDeselected ---
-    /// <summary>Driver.js: onHighlightStarted. Called before step is shown. Receives TourContext.</summary>
+    // --- Lifecycle callbacks ---
+    /// <summary>Called before step is shown. Receives TourContext.</summary>
     [Parameter] public EventCallback<TourContext> OnBeforeShow { get; set; }
 
-    /// <summary>Driver.js: onHighlighted. Called after step is shown. Receives TourContext.</summary>
+    /// <summary>Called after step is shown. Receives TourContext.</summary>
     [Parameter] public EventCallback<TourContext> OnAfterShow { get; set; }
 
     /// <summary>Called before step is hidden. Receives TourContext.</summary>
     [Parameter] public EventCallback<TourContext> OnBeforeHide { get; set; }
 
-    /// <summary>Driver.js: onDeselected. Called after step is hidden. Receives TourContext.</summary>
+    /// <summary>Called after step is hidden. Receives TourContext.</summary>
     [Parameter] public EventCallback<TourContext> OnAfterHide { get; set; }
 
-    /// <summary>Driver.js: onPopoverRender. Called after the popover is rendered in the DOM. Receives TourContext.</summary>
+    /// <summary>Called after the popover is rendered in the DOM. Receives TourContext.</summary>
     [Parameter] public EventCallback<TourContext> OnPopoverRender { get; set; }
 
-    // --- Driver.js: onNextClick / onPrevClick / onCloseClick ---
-    /// <summary>Driver.js: onNextClick. Called when the Next button is clicked. Receives TourContext.
-    /// Override prevents default navigation — call Driver.MoveNextAsync() manually.</summary>
+    // --- Button click overrides ---
+    /// <summary>Called when the Next button is clicked. Receives TourContext.
+    /// Override prevents default navigation - call Driver.MoveNextAsync() manually.</summary>
     [Parameter] public EventCallback<TourContext> OnNextClick { get; set; }
 
-    /// <summary>Driver.js: onPrevClick. Called when the Back/Previous button is clicked. Receives TourContext.
-    /// Override prevents default navigation — call Driver.MovePreviousAsync() manually.</summary>
+    /// <summary>Called when the Back/Previous button is clicked. Receives TourContext.
+    /// Override prevents default navigation - call Driver.MovePreviousAsync() manually.</summary>
     [Parameter] public EventCallback<TourContext> OnPrevClick { get; set; }
 
-    /// <summary>Driver.js: onCloseClick. Called when the Close button is clicked. Receives TourContext.
-    /// Override prevents default close — call Driver.DestroyAsync() manually.</summary>
+    /// <summary>Called when the Close button is clicked. Receives TourContext.
+    /// Override prevents default close - call Driver.DestroyAsync() manually.</summary>
     [Parameter] public EventCallback<TourContext> OnCloseClick { get; set; }
 
     private ElementReference stepElement;
@@ -217,14 +212,14 @@
         {
             var current = (_tour?.ActiveIndex ?? 0) + 1;
             var total = _tour?.TotalSteps ?? 0;
-            // Step-level override (Driver.js: popover.progressText)
+            // Step-level override
             if (!string.IsNullOrEmpty(ProgressText))
             {
                 return ProgressText!
                     .Replace("{{current}}", current.ToString())
                     .Replace("{{total}}", total.ToString());
             }
-            // Tour-level (Driver.js: progressText)
+            // Tour-level
             if (!string.IsNullOrEmpty(_tour?.TourOptions?.ProgressText))
             {
                 return _tour!.TourOptions!.ProgressText!
@@ -293,7 +288,7 @@
         get
         {
             var z = (_tour?.TourOptions?.ZIndex ?? 10000) + 1;
-            // Driver.js: position:fixed — popover stays in viewport
+            // position:fixed - popover stays in viewport
             // Scroll handler repositions it to follow the target element
             return $"z-index:{z};position:fixed;top:0;right:0;";
         }
@@ -308,7 +303,7 @@
 
     protected override void OnParametersSet()
     {
-        // Resolve Driver.js / Shepherd.js aliases
+        // Resolve aliases
         if (!string.IsNullOrEmpty(AttachTo) && string.IsNullOrEmpty(Element))
             Element = AttachTo;
         if (!string.IsNullOrEmpty(Description) && string.IsNullOrEmpty(Text))
@@ -387,7 +382,7 @@
 
     private async Task HandleNextClick()
     {
-        // Driver.js: overriding onNextClick prevents default navigation.
+        // Overriding onNextClick prevents default navigation.
         // User must call moveNext() manually in their handler.
         if (OnNextClick.HasDelegate)
         {
@@ -404,7 +399,7 @@
 
     private async Task HandleBackClick()
     {
-        // Driver.js: overriding onPrevClick prevents default navigation.
+        // Overriding onPrevClick prevents default navigation.
         if (OnPrevClick.HasDelegate)
         {
             await OnPrevClick.InvokeAsync(_tour?.BuildContext());
@@ -422,7 +417,7 @@
 
     private async Task HandleCloseClick()
     {
-        // Driver.js: overriding onCloseClick prevents default close.
+        // Overriding onCloseClick prevents default close.
         if (OnCloseClick.HasDelegate)
         {
             await OnCloseClick.InvokeAsync(_tour?.BuildContext());

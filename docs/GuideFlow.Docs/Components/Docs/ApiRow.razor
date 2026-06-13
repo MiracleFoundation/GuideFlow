@@ -6,19 +6,19 @@
 </tr>
 
 @code {
-    /// <summary>Property name. Driver.js-style alias: Name</summary>
+    /// <summary>Property name.</summary>
     [Parameter] public string Property { get; set; } = "";
 
-    /// <summary>Alias for Property (Driver.js-style naming).</summary>
+    /// <summary>Alias for Property.</summary>
     [Parameter] public string Name { get; set; } = "";
 
     [Parameter] public string Type { get; set; } = "";
     [Parameter] public string Default { get; set; } = "";
 
-    /// <summary>Description. Driver.js-style alias: Desc</summary>
+    /// <summary>Description.</summary>
     [Parameter] public string Description { get; set; } = "";
 
-    /// <summary>Alias for Description (Driver.js-style naming).</summary>
+    /// <summary>Alias for Description.</summary>
     [Parameter] public string Desc { get; set; } = "";
 
     private string ResolvedName => !string.IsNullOrEmpty(Name) ? Name : Property;

@@ -21,11 +21,11 @@
     [Parameter] public EventCallback<StepChangeEventArgs> OnStepChange { get; set; }
     public EventCallback<BeforeStepChangeEventArgs> OnBeforeStepChange { get; set; }
 
-    // --- Driver.js: onDestroyStarted / onDestroyed ---
+    // --- Destroy lifecycle ---
     [Parameter] public EventCallback<TourContext> OnBeforeDestroy { get; set; }
     [Parameter] public EventCallback<TourContext> OnDestroyed { get; set; }
 
-    // --- Driver.js: onNextClick / onPrevClick / onCloseClick (tour-level) ---
+    // --- Button click overrides (tour-level) ---
     [Parameter] public EventCallback<TourContext> OnNextClick { get; set; }
     [Parameter] public EventCallback<TourContext> OnPrevClick { get; set; }
     [Parameter] public EventCallback<TourContext> OnCloseClick { get; set; }
@@ -98,15 +98,15 @@
 
     public void UnregisterStep(GuideFlowStep step) { _steps.Remove(step); }
 
-    // === Navigation (Driver.js: drive, moveNext, movePrevious, moveTo, destroy) ===
+    // === Navigation ===
 
-    /// <summary>Driver.js: drive(). Starts the tour from step 0.</summary>
+    /// <summary>Starts the tour from step 0.</summary>
     public async Task DriveAsync()
     {
         await DriveAsync(0);
     }
 
-    /// <summary>Driver.js: drive(index). Starts the tour from a specific step.</summary>
+    /// <summary>Starts the tour from a specific step.</summary>
     public async Task DriveAsync(int stepIndex)
     {
         if (_steps.Count == 0) return;
@@ -121,7 +121,7 @@
         await NotifyStepChanged(-1, ActiveIndex);
     }
 
-    /// <summary>Driver.js: moveNext(). Moves to the next step.</summary>
+    /// <summary>Moves to the next step.</summary>
     public async Task MoveNextAsync()
     {
         if (!_isActive) return;
@@ -136,7 +136,7 @@
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
 
-    /// <summary>Driver.js: movePrevious(). Moves to the previous step.</summary>
+    /// <summary>Moves to the previous step.</summary>
     public async Task MovePreviousAsync()
     {
         if (!_isActive || ActiveIndex <= 0) return;
@@ -149,7 +149,7 @@
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
 
-    /// <summary>Driver.js: moveTo(index). Moves to a specific step.</summary>
+    /// <summary>Moves to a specific step.</summary>
     public async Task MoveToAsync(int index)
     {
         if (!_isActive || index < 0 || index >= _steps.Count) return;
@@ -164,14 +164,14 @@
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
 
-    // === Skip (GuideFlow extension — Driver.js doesn't have skip) ===
+    // === Skip ===
 
     /// <summary>Skip to next step (GuideFlow extension).</summary>
     public async Task SkipAsync() { await MoveNextAsync(); }
 
-    // === Highlight (Driver.js: highlight) ===
+    // === Highlight ===
 
-    /// <summary>Driver.js: highlight(). Highlight a single element with optional popover.</summary>
+    /// <summary>Highlight a single element with optional popover.</summary>
     public async Task HighlightAsync(string selector, string? title = null, string? description = null,
         Placement side = Placement.Bottom, PopoverAlign align = PopoverAlign.Center)
     {
@@ -210,9 +210,9 @@
         }
     }
 
-    // === Destroy (Driver.js: destroy) ===
+    // === Destroy ===
 
-    /// <summary>Driver.js: destroy(). Destroys the tour and cleans up.</summary>
+    /// <summary>Destroys the tour and cleans up.</summary>
     public async Task DestroyAsync()
     {
         if (OnBeforeDestroy.HasDelegate) await OnBeforeDestroy.InvokeAsync(BuildContext());
@@ -245,42 +245,42 @@
         StateHasChanged();
     }
 
-    // === Driver.js: hasNextStep, hasPreviousStep, isFirstStep, isLastStep ===
+    // === Step Queries ===
 
-    /// <summary>Driver.js: hasNextStep(). Returns true if there is a next step.</summary>
+    /// <summary>Returns true if there is a next step.</summary>
     public bool HasNextStep() => ActiveIndex < _steps.Count - 1;
 
-    /// <summary>Driver.js: hasPreviousStep(). Returns true if there is a previous step.</summary>
+    /// <summary>Returns true if there is a previous step.</summary>
     public bool HasPreviousStep() => ActiveIndex > 0;
 
-    /// <summary>Driver.js: isFirstStep(). Returns true if current step is the first.</summary>
+    /// <summary>Returns true if current step is the first.</summary>
     public bool IsFirstStep() => ActiveIndex == 0;
 
-    /// <summary>Driver.js: isLastStep(). Returns true if current step is the last.</summary>
+    /// <summary>Returns true if current step is the last.</summary>
     public bool IsLastStep() => ActiveIndex >= _steps.Count - 1;
 
-    // === Driver.js: getActiveIndex, getActiveStep, getPreviousStep ===
+    // === State Access ===
 
-    /// <summary>Driver.js: getActiveIndex(). Returns the current step index.</summary>
+    /// <summary>Returns the current step index.</summary>
     public int GetActiveIndex() => ActiveIndex;
 
-    /// <summary>Driver.js: getActiveStep(). Returns the current step component.</summary>
+    /// <summary>Returns the current step component.</summary>
     public GuideFlowStep? GetActiveStep() => _steps.ElementAtOrDefault(ActiveIndex);
 
-    /// <summary>Driver.js: getPreviousStep(). Returns the previous step component.</summary>
+    /// <summary>Returns the previous step component.</summary>
     public GuideFlowStep? GetPreviousStep() => _steps.ElementAtOrDefault(ActiveIndex - 1);
 
-    // === Driver.js: getActiveElement, getPreviousElement ===
+    // === Element Access ===
 
-    /// <summary>Driver.js: getActiveElement(). Returns the selector of the active step's target.</summary>
+    /// <summary>Returns the selector of the active step's target.</summary>
     public string? GetActiveElement() => GetActiveStep()?.Element;
 
-    /// <summary>Driver.js: getPreviousElement(). Returns the selector of the previous step's target.</summary>
+    /// <summary>Returns the selector of the previous step's target.</summary>
     public string? GetPreviousElement() => GetPreviousStep()?.Element;
 
-    // === Driver.js: getState, getConfig, setConfig, setSteps ===
+    // === Config & State ===
 
-    /// <summary>Driver.js: getState(). Returns the current tour state as JSON.</summary>
+    /// <summary>Returns the current tour state as JSON.</summary>
     public string GetState()
     {
         var state = new TourSnapshot
@@ -304,7 +304,7 @@
         return System.Text.Json.JsonSerializer.Serialize(state, GuideFlowJsonContext.Default.TourSnapshot);
     }
 
-    /// <summary>Build the current state object for hooks (Driver.js style).</summary>
+    /// <summary>Build the current state object for hooks.</summary>
     internal GuideFlowState BuildGuideFlowState()
     {
         return new GuideFlowState
@@ -318,7 +318,7 @@
         };
     }
 
-    /// <summary>Build the full context for hooks (Driver.js: { config, state, driver }).</summary>
+    /// <summary>Build the full context for hooks.</summary>
     internal TourContext BuildContext()
     {
         return new TourContext
@@ -329,17 +329,17 @@
         };
     }
 
-    /// <summary>Driver.js: getConfig(). Returns the current tour options.</summary>
+    /// <summary>Returns the current tour options.</summary>
     public TourOptions GetConfig() => TourOptions;
 
-    /// <summary>Driver.js: setConfig(). Updates the tour options at runtime.</summary>
+    /// <summary>Updates the tour options at runtime.</summary>
     public void SetConfig(TourOptions options)
     {
         TourOptions = options;
         StateHasChanged();
     }
 
-    /// <summary>Driver.js: setSteps(). Replaces the tour steps at runtime.</summary>
+    /// <summary>Replaces the tour steps at runtime.</summary>
     public void SetSteps(IReadOnlyList<ProgrammaticStep> steps)
     {
         _steps.Clear();
@@ -374,7 +374,7 @@
         StateHasChanged();
     }
 
-    /// <summary>Driver.js: refresh(). Forces a re-render of the tour.</summary>
+    /// <summary>Forces a re-render of the tour.</summary>
     public void Refresh() { StateHasChanged(); }
 
     // === JS Interop: Positioning ===
@@ -535,7 +535,7 @@
         _overlayCreated = false;
     }
 
-    /// <summary>Add/remove body classes when tour starts/ends (Driver.js style).</summary>
+    /// <summary>Add/remove body classes when tour starts/ends.</summary>
     private async Task SetBodyClassesAsync(bool active)
     {
         if (!_jsAvailable || _jsModule == null) return;

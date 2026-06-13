@@ -35,9 +35,9 @@ public class GuideFlowService : IGuideFlowService
     public event EventHandler<StepChangeEventArgs>? OnStepChanged;
     public event Func<BeforeStepChangeEventArgs, Task>? OnBeforeStepChange;
 
-    // === Navigation (Driver.js API) ===
+    // === Navigation ===
 
-    /// <summary>Driver.js: drive(). Starts the tour.</summary>
+    /// <summary>Starts the tour.</summary>
     public async Task DriveAsync(string? tourName = null)
     {
         _tourName = tourName ?? _tourName ?? Constants.DefaultTourName;
@@ -67,7 +67,7 @@ public class GuideFlowService : IGuideFlowService
             await SaveStateAsync();
     }
 
-    /// <summary>Driver.js: moveNext(). Moves to the next step.</summary>
+    /// <summary>Moves to the next step.</summary>
     public async Task MoveNextAsync()
     {
         if (Status != TourStatus.Active) return;
@@ -95,7 +95,7 @@ public class GuideFlowService : IGuideFlowService
             await SaveStateAsync();
     }
 
-    /// <summary>Driver.js: movePrevious(). Moves to the previous step.</summary>
+    /// <summary>Moves to the previous step.</summary>
     public async Task MovePreviousAsync()
     {
         if (Status != TourStatus.Active) return;
@@ -120,7 +120,7 @@ public class GuideFlowService : IGuideFlowService
             await SaveStateAsync();
     }
 
-    /// <summary>Driver.js: moveTo(index). Moves to a specific step.</summary>
+    /// <summary>Moves to a specific step.</summary>
     public async Task MoveToAsync(int stepIndex)
     {
         if (Status != TourStatus.Active) return;
@@ -141,7 +141,7 @@ public class GuideFlowService : IGuideFlowService
             await SaveStateAsync();
     }
 
-    /// <summary>Driver.js: destroy(). Destroys the tour.</summary>
+    /// <summary>Destroys the tour.</summary>
     public async Task DestroyAsync()
     {
         if (Status != TourStatus.Active) return;
@@ -174,14 +174,14 @@ public class GuideFlowService : IGuideFlowService
             await SaveStateAsync();
     }
 
-    // === Driver.js: hasNextStep, hasPreviousStep, isFirstStep, isLastStep ===
+    // === Step Queries ===
 
     public bool HasNextStep() => ActiveIndex < TotalSteps - 1;
     public bool HasPreviousStep() => ActiveIndex > 0;
     public bool IsFirstStep() => ActiveIndex == 0;
     public bool IsLastStep() => ActiveIndex >= TotalSteps - 1;
 
-    // === Driver.js: getActiveIndex, getActiveStep, getPreviousStep ===
+    // === State Access ===
 
     public int GetActiveIndex() => ActiveIndex;
 
@@ -190,7 +190,7 @@ public class GuideFlowService : IGuideFlowService
     public StepOptions? GetPreviousStep() =>
         ActiveIndex > 0 ? GetStepAtIndex(ActiveIndex - 1) : null;
 
-    // === Driver.js: getState, getConfig, setConfig ===
+    // === Config ===
 
     public TourState? GetState() => BuildState();
 

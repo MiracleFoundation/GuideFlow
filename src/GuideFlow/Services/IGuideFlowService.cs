@@ -5,7 +5,6 @@ namespace GuideFlow.Services;
 
 /// <summary>
 /// Service for controlling guided tours programmatically.
-/// API aligned with Driver.js.
 /// </summary>
 public interface IGuideFlowService
 {
@@ -16,38 +15,38 @@ public interface IGuideFlowService
     bool IsActive { get; }
     TourState? CurrentState { get; }
 
-    // === Navigation (Driver.js: drive, moveNext, movePrevious, moveTo, destroy) ===
+    // === Navigation ===
 
-    /// <summary>Driver.js: drive(). Starts the tour.</summary>
+    /// <summary>Starts the tour.</summary>
     Task DriveAsync(string? tourName = null);
 
-    /// <summary>Driver.js: moveNext(). Moves to the next step.</summary>
+    /// <summary>Moves to the next step.</summary>
     Task MoveNextAsync();
 
-    /// <summary>Driver.js: movePrevious(). Moves to the previous step.</summary>
+    /// <summary>Moves to the previous step.</summary>
     Task MovePreviousAsync();
 
-    /// <summary>Driver.js: moveTo(index). Moves to a specific step.</summary>
+    /// <summary>Moves to a specific step.</summary>
     Task MoveToAsync(int stepIndex);
 
-    /// <summary>Driver.js: destroy(). Destroys the tour.</summary>
+    /// <summary>Destroys the tour.</summary>
     Task DestroyAsync();
 
     /// <summary>Complete the tour.</summary>
     Task CompleteAsync();
 
-    // === Driver.js: hasNextStep, hasPreviousStep, isFirstStep, isLastStep ===
+    // === Step Queries ===
     bool HasNextStep();
     bool HasPreviousStep();
     bool IsFirstStep();
     bool IsLastStep();
 
-    // === Driver.js: getActiveIndex, getActiveStep, getPreviousStep ===
+    // === State Access ===
     int GetActiveIndex();
     StepOptions? GetActiveStep();
     StepOptions? GetPreviousStep();
 
-    // === Driver.js: getState, getConfig, setConfig ===
+    // === Config ===
     TourState? GetState();
     TourOptions? GetConfig();
     void SetConfig(TourOptions options);

@@ -42,10 +42,10 @@ public class GuideFlowBuilder
     /// <summary>
     /// Add a step to the tour.
     /// </summary>
-    /// <param name="element">CSS selector for target element. Driver.js: element</param>
-    /// <param name="title">Popover title. Driver.js: popover.title</param>
-    /// <param name="text">Popover description. Driver.js: popover.description</param>
-    /// <param name="side">Popover side. Driver.js: popover.side</param>
+    /// <param name="element">CSS selector for target element.</param>
+    /// <param name="title">Popover title.</param>
+    /// <param name="text">Popover description.</param>
+    /// <param name="side">Popover side.</param>
     /// <param name="order">Step order for sorting.</param>
     /// <param name="configure">Optional step configuration callback.</param>
     public GuideFlowBuilder AddStep(string element, string title, string? text = null,
@@ -92,19 +92,19 @@ public class StepBuilder
 
     public StepBuilder WithText(string? text) { _step.Text = text; return this; }
 
-    /// <summary>Driver.js / Shepherd.js alias for WithText (popover.description).</summary>
+    /// <summary>Alias for WithText (popover.description).</summary>
     public StepBuilder WithDescription(string? description) { _step.Text = description; return this; }
 
     /// <summary>Shepherd.js alias: attachTo element selector.</summary>
     public StepBuilder WithAttachTo(string element) { _step.Element = element; return this; }
 
-    /// <summary>Set popover side. Driver.js: popover.side</summary>
+    /// <summary>Set popover side.</summary>
     public StepBuilder WithSide(Placement side) { _step.Side = side; return this; }
 
     /// <summary>Alias for WithSide (backward-compatible).</summary>
     public StepBuilder WithPlacement(Placement placement) { _step.Side = placement; return this; }
 
-    /// <summary>Set popover alignment. Driver.js: popover.align</summary>
+    /// <summary>Set popover alignment.</summary>
     public StepBuilder WithAlign(PopoverAlign align) { _step.Align = align; return this; }
 
     public StepBuilder WithOrder(int order) { _step.Order = order; return this; }
@@ -117,7 +117,7 @@ public class StepBuilder
     public StepBuilder ShowProgress(bool show) { _step.ShowProgress = show; return this; }
     public StepBuilder WithProgressText(string template) { _step.ProgressText = template; return this; }
 
-    /// <summary>Set CSS class for popover. Driver.js: popover.popoverClass</summary>
+    /// <summary>Set CSS class for popover.</summary>
     public StepBuilder WithPopoverClass(string css) { _step.PopoverClass = css; return this; }
 
     /// <summary>Alias for WithPopoverClass (backward-compatible).</summary>
@@ -128,7 +128,7 @@ public class StepBuilder
     public StepBuilder WithAnimation(AnimationType animation) { _step.Animation = animation; return this; }
     public StepBuilder WithContentUrl(string url) { _step.ContentUrl = url; return this; }
 
-    /// <summary>Driver.js: disableActiveInteraction</summary>
+    /// <summary>Disable interaction with the highlighted element.</summary>
     public StepBuilder DisableActiveInteraction(bool disable = true) { _step.DisableActiveInteraction = disable; return this; }
 
     /// <summary>
@@ -160,18 +160,18 @@ public class StepBuilder
 /// </summary>
 public class ProgrammaticStep
 {
-    /// <summary>CSS selector for target element. Driver.js: element</summary>
+    /// <summary>CSS selector for target element.</summary>
     public string Element { get; set; } = string.Empty;
 
     public string Title { get; set; } = string.Empty;
 
-    /// <summary>Popover description. Driver.js: popover.description</summary>
+    /// <summary>Popover description.</summary>
     public string? Text { get; set; }
 
-    /// <summary>Popover side. Driver.js: popover.side</summary>
+    /// <summary>Popover side.</summary>
     public Placement Side { get; set; } = Placement.Bottom;
 
-    /// <summary>Popover alignment. Driver.js: popover.align</summary>
+    /// <summary>Popover alignment.</summary>
     public PopoverAlign? Align { get; set; }
 
     public int Order { get; set; }
@@ -185,14 +185,14 @@ public class ProgrammaticStep
     public string? ProgressText { get; set; }
     public bool Disabled { get; set; }
 
-    /// <summary>CSS class for popover. Driver.js: popover.popoverClass</summary>
+    /// <summary>CSS class for popover.</summary>
     public string? PopoverClass { get; set; }
 
     public StepMode? Mode { get; set; }
     public AnimationType? Animation { get; set; }
     public string? ContentUrl { get; set; }
 
-    /// <summary>Driver.js: disableActiveInteraction</summary>
+    /// <summary>Disable interaction with the highlighted element.</summary>
     public bool DisableActiveInteraction { get; set; }
 
     public string? NextBtnText { get; set; }
