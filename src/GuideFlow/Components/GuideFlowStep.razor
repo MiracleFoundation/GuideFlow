@@ -204,12 +204,12 @@
     private StepMode ResolvedMode => Mode ?? _tour?.TourOptions?.StepMode ?? StepMode.Bubble;
     private AnimationType ResolvedAnimation => Animation ?? _tour?.TourOptions?.AnimationType ?? AnimationType.Fade;
 
-    private string ResolvedNextText => NextBtnText ?? _tour?.TourOptions?.Localization?.NextButton ?? _tour?.TourOptions?.NextBtnText ?? "Next";
-    private string ResolvedBackText => PrevBtnText ?? _tour?.TourOptions?.Localization?.BackButton ?? _tour?.TourOptions?.PrevBtnText ?? "Back";
-    private string ResolvedSkipText => SkipBtnText ?? _tour?.TourOptions?.Localization?.SkipButton ?? _tour?.TourOptions?.SkipBtnText ?? "Skip";
-    private string ResolvedFinishText => DoneBtnText ?? _tour?.TourOptions?.Localization?.FinishButton ?? _tour?.TourOptions?.DoneBtnText ?? "Done";
-    private string ResolvedCloseLabel => _tour?.TourOptions?.Localization?.CloseLabel ?? "Close tour";
-    private string ResolvedAriaLabel => $"{_tour?.TourOptions?.Localization?.StepAriaLabel ?? "Tour step"}: {Title}";
+    private string ResolvedNextText => NextBtnText ?? _tour?.TourOptions?.NextBtnText ?? "Next";
+    private string ResolvedBackText => PrevBtnText ?? _tour?.TourOptions?.PrevBtnText ?? "Back";
+    private string ResolvedSkipText => SkipBtnText ?? _tour?.TourOptions?.SkipBtnText ?? "Skip";
+    private string ResolvedFinishText => DoneBtnText ?? _tour?.TourOptions?.DoneBtnText ?? "Done";
+    private string ResolvedCloseLabel => "Close tour";
+    private string ResolvedAriaLabel => $"Tour step: {Title}";
 
     private string ResolvedProgressText
     {
@@ -231,9 +231,7 @@
                     .Replace("{{current}}", current.ToString())
                     .Replace("{{total}}", total.ToString());
             }
-            // Localization syntax: {0} of {1}
-            var template = _tour?.TourOptions?.Localization?.ProgressTemplate ?? "{0} of {1}";
-            return string.Format(template, current, total);
+            return $"{current} of {total}";
         }
     }
 

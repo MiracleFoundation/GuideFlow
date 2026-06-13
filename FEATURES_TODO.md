@@ -155,13 +155,7 @@ So sánh với Shepherd.js, Intro.js, Driver.js. Trạng thái: ❌ Chưa có | 
 - **Cách implement:** Pre-built CSS class sets: `gf-theme-light`, `gf-theme-dark`, `gf-theme-high-contrast`
 - **Files cần tạo:** `wwwroot/themes/light.css`, `wwwroot/themes/dark.css`
 
-### 22. i18n Support ✅
-- **Mô tả:** Đa ngôn ngữ cho button text, progress text, accessibility labels
-- **JS tham khảo:** Không thư viện nào có sẵn
-- **Cách implement:** `GuideFlowLocalization` class với dictionary, hoặc resource files
-- **Files cần tạo:** `Services/GuideFlowLocalization.cs`
-
-### 23. Tour Replay ✅
+### 22. Tour Replay ✅
 - **Mô tả:** Restart tour từ đầu sau khi complete, hoặc replay từ step cụ thể
 - **JS tham khảo:** Intro.js `introJs().start()`, Driver.js re-define
 - **Cách implement:** `tour.ResetAsync()` → reset state, gọi `StartAsync()` lại

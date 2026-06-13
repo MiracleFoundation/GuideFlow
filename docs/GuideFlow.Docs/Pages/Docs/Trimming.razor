@@ -99,9 +99,9 @@ internal partial class GuideFlowJsonContext : JsonSerializerContext;")" />
     <p>If you encounter issues after trimming:</p>
 
     <ul>
-        <li><strong>Tour state not saving/loading</strong> — Make sure you're using GuideFlow's built-in persistence. Custom JSON serialization of GuideFlow types may need a source generator context.</li>
-        <li><strong>Missing types at runtime</strong> — If you extend GuideFlow with custom types that use JSON serialization, add them to a <code>[JsonSerializable]</code> context.</li>
-        <li><strong>Trim warnings</strong> — Run <code>dotnet publish -c Release</code> and check for trim analysis warnings in the output.</li>
+        <li><strong>Tour state not saving/loading</strong> -Make sure you're using GuideFlow's built-in persistence. Custom JSON serialization of GuideFlow types may need a source generator context.</li>
+        <li><strong>Missing types at runtime</strong> -If you extend GuideFlow with custom types that use JSON serialization, add them to a <code>[JsonSerializable]</code> context.</li>
+        <li><strong>Trim warnings</strong> -Run <code>dotnet publish -c Release</code> and check for trim analysis warnings in the output.</li>
     </ul>
 
     <h2 id="best-practices">

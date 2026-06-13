@@ -156,7 +156,7 @@ driverObj.drive(steps);
 | `popover.doneBtnText` | `DoneBtnText` | |
 | `popover.popoverClass` | `PopoverClass` | |
 | `popover.showProgress` | `ShowProgress` | |
-| `popover.progressText` | `Localization.ProgressTemplate` | |
+| `popover.progressText` | `ProgressText` | |
 | `popover.onNextClick` | `OnNextClick` | per-step |
 | `popover.onPrevClick` | `OnPrevClick` | per-step |
 | `popover.onCloseClick` | `OnCloseClick` | per-step |
@@ -206,7 +206,6 @@ These features exist in GuideFlow but not in Driver.js:
 | Focus trapping | `TrapFocus` | Trap Tab key within popover |
 | State persistence | `PersistState` | Auto-save/load to localStorage |
 | Visited tracking | `TrackVisited` | Track and mark visited steps |
-| Localization | `Localization` | Built-in 8-language support |
 | Async content | `OnLoadContent` / `ContentUrl` | Lazy-load step content |
 | Standalone tooltip | `GuideFlowTooltip` | Independent tooltip component |
 | Fluent builder | `GuideFlowBuilder` | C# fluent API for tours |

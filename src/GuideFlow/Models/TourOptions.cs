@@ -1,5 +1,4 @@
 using GuideFlow.Enums;
-using GuideFlow.Services;
 
 namespace GuideFlow.Models;
 
@@ -281,14 +280,6 @@ public class TourOptions
     /// Default: "Done"
     /// </summary>
     public string DoneBtnText { get; set; } = "Done";
-
-    // === Localization ===
-
-    /// <summary>
-    /// Custom localization for button text and labels.
-    /// If null, uses the button text properties on TourOptions.
-    /// </summary>
-    public GuideFlowLocalization? Localization { get; set; }
 
     // === State ===
 

@@ -57,7 +57,7 @@ builder.Services.AddGuideFlow();
 
 ## Documentation
 
-Full docs — options, step parameters, events, theming, keyboard shortcuts:  
+Full docs - options, step parameters, events, theming, keyboard shortcuts:  
 👉 [https://miraclefoundation.github.io/GuideFlow](https://miraclefoundation.github.io/GuideFlow)
 
 ## Contributing
