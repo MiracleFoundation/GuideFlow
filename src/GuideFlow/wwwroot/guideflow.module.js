@@ -148,6 +148,7 @@ export function startAutoUpdate(selector, stepElement, placement, padding, offse
             if (!target || !step.isConnected) return;
 
             const { x, y, reference, actualPlacement } = computePositionWithFlip(target, step, placement, padding, offset);
+            step.style.right = 'auto';
             step.style.left = `${x}px`;
             step.style.top = `${y}px`;
             updateArrow(step, target, actualPlacement || placement);
@@ -205,6 +206,7 @@ export function positionStep(selector, stepElement, placement, padding, offset, 
     return new Promise((resolve) => {
         const doPosition = () => {
             const { x, y, reference, actualPlacement } = computePositionWithFlip(target, step, placement, padding, offset);
+            step.style.right = 'auto';
             step.style.left = `${x}px`;
             step.style.top = `${y}px`;
             updateArrow(step, target, actualPlacement || placement);
@@ -256,6 +258,7 @@ export function positionStepWithScrollConfig(selector, stepElement, placement, p
     return new Promise((resolve) => {
         const doPosition = () => {
             const { x, y, reference, actualPlacement } = computePositionWithFlip(target, step, placement, padding, offset);
+            step.style.right = 'auto';
             step.style.left = `${x}px`;
             step.style.top = `${y}px`;
             updateArrow(step, target, actualPlacement || placement);
