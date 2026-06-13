@@ -1,0 +1,107 @@
+@page "/docs/ai-skill"
+
+<PageTitle>AI Skill - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>AI Skill</h1>
+    <p class="docs-lead">GuideFlow ships with a Claude Code skill file that helps AI assistants generate correct, idiomatic GuideFlow code. Install it to get accurate suggestions for tours, theming, and configuration.</p>
+
+    <h2 id="what-is-it">
+        What is it?
+        <a class="docs-anchor" href="#what-is-it">#</a>
+    </h2>
+
+    <p>The skill file is a comprehensive reference that teaches AI coding assistants how to use GuideFlow correctly. It covers:</p>
+
+    <ul>
+        <li>Project setup and installation</li>
+        <li>Declarative tours with <code>GuideFlowTour</code> + <code>GuideFlowStep</code></li>
+        <li>Programmatic tours with <code>GuideFlowBuilder</code></li>
+        <li>All <code>TourOptions</code> properties and their defaults</li>
+        <li>Enum values (Placement, AnimationType, OverlayMode, etc.)</li>
+        <li>Theming with CSS custom properties</li>
+        <li>Common patterns (onboarding, highlight, confirm-on-exit)</li>
+        <li>Best practices and anti-patterns to avoid</li>
+    </ul>
+
+    <h2 id="installation">
+        Installation
+        <a class="docs-anchor" href="#installation">#</a>
+    </h2>
+
+    <p>Copy the skill file to your project's <code>.claude/skills/guideflow/</code> directory:</p>
+
+    <CodeBlock Language="bash" Code="@(@"# From your project root
+mkdir -p .claude/skills/guideflow
+
+# Copy the skill file
+curl -o .claude/skills/guideflow/SKILL.md \
+  https://raw.githubusercontent.com/MiracleFoundation/GuideFlow/main/.claude/skills/guideflow/SKILL.md")" />
+
+    <p>Or manually create <code>.claude/skills/guideflow/SKILL.md</code> and paste the contents from the <a href="https://github.com/MiracleFoundation/GuideFlow/blob/main/.claude/skills/guideflow/SKILL.md" target="_blank">GitHub repository</a>.</p>
+
+    <h2 id="usage">
+        Usage
+        <a class="docs-anchor" href="#usage">#</a>
+    </h2>
+
+    <p>Once installed, Claude Code will automatically use the skill when you ask about GuideFlow. Try these prompts:</p>
+
+    <ul>
+        <li><em>"Create a GuideFlow onboarding tour for my dashboard page"</em></li>
+        <li><em>"Add a dark theme tour with 3 steps to my Blazor app"</em></li>
+        <li><em>"How do I use the programmatic API to build a tour?"</em></li>
+        <li><em>"Configure GuideFlow with stage overlay and progress bar"</em></li>
+    </ul>
+
+    <div class="docs-note docs-note--info">
+        <strong>Tip</strong> The skill works with any AI assistant that supports Claude Code skills, including Claude Code CLI, VS Code extension, and JetBrains extension.
+    </div>
+
+    <h2 id="what-it-covers">
+        What it Covers
+        <a class="docs-anchor" href="#what-it-covers">#</a>
+    </h2>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin:1rem 0;">
+        <div style="padding:1rem;background:var(--surface-2,#f8f9fa);border-radius:8px;">
+            <strong>Setup</strong>
+            <p style="margin:0.5rem 0 0;font-size:0.9rem;">NuGet install, DI registration, CSS/JS imports, namespace imports.</p>
+        </div>
+        <div style="padding:1rem;background:var(--surface-2,#f8f9fa);border-radius:8px;">
+            <strong>Components</strong>
+            <p style="margin:0.5rem 0 0;font-size:0.9rem;">GuideFlowTour, GuideFlowStep, ProgrammaticTour with all parameters.</p>
+        </div>
+        <div style="padding:1rem;background:var(--surface-2,#f8f9fa);border-radius:8px;">
+            <strong>Configuration</strong>
+            <p style="margin:0.5rem 0 0;font-size:0.9rem;">Full TourOptions reference with types and default values.</p>
+        </div>
+        <div style="padding:1rem;background:var(--surface-2,#f8f9fa);border-radius:8px;">
+            <strong>Theming</strong>
+            <p style="margin:0.5rem 0 0;font-size:0.9rem;">Built-in themes and custom CSS variable overrides.</p>
+        </div>
+        <div style="padding:1rem;background:var(--surface-2,#f8f9fa);border-radius:8px;">
+            <strong>Patterns</strong>
+            <p style="margin:0.5rem 0 0;font-size:0.9rem;">Onboarding, feature highlight, confirm-on-exit, async content, modal steps.</p>
+        </div>
+        <div style="padding:1rem;background:var(--surface-2,#f8f9fa);border-radius:8px;">
+            <strong>Best Practices</strong>
+            <p style="margin:0.5rem 0 0;font-size:0.9rem;">Accessibility, stable selectors, keyboard navigation, state persistence.</p>
+        </div>
+    </div>
+
+    <h2 id="supported-ai-tools">
+        Supported AI Tools
+        <a class="docs-anchor" href="#supported-ai-tools">#</a>
+    </h2>
+
+    <ul>
+        <li><strong>Claude Code CLI</strong> - Terminal-based coding assistant</li>
+        <li><strong>Claude Code VS Code Extension</strong> - In-editor assistant</li>
+        <li><strong>Claude Code JetBrains Extension</strong> - Rider/IntelliJ support</li>
+    </ul>
+
+    <div class="docs-note docs-note--info">
+        <strong>Note</strong> The skill file uses the Claude Code skills format. Other AI tools that support custom instructions or system prompts can also use the content as reference material.
+    </div>
+</div>
