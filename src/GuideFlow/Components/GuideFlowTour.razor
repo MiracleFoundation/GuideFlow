@@ -7,7 +7,19 @@
     @ChildContent
 </CascadingValue>
 
-@* Overlay is now rendered and animated entirely via JS — no Blazor component needed *@
+@if (_isActive)
+{
+    <GuideFlowOverlay @ref="overlay"
+                      Visible="TourOptions.Overlay && TourOptions.OverlayMode == OverlayMode.Cutout"
+                      Opacity="TourOptions.OverlayOpacity"
+                      Color="TourOptions.OverlayColor"
+                      ZIndex="TourOptions.ZIndex"
+                      AnimateCutout="TourOptions.AnimateCutout"
+                      AnimationDuration="TourOptions.AnimationDuration"
+                      Mode="TourOptions.OverlayMode"
+                      Shape="TourOptions.HighlightShape"
+                      OnClick="OnOverlayClick" />
+}
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -21,22 +33,20 @@
     [Parameter] public EventCallback<StepChangeEventArgs> OnStepChange { get; set; }
     public EventCallback<BeforeStepChangeEventArgs> OnBeforeStepChange { get; set; }
 
-    // --- Destroy lifecycle ---
     [Parameter] public EventCallback<TourContext> OnBeforeDestroy { get; set; }
     [Parameter] public EventCallback<TourContext> OnDestroyed { get; set; }
 
-    // --- Button click overrides (tour-level) ---
     [Parameter] public EventCallback<TourContext> OnNextClick { get; set; }
     [Parameter] public EventCallback<TourContext> OnPrevClick { get; set; }
     [Parameter] public EventCallback<TourContext> OnCloseClick { get; set; }
 
     private List<GuideFlowStep> _steps = new();
+    private GuideFlowOverlay? overlay;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<GuideFlowTour>? _dotNetRef;
     private bool _isActive;
     private string? _activeSelector;
     private HashSet<string> _visitedSteps = new();
-    private bool _overlayCreated;
     private bool _jsAvailable;
 
     public int ActiveIndex { get; private set; }
@@ -98,15 +108,15 @@
 
     public void UnregisterStep(GuideFlowStep step) { _steps.Remove(step); }
 
-    // === Navigation ===
+    // === Navigation (Driver.js: drive, moveNext, movePrevious, moveTo, destroy) ===
 
-    /// <summary>Starts the tour from step 0.</summary>
+    /// <summary>Driver.js: drive(). Starts the tour from step 0.</summary>
     public async Task DriveAsync()
     {
         await DriveAsync(0);
     }
 
-    /// <summary>Starts the tour from a specific step.</summary>
+    /// <summary>Driver.js: drive(index). Starts the tour from a specific step.</summary>
     public async Task DriveAsync(int stepIndex)
     {
         if (_steps.Count == 0) return;
@@ -121,7 +131,7 @@
         await NotifyStepChanged(-1, ActiveIndex);
     }
 
-    /// <summary>Moves to the next step.</summary>
+    /// <summary>Driver.js: moveNext(). Moves to the next step.</summary>
     public async Task MoveNextAsync()
     {
         if (!_isActive) return;
@@ -136,7 +146,7 @@
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
 
-    /// <summary>Moves to the previous step.</summary>
+    /// <summary>Driver.js: movePrevious(). Moves to the previous step.</summary>
     public async Task MovePreviousAsync()
     {
         if (!_isActive || ActiveIndex <= 0) return;
@@ -149,7 +159,7 @@
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
 
-    /// <summary>Moves to a specific step.</summary>
+    /// <summary>Driver.js: moveTo(index). Moves to a specific step.</summary>
     public async Task MoveToAsync(int index)
     {
         if (!_isActive || index < 0 || index >= _steps.Count) return;
@@ -164,14 +174,14 @@
         await NotifyStepChanged(previousIndex, ActiveIndex);
     }
 
-    // === Skip ===
+    // === Skip (GuideFlow extension — Driver.js doesn't have skip) ===
 
     /// <summary>Skip to next step (GuideFlow extension).</summary>
     public async Task SkipAsync() { await MoveNextAsync(); }
 
-    // === Highlight ===
+    // === Highlight (Driver.js: highlight) ===
 
-    /// <summary>Highlight a single element with optional popover.</summary>
+    /// <summary>Driver.js: highlight(). Highlight a single element with optional popover.</summary>
     public async Task HighlightAsync(string selector, string? title = null, string? description = null,
         Placement side = Placement.Bottom, PopoverAlign align = PopoverAlign.Center)
     {
@@ -181,7 +191,6 @@
         {
             // Show highlight with popover — create a single-step tour
             _steps.Clear();
-#pragma warning disable BL0005 // Component parameter should not be set outside of its component - intentional for programmatic step creation
             var step = new GuideFlowStep
             {
                 Element = selector,
@@ -193,7 +202,6 @@
                 ShowBack = false,
                 ShowSkip = false,
             };
-#pragma warning restore BL0005
             RegisterStep(step);
             _isActive = true;
             ActiveIndex = 0;
@@ -212,9 +220,9 @@
         }
     }
 
-    // === Destroy ===
+    // === Destroy (Driver.js: destroy) ===
 
-    /// <summary>Destroys the tour and cleans up.</summary>
+    /// <summary>Driver.js: destroy(). Destroys the tour and cleans up.</summary>
     public async Task DestroyAsync()
     {
         if (OnBeforeDestroy.HasDelegate) await OnBeforeDestroy.InvokeAsync(BuildContext());
@@ -247,66 +255,62 @@
         StateHasChanged();
     }
 
-    // === Step Queries ===
+    // === Driver.js: hasNextStep, hasPreviousStep, isFirstStep, isLastStep ===
 
-    /// <summary>Returns true if there is a next step.</summary>
+    /// <summary>Driver.js: hasNextStep(). Returns true if there is a next step.</summary>
     public bool HasNextStep() => ActiveIndex < _steps.Count - 1;
 
-    /// <summary>Returns true if there is a previous step.</summary>
+    /// <summary>Driver.js: hasPreviousStep(). Returns true if there is a previous step.</summary>
     public bool HasPreviousStep() => ActiveIndex > 0;
 
-    /// <summary>Returns true if current step is the first.</summary>
+    /// <summary>Driver.js: isFirstStep(). Returns true if current step is the first.</summary>
     public bool IsFirstStep() => ActiveIndex == 0;
 
-    /// <summary>Returns true if current step is the last.</summary>
+    /// <summary>Driver.js: isLastStep(). Returns true if current step is the last.</summary>
     public bool IsLastStep() => ActiveIndex >= _steps.Count - 1;
 
-    // === State Access ===
+    // === Driver.js: getActiveIndex, getActiveStep, getPreviousStep ===
 
-    /// <summary>Returns the current step index.</summary>
+    /// <summary>Driver.js: getActiveIndex(). Returns the current step index.</summary>
     public int GetActiveIndex() => ActiveIndex;
 
-    /// <summary>Returns the current step component.</summary>
+    /// <summary>Driver.js: getActiveStep(). Returns the current step component.</summary>
     public GuideFlowStep? GetActiveStep() => _steps.ElementAtOrDefault(ActiveIndex);
 
-    /// <summary>Returns the previous step component.</summary>
+    /// <summary>Driver.js: getPreviousStep(). Returns the previous step component.</summary>
     public GuideFlowStep? GetPreviousStep() => _steps.ElementAtOrDefault(ActiveIndex - 1);
 
-    // === Element Access ===
+    // === Driver.js: getActiveElement, getPreviousElement ===
 
-    /// <summary>Returns the selector of the active step's target.</summary>
+    /// <summary>Driver.js: getActiveElement(). Returns the selector of the active step's target.</summary>
     public string? GetActiveElement() => GetActiveStep()?.Element;
 
-    /// <summary>Returns the selector of the previous step's target.</summary>
+    /// <summary>Driver.js: getPreviousElement(). Returns the selector of the previous step's target.</summary>
     public string? GetPreviousElement() => GetPreviousStep()?.Element;
 
-    // === Config & State ===
+    // === Driver.js: getState, getConfig, setConfig, setSteps ===
 
-    /// <summary>Returns the current tour state as JSON.</summary>
+    /// <summary>Driver.js: getState(). Returns the current tour state as JSON.</summary>
     public string GetState()
     {
-        var state = new TourSnapshot
+        var state = new
         {
-            TourName = TourName,
+            TourName,
             IsActive = _isActive,
-            ActiveIndex = ActiveIndex,
-            TotalSteps = TotalSteps,
+            ActiveIndex,
+            TotalSteps,
             Status = _isActive ? "Active" : "Inactive",
             VisitedSteps = _visitedSteps.ToList(),
-            Steps = _steps.Select(s => new TourSnapshotStep
+            Steps = _steps.Select(s => new
             {
-                Element = s.Element,
-                Title = s.Title,
-                Order = s.Order,
-                StepId = s.StepId,
-                Side = s.Side,
+                s.Element, s.Title, s.Order, s.StepId, s.Side,
                 IsVisited = IsStepVisited(s),
             }).ToList(),
         };
-        return System.Text.Json.JsonSerializer.Serialize(state, GuideFlowJsonContext.Default.TourSnapshot);
+        return System.Text.Json.JsonSerializer.Serialize(state, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
     }
 
-    /// <summary>Build the current state object for hooks.</summary>
+    /// <summary>Build the current state object for hooks (Driver.js style).</summary>
     internal GuideFlowState BuildGuideFlowState()
     {
         return new GuideFlowState
@@ -320,7 +324,7 @@
         };
     }
 
-    /// <summary>Build the full context for hooks.</summary>
+    /// <summary>Build the full context for hooks (Driver.js: { config, state, driver }).</summary>
     internal TourContext BuildContext()
     {
         return new TourContext
@@ -331,21 +335,20 @@
         };
     }
 
-    /// <summary>Returns the current tour options.</summary>
+    /// <summary>Driver.js: getConfig(). Returns the current tour options.</summary>
     public TourOptions GetConfig() => TourOptions;
 
-    /// <summary>Updates the tour options at runtime.</summary>
+    /// <summary>Driver.js: setConfig(). Updates the tour options at runtime.</summary>
     public void SetConfig(TourOptions options)
     {
         TourOptions = options;
         StateHasChanged();
     }
 
-    /// <summary>Replaces the tour steps at runtime.</summary>
+    /// <summary>Driver.js: setSteps(). Replaces the tour steps at runtime.</summary>
     public void SetSteps(IReadOnlyList<ProgrammaticStep> steps)
     {
         _steps.Clear();
-#pragma warning disable BL0005 // Component parameter should not be set outside of its component - intentional for programmatic step creation
         foreach (var step in steps)
         {
             var component = new GuideFlowStep
@@ -374,11 +377,10 @@
             };
             RegisterStep(component);
         }
-#pragma warning restore BL0005
         StateHasChanged();
     }
 
-    /// <summary>Forces a re-render of the tour.</summary>
+    /// <summary>Driver.js: refresh(). Forces a re-render of the tour.</summary>
     public void Refresh() { StateHasChanged(); }
 
     // === JS Interop: Positioning ===
@@ -399,8 +401,8 @@
                     "positionStepWithScrollConfig",
                     step.Element, step.StepElement, placement,
                     TourOptions.StagePadding, offset,
-                    TourOptions.ScrollBehavior.ToCssString(),
-                    TourOptions.ScrollBlock.ToCssString());
+                    TourOptions.ScrollBehavior.ToString().ToLower(),
+                    TourOptions.ScrollBlock);
             }
             else
             {
@@ -414,21 +416,15 @@
             {
                 _activeSelector = step.Element;
 
-                if (TourOptions.Overlay)
+                if (TourOptions.OverlayMode == OverlayMode.Stage && TourOptions.Overlay)
                 {
-                    // Create overlay on first step, then animate to each target
-                    if (!_overlayCreated)
-                    {
-                        await SafeInvokeVoidAsync("createOverlay",
-                            TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef);
-                        _overlayCreated = true;
-                    }
-
-                    var isStage = TourOptions.OverlayMode == OverlayMode.Stage;
-                    var animDuration = TourOptions.Animate ? TourOptions.AnimationDuration : 0;
-                    await SafeInvokeVoidAsync("animateCutoutTo",
-                        step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
-                        animDuration, isStage, TourOptions.OverlayOpacity);
+                    await SafeInvokeVoidAsync("createStageOverlay",
+                        step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
+                        TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
+                }
+                else
+                {
+                    overlay?.SetHighlight(result.TargetLeft, result.TargetTop, result.TargetWidth, result.TargetHeight);
                 }
 
                 if (TourOptions.AutoReposition)
@@ -483,16 +479,10 @@
 
     // --- JS Callbacks ---
     [JSInvokable]
-    public async Task OnReposition(double targetLeft, double targetTop, double width, double height)
+    public void OnReposition(double targetLeft, double targetTop, double width, double height)
     {
-        if (TourOptions.Overlay && _activeSelector != null)
-        {
-            // Reposition overlay instantly (no animation) when scrolling/resizing
-            var isStage = TourOptions.OverlayMode == OverlayMode.Stage;
-            await SafeInvokeVoidAsync("animateCutoutTo",
-                _activeSelector, TourOptions.StagePadding, TourOptions.StageRadius,
-                0, isStage, TourOptions.OverlayOpacity);
-        }
+        if (TourOptions.OverlayMode == OverlayMode.Cutout)
+            overlay?.SetHighlight(targetLeft, targetTop, width, height);
     }
 
     [JSInvokable]
@@ -530,16 +520,17 @@
 
                 if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
                     await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);
+
+                if (TourOptions.OverlayMode == OverlayMode.Stage)
+                    await SafeInvokeVoidAsync("removeStageOverlay", _activeSelector);
             }
-            await SafeInvokeVoidAsync("removeOverlay");
             await SafeInvokeVoidAsync("destroy");
         }
         catch (JSException) { }
         _activeSelector = null;
-        _overlayCreated = false;
     }
 
-    /// <summary>Add/remove body classes when tour starts/ends.</summary>
+    /// <summary>Add/remove body classes when tour starts/ends (Driver.js style).</summary>
     private async Task SetBodyClassesAsync(bool active)
     {
         if (!_jsAvailable || _jsModule == null) return;
@@ -566,18 +557,7 @@
     private async Task NotifyStepChanged(int previousIndex, int currentIndex)
     {
         var prevStep = _steps.ElementAtOrDefault(previousIndex);
-        if (prevStep != null)
-        {
-            // Remove highlight class from the previous element before showing the new step
-            if (!string.IsNullOrEmpty(prevStep.Element) && !string.IsNullOrEmpty(TourOptions.HighlightClass))
-                await SafeInvokeVoidAsync("removeHighlightClass", prevStep.Element, TourOptions.HighlightClass);
-
-            // Disable click-through on the previous element
-            if (!string.IsNullOrEmpty(prevStep.Element))
-                await SafeInvokeVoidAsync("disableClickThrough", prevStep.Element);
-
-            await prevStep.FireOnAfterHide();
-        }
+        if (prevStep != null) await prevStep.FireOnAfterHide();
 
         var step = _steps.ElementAtOrDefault(currentIndex);
         if (step != null)
@@ -600,7 +580,6 @@
         var data = await SafeInvokeAsync<DataStep[]>("scanDataSteps");
         if (data == null) return;
 
-#pragma warning disable BL0005 // Component parameter should not be set outside of its component - intentional for programmatic step creation
         foreach (var d in data)
         {
             var step = new GuideFlowStep
@@ -613,7 +592,6 @@
             };
             RegisterStep(step);
         }
-#pragma warning restore BL0005
     }
 
     private class DataStep
