@@ -153,6 +153,10 @@ export function startAutoUpdate(selector, stepElement, placement, padding, offse
             step.style.top = `${y}px`;
             updateArrow(step, target, actualPlacement || placement);
 
+            // Re-sync the fixed overlay cutout/stage panels to the target's new position,
+            // otherwise the highlight stays frozen on screen and "drifts" away on scroll.
+            repositionOverlay();
+
             if (dotNetRef) {
                 // reference already has document coords from computePositionWithFlip
                 dotNetRef.invokeMethodAsync('OnReposition',
@@ -340,6 +344,8 @@ let _overlaySvg = null;
 let _overlayCutoutRect = null;
 let _overlayDotNetRef = null;
 let _overlayAnimFrame = null;
+// Last cutout target config, so scroll/resize can re-sync the fixed overlay to the moving target.
+let _overlayTargetConfig = null;
 
 // Stage panels (4 divs around cutout)
 let _stagePanels = [];
@@ -428,6 +434,9 @@ export function animateCutoutTo(selector, padding, radius, duration, stageMode, 
     const target = document.querySelector(selector);
     if (!target) return;
 
+    // Remember this target so scroll/resize can re-sync the fixed overlay to the moving element.
+    _overlayTargetConfig = { selector, padding, radius, stageMode, stageOpacity };
+
     const targetRect = target.getBoundingClientRect();
     const toRect = {
         x: targetRect.left - padding,
@@ -483,6 +492,36 @@ export function animateCutoutTo(selector, padding, radius, duration, stageMode, 
         }
     }
     _overlayAnimFrame = requestAnimationFrame(step);
+}
+
+/**
+ * Re-sync the overlay cutout (and stage panels) to the current target position.
+ * Called on scroll/resize so the fixed overlay follows the moving target instead of
+ * leaving a stale "ghost" highlight frozen on screen. Always instant (no animation).
+ */
+export function repositionOverlay() {
+    if (!_overlayCutoutRect || !_overlayTargetConfig) return;
+
+    const { selector, padding, radius, stageMode, stageOpacity } = _overlayTargetConfig;
+    const target = document.querySelector(selector);
+    if (!target) return;
+
+    // Cancel any in-flight step-transition animation so it doesn't fight the scroll sync.
+    if (_overlayAnimFrame) {
+        cancelAnimationFrame(_overlayAnimFrame);
+        _overlayAnimFrame = null;
+    }
+
+    const targetRect = target.getBoundingClientRect();
+    const toRect = {
+        x: targetRect.left - padding,
+        y: targetRect.top - padding,
+        w: targetRect.width + padding * 2,
+        h: targetRect.height + padding * 2,
+        r: radius,
+    };
+    applyCutoutRect(toRect);
+    if (stageMode) createStagePanels(toRect, stageOpacity);
 }
 
 function applyCutoutRect(r) {
@@ -557,6 +596,7 @@ export function removeOverlay() {
         _overlayCutoutRect = null;
     }
     _overlayDotNetRef = null;
+    _overlayTargetConfig = null;
     removeStagePanels();
 }
 
