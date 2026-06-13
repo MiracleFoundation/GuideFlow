@@ -31,7 +31,7 @@
     [Parameter] public EventCallback OnComplete { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public EventCallback<StepChangeEventArgs> OnStepChange { get; set; }
-    public EventCallback<BeforeStepChangeEventArgs> OnBeforeStepChange { get; set; }
+    [Parameter] public EventCallback<BeforeStepChangeEventArgs> OnBeforeStepChange { get; set; }
 
     [Parameter] public EventCallback<TourContext> OnBeforeDestroy { get; set; }
     [Parameter] public EventCallback<TourContext> OnDestroyed { get; set; }

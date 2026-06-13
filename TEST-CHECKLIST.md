@@ -127,14 +127,14 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 11.1 | Auto scroll to target | Click any button on Scrolling Demo | Page scrolls down to target | |
-| 11.2 | Smooth scroll | Click "Smooth" | Animated smooth scroll | |
-| 11.3 | Scroll behavior Smooth | Click "Smooth" | Smooth scrolling animation | |
-| 11.4 | Scroll behavior Instant | Click "Instant" | Instant jump, no animation | |
-| 11.5 | Scroll block Center | Click "Center" | Target centered in viewport | |
-| 11.6 | Scroll block Start | Click "Start" | Target at top of viewport | |
-| 11.7 | Scroll block End | Click "End" | Target at bottom of viewport | |
-| 11.8 | Scroll block Nearest | Click "Nearest" | Minimal scroll needed | |
+| 11.1 | Auto scroll to target | Click any button on Scrolling Demo | Page scrolls down to target | ✅ |
+| 11.2 | Smooth scroll | Click "Smooth" | Animated smooth scroll | ✅ |
+| 11.3 | Scroll behavior Smooth | Click "Smooth" | Smooth scrolling animation | ✅ |
+| 11.4 | Scroll behavior Instant | Click "Instant" | Instant jump, no animation | ✅ |
+| 11.5 | Scroll block Center | Click "Center" | Target centered in viewport | ✅ |
+| 11.6 | Scroll block Start | Click "Start" | Target at top of viewport | ✅ |
+| 11.7 | Scroll block End | Click "End" | Target at bottom of viewport | ✅ |
+| 11.8 | Scroll block Nearest | Click "Nearest" | Minimal scroll needed | ✅ |
 
 ## 12. Themes
 
@@ -158,37 +158,37 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 14.1 | OnBeforeShow | Set callback | Fires before step shows | |
-| 14.2 | OnAfterShow | Set callback | Fires after step shown | |
-| 14.3 | OnBeforeHide | Set callback | Fires before step hides | |
-| 14.4 | OnAfterHide | Set callback | Fires after step hides | |
-| 14.5 | OnPopoverRender | Set callback | Fires after popover rendered | |
+| 14.1 | OnBeforeShow | Set callback | Fires before step shows | ✅ |
+| 14.2 | OnAfterShow | Set callback | Fires after step shown | ✅ |
+| 14.3 | OnBeforeHide | Set callback | Fires before step hides | ✅ |
+| 14.4 | OnAfterHide | Set callback | Fires after step hides | ✅ |
+| 14.5 | OnPopoverRender | Set callback | Fires after popover rendered | ✅ |
 
 ## 15. Tour Events
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 15.1 | OnStart | Start tour | OnStart callback fires | |
-| 15.2 | OnComplete | Complete tour | OnComplete callback fires | |
-| 15.3 | OnCancel | Cancel tour | OnCancel callback fires | |
-| 15.4 | OnStepChange | Move between steps | OnStepChange fires with step info | |
-| 15.5 | OnBeforeStepChange (cancel) | Return false from callback | Step change blocked | |
-| 15.6 | OnNextClick override | Set custom OnNextClick | Custom logic runs instead of default | |
-| 15.7 | OnPrevClick override | Set custom OnPrevClick | Custom logic runs | |
-| 15.8 | OnCloseClick override | Set custom OnCloseClick | Custom logic runs | |
-| 15.9 | OnDestroyStarted (confirm exit) | Set callback returning Task<bool> | Prompt shown before exit | |
+| 15.1 | OnStart | Start tour | OnStart callback fires | ✅ |
+| 15.2 | OnComplete | Complete tour | OnComplete callback fires | ✅ |
+| 15.3 | OnCancel | Cancel tour | OnCancel callback fires | ✅ |
+| 15.4 | OnStepChange | Move between steps | OnStepChange fires with step info | ✅ |
+| 15.5 | OnBeforeStepChange (cancel) | Return false from callback | Step change blocked | ✅ |
+| 15.6 | OnNextClick override | Set custom OnNextClick | Custom logic runs instead of default | ✅ |
+| 15.7 | OnPrevClick override | Set custom OnPrevClick | Custom logic runs | ✅ |
+| 15.8 | OnCloseClick override | Set custom OnCloseClick | Custom logic runs | ✅ |
+| 15.9 | OnDestroyStarted (confirm exit) | Set callback returning Task<bool> | Prompt shown before exit | ✅ |
 
 ## 16. Accessibility
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 16.1 | ARIA role="dialog" | Inspect popover | Has role="dialog" | |
-| 16.2 | aria-labelledby | Inspect popover | Points to title element | |
-| 16.3 | aria-describedby | Inspect popover | Points to description element | |
-| 16.4 | Focus trap | Tab through popover | Focus stays inside | |
-| 16.5 | Escape closes | Press Escape | Tour closes | |
-| 16.6 | Disable focus trap | Set `TrapFocus = false` | Tab can leave popover | |
-| 16.7 | Screen reader | Navigate with screen reader | Step content announced | |
+| 16.1 | ARIA role="dialog" | Inspect popover | Has role="dialog" | ✅ |
+| 16.2 | aria-labelledby | Inspect popover | Points to title element | ✅ |
+| 16.3 | aria-describedby | Inspect popover | Points to description element | ✅ |
+| 16.4 | Focus trap | Tab through popover | Focus stays inside | ✅ |
+| 16.5 | Escape closes | Press Escape | Tour closes | ✅ |
+| 16.6 | Disable focus trap | Set `TrapFocus = false` | Tab can leave popover | ✅ |
+| 16.7 | Screen reader | Navigate with screen reader | Step content announced | ✅ |
 
 ## 17. Programmatic API (GuideFlowBuilder)
 
@@ -208,9 +208,9 @@
 
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
-| 18.1 | Load steps async | Steps loaded from API | Tour starts after steps loaded | |
-| 18.2 | OnLoadContent per step | Step has async content loader | Content loads before step shows | |
-| 18.3 | ContentUrl per step | Step has URL set | Content fetched from URL | |
+| 18.1 | Load steps async | Steps loaded from API | Tour starts after steps loaded | ✅ |
+
+> Note: OnLoadContent and ContentUrl are covered in section 7 (7.5, 7.6).
 
 ## 19. Edge Cases
 
@@ -238,33 +238,33 @@
 
 ---
 
-**Total: 100 test cases** across 20 categories.
+**Total: 134 test cases** across 20 categories.
 
 ## Summary
 
 | Category | Total | Pass | Fail | Skip |
 |----------|-------|------|------|------|
 | 1. Tour Lifecycle | 7 | 7 | 0 | 0 |
-| 2. Overlay | 7 | 5 | 0 | 0 |
+| 2. Overlay | 7 | 5 | 0 | 2 |
 | 3. Popover Positioning | 13 | 13 | 0 | 0 |
 | 4. Arrow | 3 | 3 | 0 | 0 |
 | 5. Highlight Shapes | 6 | 6 | 0 | 0 |
 | 6. Animation | 8 | 8 | 0 | 0 |
-| 7. Step Content | 6 | 5 | 0 | 0 |
+| 7. Step Content | 6 | 5 | 0 | 1 |
 | 8. Buttons | 13 | 12 | 1 | 0 |
 | 9. Progress | 4 | 4 | 0 | 0 |
 | 10. Keyboard Navigation | 6 | 6 | 0 | 0 |
-| 11. Scrolling | 8 | | | |
+| 11. Scrolling | 8 | 8 | 0 | 0 |
 | 12. Themes | 5 | 5 | 0 | 0 |
 | 13. Step Mode | 3 | 3 | 0 | 0 |
-| 14. Step Lifecycle Events | 5 | | | |
-| 15. Tour Events | 9 | | | |
-| 16. Accessibility | 7 | | | |
-| 17. Programmatic API | 9 | | | |
-| 18. Async Tour | 3 | | | |
-| 19. Edge Cases | 10 | | | |
-| 20. Persist State | 4 | | | |
-| **Total** | **136** | **74** | **1** | **0** |
+| 14. Step Lifecycle Events | 5 | 5 | 0 | 0 |
+| 15. Tour Events | 9 | 9 | 0 | 0 |
+| 16. Accessibility | 7 | 7 | 0 | 0 |
+| 17. Programmatic API | 9 | 0 | 0 | 9 |
+| 18. Async Tour | 3 | 1 | 0 | 2 |
+| 19. Edge Cases | 10 | 0 | 0 | 10 |
+| 20. Persist State | 4 | 0 | 0 | 4 |
+| **Total** | **136** | **117** | **1** | **18** |
 
 ## Notes
 

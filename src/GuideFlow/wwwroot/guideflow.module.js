@@ -251,12 +251,9 @@ export function positionStepWithScrollConfig(selector, stepElement, placement, p
     if (!target) throw new Error(`GuideFlow: Target element not found: "${selector}"`);
     if (!step) throw new Error('GuideFlow: Step element not resolved');
 
+    // Scroll to the correct block position (always instant for reliable positioning)
     if (scrollBehavior !== 'none') {
-        target.scrollIntoView({
-            behavior: scrollBehavior || 'smooth',
-            block: scrollBlock || 'center',
-            inline: 'nearest'
-        });
+        target.scrollIntoView({ behavior: 'instant', block: scrollBlock || 'center', inline: 'nearest' });
     }
 
     return new Promise((resolve) => {

@@ -1,0 +1,132 @@
+@page "/docs/step-lifecycle"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Step Lifecycle - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="lifecycle-title">Step Lifecycle Events</h1>
+    <p class="docs-lead" id="lifecycle-lead">Each step fires lifecycle callbacks at key moments during its display. Use these to run custom logic before or after a step appears, or when the popover is fully rendered.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="lifecycle-run-btn">▶ Show me the example</button>
+
+    <h2 id="events">Events <a class="docs-anchor" href="#events">#</a></h2>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Event</th><th>When it fires</th><th>Parameter</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>OnBeforeShow</code></td><td>Before the step becomes visible</td><td><code>TourContext</code></td></tr>
+            <tr><td><code>OnAfterShow</code></td><td>After the step is fully visible and positioned</td><td><code>TourContext</code></td></tr>
+            <tr><td><code>OnBeforeHide</code></td><td>Before the step is removed from view</td><td><code>TourContext</code></td></tr>
+            <tr><td><code>OnAfterHide</code></td><td>After the step is fully hidden</td><td><code>TourContext</code></td></tr>
+            <tr><td><code>OnPopoverRender</code></td><td>After the popover DOM is rendered (fires with OnAfterShow)</td><td><code>TourContext</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Click the button below to start a 2-step tour. The log panel below will show each lifecycle event as it fires, in order.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="lifecycle-target">
+            <span>Target Element</span>
+        </div>
+    </div>
+
+    <h3>Event Log</h3>
+    <div id="lifecycle-log" style="background: var(--docs-code-bg, #1e1e2e); color: var(--docs-code-text, #cdd6f4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 13px; max-height: 250px; overflow-y: auto; margin-top: 0.5rem;">
+        @if (_logs.Count == 0)
+        {
+            <div style="opacity: 0.5;">Events will appear here when the tour runs...</div>
+        }
+        @foreach (var log in _logs)
+        {
+            <div style="padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">@((MarkupString)log)</div>
+        }
+    </div>
+    <button class="docs-btn" style="margin-top: 0.5rem; font-size: 12px;" @onclick="ClearLogs">Clear Log</button>
+
+    <h3>Code</h3>
+    <div id="lifecycle-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#target"" Title=""Step 1"" Order=""0""
+    OnBeforeShow=""@(() => Log(""OnBeforeShow""))""
+    OnAfterShow=""@(() => Log(""OnAfterShow""))""
+    OnBeforeHide=""@(() => Log(""OnBeforeHide""))""
+    OnAfterHide=""@(() => Log(""OnAfterHide""))""
+    OnPopoverRender=""@(() => Log(""OnPopoverRender""))"">
+    <p>Watch the event log below.</p>
+</GuideFlowStep>
+
+@code {
+    private void Log(string name) => logs.Add($""{DateTime.Now:HH:mm:ss.fff} - {name}"");
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#lifecycle-target" Title="Step 1 - Lifecycle" Order="0"
+                   Side="Placement.Bottom"
+                   OnBeforeShow="OnBeforeShow1"
+                   OnAfterShow="OnAfterShow1"
+                   OnBeforeHide="OnBeforeHide1"
+                   OnAfterHide="OnAfterHide1"
+                   OnPopoverRender="OnPopoverRender1">
+        <p>Watch the <strong>Event Log</strong> below. Navigate to Step 2 to see more events fire.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#lifecycle-target" Title="Step 2 - Lifecycle" Order="1"
+                   Side="Placement.Right"
+                   OnBeforeShow="OnBeforeShow2"
+                   OnAfterShow="OnAfterShow2"
+                   OnBeforeHide="OnBeforeHide2"
+                   OnAfterHide="OnAfterHide2"
+                   OnPopoverRender="OnPopoverRender2">
+        <p>This is Step 2. Click Done to see the final hide events.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private bool busy;
+    private readonly List<string> _logs = new();
+
+    private TourOptions options = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private void AddLog(string step, string eventName)
+    {
+        var ts = DateTime.Now.ToString("HH:mm:ss.fff");
+        _logs.Add($"<strong>[{ts}]</strong> Step {step} - <span style=\"color:#89b4fa\">{eventName}</span>");
+        StateHasChanged();
+    }
+
+    // Step 1 events
+    private Task OnBeforeShow1(TourContext ctx) { AddLog("1", "OnBeforeShow"); return Task.CompletedTask; }
+    private Task OnAfterShow1(TourContext ctx) { AddLog("1", "OnAfterShow"); return Task.CompletedTask; }
+    private Task OnBeforeHide1(TourContext ctx) { AddLog("1", "OnBeforeHide"); return Task.CompletedTask; }
+    private Task OnAfterHide1(TourContext ctx) { AddLog("1", "OnAfterHide"); return Task.CompletedTask; }
+    private Task OnPopoverRender1(TourContext ctx) { AddLog("1", "OnPopoverRender"); return Task.CompletedTask; }
+
+    // Step 2 events
+    private Task OnBeforeShow2(TourContext ctx) { AddLog("2", "OnBeforeShow"); return Task.CompletedTask; }
+    private Task OnAfterShow2(TourContext ctx) { AddLog("2", "OnAfterShow"); return Task.CompletedTask; }
+    private Task OnBeforeHide2(TourContext ctx) { AddLog("2", "OnBeforeHide"); return Task.CompletedTask; }
+    private Task OnAfterHide2(TourContext ctx) { AddLog("2", "OnAfterHide"); return Task.CompletedTask; }
+    private Task OnPopoverRender2(TourContext ctx) { AddLog("2", "OnPopoverRender"); return Task.CompletedTask; }
+
+    private async Task StartTour()
+    {
+        if (tour != null && !busy)
+        {
+            busy = true;
+            _logs.Clear();
+            await tour.ResetAsync();
+            await tour.DriveAsync();
+        }
+    }
+
+    private void ClearLogs() { _logs.Clear(); }
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

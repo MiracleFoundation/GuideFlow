@@ -1,0 +1,317 @@
+@page "/docs/tour-events"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@inject IJSRuntime JS
+
+<PageTitle>Tour Events - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="events-title">Tour Events</h1>
+    <p class="docs-lead" id="events-lead">The tour component fires events at key moments - when it starts, completes, cancels, or when the active step changes. You can also override button click handlers to run custom logic.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="events-run-btn">▶ Show me the example</button>
+
+    <h2 id="lifecycle-events">Lifecycle Events <a class="docs-anchor" href="#lifecycle-events">#</a></h2>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Event</th><th>When it fires</th><th>Parameter</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>OnStart</code></td><td>Tour starts (first step shown)</td><td>none</td></tr>
+            <tr><td><code>OnComplete</code></td><td>User reaches the last step and clicks Done</td><td>none</td></tr>
+            <tr><td><code>OnCancel</code></td><td>Tour is closed before completing (X button, Escape, overlay click)</td><td>none</td></tr>
+            <tr><td><code>OnStepChange</code></td><td>Active step changes</td><td><code>StepChangeEventArgs</code></td></tr>
+            <tr><td><code>OnBeforeStepChange</code></td><td>Before step changes (set <code>Cancel = true</code> to block)</td><td><code>BeforeStepChangeEventArgs</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="button-overrides">Button Click Overrides <a class="docs-anchor" href="#button-overrides">#</a></h2>
+    <p>Override the default Next, Previous, or Close button behavior. When set, your handler runs <strong>instead of</strong> the default action. You must call <code>MoveNextAsync()</code>, <code>MovePreviousAsync()</code>, or <code>DestroyAsync()</code> manually if you want the default behavior.</p>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Event</th><th>Overrides</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>OnNextClick</code></td><td>Next button</td></tr>
+            <tr><td><code>OnPrevClick</code></td><td>Previous button</td></tr>
+            <tr><td><code>OnCloseClick</code></td><td>Close (X) button</td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Click the button to start a 3-step tour. The log panel shows each event as it fires. Try navigating, closing, and completing the tour.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="events-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="StartBasic">Basic Tour</button>
+            <button class="docs-btn" @onclick="StartWithOverrides">With Button Overrides</button>
+            <button class="docs-btn" @onclick="StartCancelStep">Cancel Step Change</button>
+            <button class="docs-btn" @onclick="StartConfirmExit">Confirm on Exit</button>
+        </div>
+    </div>
+
+    <h3>Event Log</h3>
+    <div id="events-log" style="background: var(--docs-code-bg, #1e1e2e); color: var(--docs-code-text, #cdd6f4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 13px; max-height: 300px; overflow-y: auto; margin-top: 0.5rem;">
+        @if (_logs.Count == 0)
+        {
+            <div style="opacity: 0.5;">Events will appear here when the tour runs...</div>
+        }
+        @foreach (var log in _logs)
+        {
+            <div style="padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">@((MarkupString)log)</div>
+        }
+    </div>
+    <button class="docs-btn" style="margin-top: 0.5rem; font-size: 12px;" @onclick="ClearLogs">Clear Log</button>
+
+    <h3>Code</h3>
+    <div id="events-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour""
+    TourOptions=""options""
+    OnStart=""@(() => Log(""OnStart""))""
+    OnComplete=""@(() => Log(""OnComplete""))""
+    OnCancel=""@(() => Log(""OnCancel""))""
+    OnStepChange=""@((StepChangeEventArgs e) => Log($""OnStepChange: {e.PreviousStepIndex} -> {e.ActiveIndex}""))""
+    OnNextClick=""@((TourContext ctx) => OnCustomNext(ctx))"">
+    <GuideFlowStep Element=""#target"" Title=""Step 1"" Order=""0"">...</GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private async Task OnCustomNext(TourContext ctx)
+    {
+        Log(""OnNextClick (custom)"");
+        // Custom logic here, then navigate manually:
+        // await ctx.Driver.MoveNextAsync();
+    }
+}")" />
+    </div>
+
+</div>
+
+@* --- Basic tour (lifecycle events only) --- *@
+<GuideFlowTour @ref="basicTour" TourOptions="basicOpts"
+    OnComplete="OnBasicEnd" OnCancel="OnBasicEnd"
+    OnStart="OnBasicStart"
+    OnStepChange="OnBasicStepChange">
+    <GuideFlowStep Element="#events-target" Title="Step 1" Order="0"
+                   Side="Placement.Bottom">
+        <p>Watch the log. Navigate to Step 2 or close the tour.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#events-target" Title="Step 2" Order="1"
+                   Side="Placement.Right">
+        <p>Step 2. Click Next to go to Step 3.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#events-target" Title="Step 3 (Done)" Order="2"
+                   Side="Placement.Top">
+        <p>Click Done to complete the tour and see OnComplete fire.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Tour with button overrides --- *@
+<GuideFlowTour @ref="overrideTour" TourOptions="overrideOpts"
+    OnComplete="OnOverrideEnd" OnCancel="OnOverrideEnd"
+    OnStart="OnOverrideStart"
+    OnStepChange="OnOverrideStepChange"
+    OnNextClick="OnCustomNext"
+    OnPrevClick="OnCustomPrev"
+    OnCloseClick="OnCustomClose">
+    <GuideFlowStep Element="#events-target" Title="Step 1 (Override)" Order="0"
+                   Side="Placement.Bottom">
+        <p>This tour has custom Next/Prev/Close handlers. Each click logs a custom event before navigating.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#events-target" Title="Step 2 (Override)" Order="1"
+                   Side="Placement.Right">
+        <p>Step 2. The buttons have custom logic.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#events-target" Title="Step 3 (Override)" Order="2"
+                   Side="Placement.Top">
+        <p>Click Done to complete.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Cancel step change tour --- *@
+<GuideFlowTour @ref="cancelStepTour" TourOptions="cancelStepOpts"
+    OnComplete="OnCancelStepEnd" OnCancel="OnCancelStepEnd"
+    OnStart="OnCancelStepStart"
+    OnStepChange="OnCancelStepStepChange"
+    OnBeforeStepChange="OnBeforeStepChange">
+    <GuideFlowStep Element="#events-target" Title="Step 1" Order="0"
+                   Side="Placement.Bottom">
+        <p>Click Next. The <code>OnBeforeStepChange</code> handler will <strong>cancel</strong> the first attempt. Click Next again to proceed.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#events-target" Title="Step 2" Order="1"
+                   Side="Placement.Right">
+        <p>Step 2 reached! The step change was cancelled on the first try but succeeded on the second.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Confirm on exit tour --- *@
+<GuideFlowTour @ref="confirmExitTour" TourOptions="confirmExitOpts"
+    OnComplete="OnConfirmExitEnd" OnCancel="OnConfirmExitEnd"
+    OnStart="OnConfirmExitStart"
+    OnDestroyStarted="OnDestroyStarted">
+    <GuideFlowStep Element="#events-target" Title="Step 1 (Confirm Exit)" Order="0"
+                   Side="Placement.Bottom">
+        <p>Try closing this tour with the X button or Escape. A confirm dialog will appear.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#events-target" Title="Step 2 (Confirm Exit)" Order="1"
+                   Side="Placement.Right">
+        <p>Step 2. Try closing - you'll be asked to confirm.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? basicTour, overrideTour, cancelStepTour, confirmExitTour;
+    private bool busy;
+    private readonly List<string> _logs = new();
+
+    private TourOptions basicOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions overrideOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions cancelStepOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions confirmExitOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private bool _cancelNextStepChange;
+
+    private void AddLog(string eventName, string detail = "")
+    {
+        var ts = DateTime.Now.ToString("HH:mm:ss.fff");
+        var extra = string.IsNullOrEmpty(detail) ? "" : $" - <span style=\"color:#a6e3a1\">{detail}</span>";
+        _logs.Add($"<strong>[{ts}]</strong> <span style=\"color:#89b4fa\">{eventName}</span>{extra}");
+        StateHasChanged();
+    }
+
+    // Basic tour events
+    private Task OnBasicStart() { AddLog("OnStart"); return Task.CompletedTask; }
+    private Task OnBasicEnd() { busy = false; AddLog("OnComplete/OnCancel"); StateHasChanged(); return Task.CompletedTask; }
+    private Task OnBasicStepChange(StepChangeEventArgs e) { AddLog("OnStepChange", $"Step {e.PreviousStepIndex} -> Step {e.ActiveIndex}"); return Task.CompletedTask; }
+
+    // Override tour events
+    private Task OnOverrideStart() { AddLog("OnStart"); return Task.CompletedTask; }
+    private Task OnOverrideEnd() { busy = false; AddLog("OnComplete/OnCancel"); StateHasChanged(); return Task.CompletedTask; }
+    private Task OnOverrideStepChange(StepChangeEventArgs e) { AddLog("OnStepChange", $"Step {e.PreviousStepIndex} -> Step {e.ActiveIndex}"); return Task.CompletedTask; }
+
+    // Button overrides
+    private async Task OnCustomNext(TourContext ctx)
+    {
+        AddLog("OnNextClick", "custom handler - calling MoveNextAsync manually");
+        if (ctx.Driver != null) await ctx.Driver.MoveNextAsync();
+    }
+    private async Task OnCustomPrev(TourContext ctx)
+    {
+        AddLog("OnPrevClick", "custom handler - calling MovePreviousAsync manually");
+        if (ctx.Driver != null) await ctx.Driver.MovePreviousAsync();
+    }
+    private async Task OnCustomClose(TourContext ctx)
+    {
+        AddLog("OnCloseClick", "custom handler - calling DestroyAsync manually");
+        if (ctx.Driver != null) await ctx.Driver.DestroyAsync();
+    }
+
+    private async Task StartTour()
+    {
+        if (basicTour != null && !busy)
+        {
+            busy = true;
+            _logs.Clear();
+            await basicTour.ResetAsync();
+            await basicTour.DriveAsync();
+        }
+    }
+
+    private async Task StartBasic()
+    {
+        if (basicTour != null && !busy)
+        {
+            busy = true;
+            _logs.Clear();
+            await basicTour.ResetAsync();
+            await basicTour.DriveAsync();
+        }
+    }
+
+    private async Task StartWithOverrides()
+    {
+        if (overrideTour != null && !busy)
+        {
+            busy = true;
+            _logs.Clear();
+            await overrideTour.ResetAsync();
+            await overrideTour.DriveAsync();
+        }
+    }
+
+    // Cancel step change handlers
+    private Task OnCancelStepStart() { AddLog("OnStart"); _cancelNextStepChange = true; return Task.CompletedTask; }
+    private Task OnCancelStepEnd() { busy = false; AddLog("OnComplete/OnCancel"); StateHasChanged(); return Task.CompletedTask; }
+    private Task OnCancelStepStepChange(StepChangeEventArgs e) { AddLog("OnStepChange", $"Step {e.PreviousStepIndex} -> Step {e.ActiveIndex}"); return Task.CompletedTask; }
+
+    private Task OnBeforeStepChange(BeforeStepChangeEventArgs e)
+    {
+        if (_cancelNextStepChange)
+        {
+            _cancelNextStepChange = false;
+            e.Cancel = true;
+            AddLog("OnBeforeStepChange", $"Step {e.ActiveIndex} -> Step {e.TargetStepIndex} CANCELLED (click Next again to proceed)");
+        }
+        else
+        {
+            AddLog("OnBeforeStepChange", $"Step {e.ActiveIndex} -> Step {e.TargetStepIndex} allowed");
+        }
+        return Task.CompletedTask;
+    }
+
+    // Confirm on exit handlers
+    private Task OnConfirmExitStart() { AddLog("OnStart"); return Task.CompletedTask; }
+    private Task OnConfirmExitEnd() { busy = false; AddLog("OnComplete/OnCancel"); StateHasChanged(); return Task.CompletedTask; }
+
+    private async Task<bool> OnDestroyStarted()
+    {
+        AddLog("OnDestroyStarted", "asking user to confirm...");
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to exit the tour?");
+        AddLog("OnDestroyStarted", confirmed ? "user confirmed - destroying tour" : "user cancelled - staying in tour");
+        return confirmed;
+    }
+
+    private async Task StartCancelStep()
+    {
+        if (cancelStepTour != null && !busy)
+        {
+            busy = true;
+            _cancelNextStepChange = true;
+            _logs.Clear();
+            await cancelStepTour.ResetAsync();
+            await cancelStepTour.DriveAsync();
+        }
+    }
+
+    private async Task StartConfirmExit()
+    {
+        if (confirmExitTour != null && !busy)
+        {
+            busy = true;
+            _logs.Clear();
+            await confirmExitTour.ResetAsync();
+            await confirmExitTour.DriveAsync();
+        }
+    }
+
+    private void ClearLogs() { _logs.Clear(); }
+}
