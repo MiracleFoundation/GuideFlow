@@ -293,19 +293,38 @@ function updateArrow(stepElement, target, placement) {
     arrow.className = arrow.className.replace(/gf-arrow--\S+/g, '');
     arrow.classList.add('gf-arrow', `gf-arrow--${placement}`);
 
+    // Reset all inline positioning so CSS defaults can apply
     arrow.style.left = '';
+    arrow.style.right = '';
     arrow.style.top = '';
+    arrow.style.bottom = '';
 
     const isVertical = placement.startsWith('top') || placement.startsWith('bottom');
 
     if (isVertical) {
-        const targetCenterX = targetRect.left + targetRect.width / 2;
-        const arrowX = targetCenterX - stepRect.left;
-        arrow.style.left = `${Math.max(16, Math.min(arrowX, stepRect.width - 16))}px`;
+        // Horizontal position depends on start/end variant
+        if (placement.endsWith('-start')) {
+            arrow.style.left = `${Math.max(16, Math.min(targetRect.left - stepRect.left + targetRect.width / 2, stepRect.width - 16))}px`;
+        } else if (placement.endsWith('-end')) {
+            arrow.style.right = `${Math.max(16, Math.min(stepRect.right - targetRect.right + targetRect.width / 2, stepRect.width - 16))}px`;
+        } else {
+            // Center: point at target center
+            const targetCenterX = targetRect.left + targetRect.width / 2;
+            const arrowX = targetCenterX - stepRect.left;
+            arrow.style.left = `${Math.max(16, Math.min(arrowX, stepRect.width - 16))}px`;
+        }
     } else {
-        const targetCenterY = targetRect.top + targetRect.height / 2;
-        const arrowY = targetCenterY - stepRect.top;
-        arrow.style.top = `${Math.max(16, Math.min(arrowY, stepRect.height - 16))}px`;
+        // Vertical position depends on start/end variant
+        if (placement.endsWith('-start')) {
+            arrow.style.top = `${Math.max(16, Math.min(targetRect.top - stepRect.top + targetRect.height / 2, stepRect.height - 16))}px`;
+        } else if (placement.endsWith('-end')) {
+            arrow.style.bottom = `${Math.max(16, Math.min(stepRect.bottom - targetRect.bottom + targetRect.height / 2, stepRect.height - 16))}px`;
+        } else {
+            // Center: point at target center
+            const targetCenterY = targetRect.top + targetRect.height / 2;
+            const arrowY = targetCenterY - stepRect.top;
+            arrow.style.top = `${Math.max(16, Math.min(arrowY, stepRect.height - 16))}px`;
+        }
     }
 }
 
@@ -327,7 +346,7 @@ let _stageHandler = null;
  * Create the persistent SVG overlay with animated cutout.
  * Called once when the tour starts; animateCutoutTo() moves the cutout.
  */
-export function createOverlay(zIndex, opacity, dotNetRef) {
+export function createOverlay(zIndex, opacity, dotNetRef, color) {
     removeOverlay();
     _overlayDotNetRef = dotNetRef;
 
@@ -365,7 +384,8 @@ export function createOverlay(zIndex, opacity, dotNetRef) {
     const overlayRect = document.createElementNS(SVG_NS, 'rect');
     overlayRect.setAttribute('width', '100%');
     overlayRect.setAttribute('height', '100%');
-    overlayRect.setAttribute('fill', `rgba(0,0,0,${opacity})`);
+    const overlayColor = color || `rgba(0,0,0,${opacity})`;
+    overlayRect.setAttribute('fill', overlayColor);
     overlayRect.setAttribute('mask', 'url(#gf-cutout)');
     svg.appendChild(overlayRect);
 
@@ -543,8 +563,8 @@ function removeStagePanels() {
 }
 
 // Legacy aliases for backward compatibility
-export function createStageOverlay(selector, zIndex, opacity, borderRadius, padding, dotNetRef) {
-    createOverlay(zIndex, opacity, dotNetRef);
+export function createStageOverlay(selector, zIndex, opacity, borderRadius, padding, dotNetRef, color) {
+    createOverlay(zIndex, opacity, dotNetRef, color);
     animateCutoutTo(selector, padding, borderRadius, 0, true, opacity);
 }
 
@@ -703,12 +723,12 @@ export function destroy() {
 // Single Element Highlight
 // ============================================================
 
-export function highlightElement(selector, zIndex, opacity, padding, radius) {
+export function highlightElement(selector, zIndex, opacity, padding, radius, color) {
     const target = document.querySelector(selector);
     if (!target) return;
 
     // Use the same animated overlay system
-    createOverlay(zIndex, opacity, null);
+    createOverlay(zIndex, opacity, null, color);
     animateCutoutTo(selector, padding, radius, 0, false, 0);
 
     // Click overlay to dismiss

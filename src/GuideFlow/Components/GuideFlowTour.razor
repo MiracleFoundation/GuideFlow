@@ -130,6 +130,15 @@
         ActiveIndex = stepIndex;
         _visitedSteps.Clear();
         await SetBodyClassesAsync(true);
+
+        // Create the SVG overlay once when the tour starts (cutout mode).
+        // Must happen before any step calls animateCutoutTo().
+        if (TourOptions.Overlay && TourOptions.OverlayMode != OverlayMode.Stage)
+        {
+            await SafeInvokeVoidAsync("createOverlay",
+                TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
+        }
+
         StateHasChanged();
         await OnStart.InvokeAsync();
         await NotifyStepChanged(-1, ActiveIndex);
@@ -220,7 +229,7 @@
             try
             {
                 await SafeInvokeVoidAsync("highlightElement", selector, TourOptions.ZIndex,
-                    TourOptions.OverlayOpacity, TourOptions.StagePadding, TourOptions.StageRadius);
+                    TourOptions.OverlayOpacity, TourOptions.StagePadding, TourOptions.StageRadius, TourOptions.OverlayColor);
             }
             catch (JSException) { }
         }
@@ -478,7 +487,7 @@
                     {
                         await SafeInvokeVoidAsync("createStageOverlay",
                             step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
-                            TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef);
+                            TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef, TourOptions.OverlayColor);
                     }
                     else
                     {
@@ -560,7 +569,7 @@
             {
                 // Modal: always full-screen overlay, no cutout (popover is centered)
                 await SafeInvokeVoidAsync("createOverlay",
-                    TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef);
+                    TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
             }
 
             if (TourOptions.TrackVisited)
