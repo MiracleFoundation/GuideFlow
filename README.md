@@ -9,6 +9,7 @@ Accessible, animated guided tour component library for Blazor.
 - ✨ Smooth animated transitions and cutout
 - 📍 Auto-flip, viewport-aware positioning
 - 💾 Optional localStorage state persistence
+- ✂️ IL trimming compatible (Blazor WASM ready)
 - 📦 Zero external JS dependencies
 
 ## Install
