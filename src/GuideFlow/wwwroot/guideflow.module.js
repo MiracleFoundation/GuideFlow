@@ -313,6 +313,8 @@ function updateArrow(stepElement, target, placement) {
         if (placement.endsWith('-start')) {
             arrow.style.left = `${Math.max(16, Math.min(targetRect.left - stepRect.left + targetRect.width / 2, stepRect.width - 16))}px`;
         } else if (placement.endsWith('-end')) {
+            // Must explicitly clear left so CSS "left: auto" takes effect
+            arrow.style.left = 'auto';
             arrow.style.right = `${Math.max(16, Math.min(stepRect.right - targetRect.right + targetRect.width / 2, stepRect.width - 16))}px`;
         } else {
             // Center: point at target center
@@ -325,6 +327,8 @@ function updateArrow(stepElement, target, placement) {
         if (placement.endsWith('-start')) {
             arrow.style.top = `${Math.max(16, Math.min(targetRect.top - stepRect.top + targetRect.height / 2, stepRect.height - 16))}px`;
         } else if (placement.endsWith('-end')) {
+            // Must explicitly clear top so CSS "top: auto" takes effect
+            arrow.style.top = 'auto';
             arrow.style.bottom = `${Math.max(16, Math.min(stepRect.bottom - targetRect.bottom + targetRect.height / 2, stepRect.height - 16))}px`;
         } else {
             // Center: point at target center
@@ -580,6 +584,13 @@ function createStagePanels(cutout, opacity) {
         });
         document.body.appendChild(p);
     });
+}
+
+/**
+ * Check whether the overlay SVG is currently active.
+ */
+export function overlayExists() {
+    return !!_overlaySvg;
 }
 
 /**

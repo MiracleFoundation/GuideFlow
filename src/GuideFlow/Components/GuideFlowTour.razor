@@ -474,17 +474,30 @@
 
                 if (TourOptions.Overlay)
                 {
+                    // Only create overlay once per tour; subsequent steps just animate the cutout.
+                    // Calling createOverlay() on every step destroys the SVG and resets the cutout
+                    // to (0,0,0,0), which makes animateCutoutTo() jump instantly instead of animating.
+                    var overlayAlreadyExists = await SafeInvokeAsync<bool>("overlayExists");
+
                     if (TourOptions.OverlayMode == OverlayMode.Stage)
                     {
-                        await SafeInvokeVoidAsync("createStageOverlay",
-                            step.Element, TourOptions.ZIndex, TourOptions.OverlayOpacity,
-                            TourOptions.StageRadius, TourOptions.StagePadding, _dotNetRef, TourOptions.OverlayColor);
+                        if (!overlayAlreadyExists)
+                        {
+                            await SafeInvokeVoidAsync("createOverlay",
+                                TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
+                        }
+                        await SafeInvokeVoidAsync("animateCutoutTo",
+                            step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
+                            TourOptions.AnimateCutout ? TourOptions.AnimationDuration : 0,
+                            true, TourOptions.OverlayOpacity);
                     }
                     else
                     {
-                        // Ensure SVG overlay exists before animating cutout
-                        await SafeInvokeVoidAsync("createOverlay",
-                            TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
+                        if (!overlayAlreadyExists)
+                        {
+                            await SafeInvokeVoidAsync("createOverlay",
+                                TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
+                        }
                         // Animate SVG cutout to new step's target element
                         await SafeInvokeVoidAsync("animateCutoutTo",
                             step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
@@ -564,9 +577,14 @@
 
             if (TourOptions.Overlay)
             {
-                // Modal: always full-screen overlay, no cutout (popover is centered)
-                await SafeInvokeVoidAsync("createOverlay",
-                    TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
+                // Modal: always full-screen overlay, no cutout (popover is centered).
+                // Only create if overlay doesn't exist yet to avoid flicker between modal steps.
+                var overlayAlreadyExists = await SafeInvokeAsync<bool>("overlayExists");
+                if (!overlayAlreadyExists)
+                {
+                    await SafeInvokeVoidAsync("createOverlay",
+                        TourOptions.ZIndex, TourOptions.OverlayOpacity, _dotNetRef, TourOptions.OverlayColor);
+                }
             }
 
             if (TourOptions.TrackVisited)
