@@ -15,6 +15,7 @@
     <PackageTags>blazor;tour;guide;onboarding;walkthrough;accessibility</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,7 @@
 
   <!-- Include static assets in NuGet package -->
   <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="wwwroot\**" Pack="true" PackagePath="wwwroot" />
   </ItemGroup>
 
