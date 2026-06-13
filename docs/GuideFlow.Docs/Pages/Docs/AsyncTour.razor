@@ -6,57 +6,107 @@
 
 <div class="docs-content">
     <h1 id="async-tour-title">Async Tour</h1>
-    <p class="docs-lead" id="async-tour-lead">Fetch step content from an API or load it asynchronously as the user progresses. Useful when tour steps depend on user data, feature flags, or server-side configuration that isn't available at page load.</p>
+    <p class="docs-lead" id="async-tour-lead">You can also have async steps in your tour. This is useful when you want to load some data from the server and then show the tour.</p>
 
-    <button class="docs-demo__run" @onclick="StartTour" id="async-tour-run-btn">▶ Show me the example</button>
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Click the button below to start the async tour. The second step's content is loaded dynamically.</p>
+
+    <div class="popover-demo">
+        <div style="text-align:center;">
+            <button class="docs-btn" @onclick="StartTour">Asynchronous Tour</button>
+        </div>
+
+        @if (_showDynamicElement)
+        {
+            <div id="async-dynamic-el" class="popover-demo__target" style="margin-top:1rem;">
+                <span>Dynamic Element (loaded async)</span>
+            </div>
+        }
+    </div>
 
     <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
 
     <div id="async-tour-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#async-tour-title"" Title=""Async Content"" Order=""0""
-                   Side=""Placement.Bottom""
-                   OnLoadContent=""LoadContent"">
-        <p>Loading content...</p>
+    <GuideFlowStep Title=""First Step"" Order=""0""
+                   OnNextClick=""OnFirstStepNext"">
+        <p>This is the first step. Next element will be loaded dynamically.</p>
     </GuideFlowStep>
+
+    @if (_showDynamicElement)
+    {
+        <GuideFlowStep Element=""#dynamic-el"" Title=""Async Element"" Order=""1"">
+            <p>This element is loaded dynamically.</p>
+        </GuideFlowStep>
+    }
 </GuideFlowTour>
 
 @code {
     private GuideFlowTour? tour;
-    private TourOptions options = new() { };
+    private bool _showDynamicElement;
 
-    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
-
-    private Task<string> LoadContent()
+    private TourOptions options = new()
     {
-        return Task.FromResult(""<p>Content loaded dynamically via <code>OnLoadContent</code>!</p>"");
+        ShowProgress = true,
+    };
+
+    // Override next button to load element before moving to next step
+    private async Task OnFirstStepNext()
+    {
+        _showDynamicElement = true;
+        StateHasChanged();
+        await Task.Delay(100); // Wait for DOM to render
+        await tour!.MoveNextAsync();
+    }
+
+    private async Task StartTour()
+    {
+        _showDynamicElement = false;
+        if (tour != null) await tour.DriveAsync();
     }
 }")" />
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> When using <code>OnNextClick</code> at the step level, you override the default behavior of the next button. The driver will not move to the next step automatically. You must call <code>MoveNextAsync()</code> manually. When configured at the tour level via <code>TourOptions.OnNextClick</code>, you control the navigation for all the steps. When configured at the step level, you control the navigation for that particular step only.
     </div>
 
 </div>
 
 <GuideFlowTour @ref="tour" TourOptions="options">
-    <GuideFlowStep Element="#async-tour-title" Title="Async Content" Order="0"
-                   Side="Placement.Bottom" Align="PopoverAlign.Start"
-                   OnLoadContent="LoadContent">
-        <p>Loading content...</p>
+    <GuideFlowStep Title="First Step" Order="0"
+                   OnNextClick="OnFirstStepNext">
+        <p>This is the first step. Next element will be loaded dynamically.</p>
     </GuideFlowStep>
+
+    @if (_showDynamicElement)
+    {
+        <GuideFlowStep Element="#async-dynamic-el" Title="Async Element" Order="1">
+            <p>This element is loaded dynamically after clicking Next on the first step.</p>
+        </GuideFlowStep>
+    }
 </GuideFlowTour>
 
 @code {
     private GuideFlowTour? tour;
+    private bool _showDynamicElement;
 
-    private TourOptions options = new() { };
-
-    private Task<string> LoadContent()
+    private TourOptions options = new()
     {
-        // In real apps, fetch from API here
-        return Task.FromResult("<p>Content loaded dynamically via <code>OnLoadContent</code>!</p>");
+        ShowProgress = true,
+    };
+
+    private async Task OnFirstStepNext()
+    {
+        _showDynamicElement = true;
+        StateHasChanged();
+        await Task.Delay(100); // Wait for DOM to render
+        await tour!.MoveNextAsync();
     }
 
     private async Task StartTour()
     {
+        _showDynamicElement = false;
         if (tour != null) await tour.DriveAsync();
     }
 }

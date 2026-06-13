@@ -36,6 +36,10 @@
     [Parameter] public EventCallback<TourContext> OnBeforeDestroy { get; set; }
     [Parameter] public EventCallback<TourContext> OnDestroyed { get; set; }
 
+    /// <summary>Called when the user tries to exit the tour. Return true to proceed with destroy, false to cancel.
+    /// When set, you are responsible for calling DestroyAsync() manually to exit the tour.</summary>
+    [Parameter] public Func<Task<bool>>? OnDestroyStarted { get; set; }
+
     [Parameter] public EventCallback<TourContext> OnNextClick { get; set; }
     [Parameter] public EventCallback<TourContext> OnPrevClick { get; set; }
     [Parameter] public EventCallback<TourContext> OnCloseClick { get; set; }
@@ -222,11 +226,46 @@
         }
     }
 
+    /// <summary>Show a popover without highlighting any element (modal mode).</summary>
+    public async Task ShowPopoverAsync(string title, string? description = null,
+        Placement side = Placement.Bottom, PopoverAlign align = PopoverAlign.Center)
+    {
+        if (!_jsAvailable || _jsModule == null) return;
+
+        _steps.Clear();
+#pragma warning disable BL0005
+        var step = new GuideFlowStep
+        {
+            Element = string.Empty,
+            Title = title,
+            Text = description,
+            Side = side,
+            Align = align,
+            Order = 0,
+            ShowBack = false,
+            ShowSkip = false,
+            Mode = StepMode.Modal,
+        };
+#pragma warning restore BL0005
+        RegisterStep(step);
+        _isActive = true;
+        ActiveIndex = 0;
+        await SetBodyClassesAsync(true);
+        StateHasChanged();
+    }
+
     // === Destroy (Driver.js: destroy) ===
 
     /// <summary>Driver.js: destroy(). Destroys the tour and cleans up.</summary>
     public async Task DestroyAsync()
     {
+        // If OnDestroyStarted is set, check if destroy should proceed
+        if (OnDestroyStarted != null)
+        {
+            var shouldDestroy = await OnDestroyStarted();
+            if (!shouldDestroy) return;
+        }
+
         if (OnBeforeDestroy.HasDelegate) await OnBeforeDestroy.InvokeAsync(BuildContext());
 
         await CleanupCurrentStep();

@@ -34,6 +34,7 @@
     {
         ShowProgress = true,
         ShowProgressBar = true,
+        ProgressText = ""Step {{current}} of {{total}}"",
     };
     private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
 }")" />
@@ -63,6 +64,7 @@
     {
         ShowProgress = true,
         ShowProgressBar = true,
+        ProgressText = "Step {{current}} of {{total}}",
     };
 
     private async Task StartTour()

@@ -6,63 +6,129 @@
 
 <div class="docs-content">
     <h1 id="styling-popover-title">Styling Popover</h1>
-    <p class="docs-lead" id="styling-popover-lead">Override the default popover look with custom CSS classes or built-in themes. Control the popover's background, border, arrow style, and button appearance to match your application's design system.</p>
+    <p class="docs-lead" id="styling-popover-lead">You can either use the default class names and override the styles or you can pass a custom class name to the <code>PopoverClass</code> option either globally or per step.</p>
 
-    <button class="docs-demo__run" @onclick="StartTour" id="styling-popover-run-btn">▶ Show me the example</button>
+    <div class="docs-callout docs-callout--info">
+        Alternatively, if you want to modify the Popover DOM, you can use the <code>OnPopoverRender</code> callback to get the popover DOM element and do whatever you want with it before popover is rendered.
+    </div>
 
-    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+    <p>We have added a few examples below but have a look at the <a href="/docs/theming">theming section</a> for detailed guide including class names to target etc.</p>
 
-    <div id="styling-popover-code">
+    <h2 id="using-css">Using CSS <a class="docs-anchor" href="#using-css">#</a></h2>
+
+    <div id="styling-popover-css-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#styling-popover-title"" Title=""Dark Theme"" Order=""0""
-                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start""
-                   PopoverClass=""gf-theme-dark"">
-        <p>This step uses the built-in dark theme.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element=""#styling-popover-code"" Title=""Custom Class"" Order=""1""
-                   Side=""Placement.Top""
-                   PopoverClass=""custom-popover"">
-        <p>This step uses a custom CSS class.</p>
+    <GuideFlowStep Element=""#my-element"" Title=""Style However You Want""
+                   Order=""0"" Side=""Placement.Bottom"">
+        <p>You can use the default class names and override the styles
+           or you can pass a custom class name to the PopoverClass option
+           either globally or per step.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 @code {
-    private GuideFlowTour? tour;
-    private TourOptions options = new() { };
-    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+    private TourOptions options = new()
+    {
+        PopoverClass = ""my-custom-theme"",
+    };
+}")" />
+    </div>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="styling-demo-target">
+            <span>Target Element</span>
+        </div>
+
+        <div class="popover-demo__buttons" style="margin-top: 1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowDefault">Default Theme</button>
+            <button class="docs-btn" @onclick="ShowDark">Dark Theme</button>
+            <button class="docs-btn" @onclick="ShowCustom">Custom CSS Theme</button>
+        </div>
+    </div>
+
+    <h3>Custom CSS for the above example</h3>
+    <div id="styling-custom-css-code">
+        <CodeBlock Language="css" Code="@(@".my-custom-theme {
+    --gf-popover-bg: #1a1a2e;
+    --gf-title-color: #667eea;
+    --gf-text-color: #a0a0b0;
+    --gf-btn-primary-bg: #667eea;
+    --gf-btn-primary-color: #ffffff;
+    --gf-btn-secondary-bg: #2a2a3e;
+    --gf-btn-secondary-color: #a0a0b0;
+    --gf-popover-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --gf-popover-radius: 12px;
+}")" />
+    </div>
+
+    <h2 id="popover-dom">Manipulating Popover DOM <a class="docs-anchor" href="#popover-dom">#</a></h2>
+
+    <p>You can use the <code>OnPopoverRender</code> callback to manipulate the popover DOM element directly:</p>
+
+    <div id="styling-dom-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""Custom DOM""
+               Order=""0"" OnPopoverRender=""OnPopoverRender"">
+    <p>This popover has custom DOM manipulation.</p>
+</GuideFlowStep>
+
+@code {
+    private void OnPopoverRender()
+    {
+        // Access the popover DOM element via JS interop
+        // and modify it as needed before it is rendered.
+    }
 }")" />
     </div>
 
 </div>
 
-<GuideFlowTour @ref="tour" TourOptions="options">
-    <GuideFlowStep Element="#styling-popover-title" Title="Dark Theme" Order="0"
-                   Side="Placement.Bottom" Align="PopoverAlign.Start"
-                   PopoverClass="gf-theme-dark">
-        <p>This step uses the built-in dark theme.</p>
+<GuideFlowTour @ref="defaultTour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-demo-target" Title="Default Theme" Order="0"
+                   Side="Placement.Bottom">
+        <p>This uses the default light theme with no custom styling.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element="#styling-popover-code" Title="Custom Class" Order="1"
-                   Side="Placement.Top"
-                   PopoverClass="custom-popover">
-        <p>This step uses a custom CSS class.</p>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="darkTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-demo-target" Title="Dark Theme" Order="0"
+                   Side="Placement.Bottom">
+        <p>This uses the built-in <code>gf-theme-dark</code> class.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="customTour" TourOptions="customOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-demo-target" Title="Custom CSS Theme" Order="0"
+                   Side="Placement.Bottom">
+        <p>This uses a custom CSS class with overridden CSS variables.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 @code {
-    private GuideFlowTour? tour;
+    private GuideFlowTour? defaultTour, darkTour, customTour;
+    private bool busy;
 
-    private TourOptions options = new() { };
+    private TourOptions defaultOpts = new() { };
+    private TourOptions darkOpts = new() { PopoverClass = "gf-theme-dark" };
+    private TourOptions customOpts = new() { PopoverClass = "my-custom-theme" };
 
-    private async Task StartTour()
-    {
-        if (tour != null) await tour.DriveAsync();
-    }
+    private async Task ShowDefault() { if (defaultTour != null && !busy) { busy = true; await defaultTour.DriveAsync(); } }
+    private async Task ShowDark() { if (darkTour != null && !busy) { busy = true; await darkTour.DriveAsync(); } }
+    private async Task ShowCustom() { if (customTour != null && !busy) { busy = true; await customTour.DriveAsync(); } }
+    private void OnEnd() { busy = false; StateHasChanged(); }
 }
 
 <style>
-    .custom-popover {
-        background-color: #f3f4f6;
-        border: 2px solid #4b5563;
-        color: #1f2937;
+    .my-custom-theme {
+        --gf-popover-bg: #1a1a2e;
+        --gf-title-color: #667eea;
+        --gf-text-color: #a0a0b0;
+        --gf-btn-primary-bg: #667eea;
+        --gf-btn-primary-color: #ffffff;
+        --gf-btn-secondary-bg: #2a2a3e;
+        --gf-btn-secondary-color: #a0a0b0;
+        --gf-popover-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --gf-popover-radius: 12px;
     }
 </style>

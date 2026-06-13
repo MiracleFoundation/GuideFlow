@@ -1,0 +1,101 @@
+@page "/docs/styling-overlay"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Styling Overlay - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="styling-overlay-title">Styling Overlay</h1>
+    <p class="docs-lead" id="styling-overlay-lead">You can customize the overlay opacity and color using <code>OverlayOpacity</code> and <code>OverlayColor</code> options to change the look of the overlay.</p>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> In the examples below we have used the <code>HighlightAsync</code> method to highlight the elements. The same configuration applies to the tour steps as well.
+    </div>
+
+    <h2 id="overlay-color">Overlay Color <a class="docs-anchor" href="#overlay-color">#</a></h2>
+    <p>Here are some examples with different overlay colors.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="overlay-color-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowRed">Red Color</button>
+            <button class="docs-btn" @onclick="ShowBlue">Blue Color</button>
+            <button class="docs-btn" @onclick="ShowYellow">Yellow Color</button>
+        </div>
+    </div>
+
+    <h3>Code for the above example</h3>
+    <div id="overlay-color-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"" />
+
+<button @onclick=""ShowRed"">Red Color</button>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new()
+    {
+        OverlayColor = ""rgba(255, 0, 0, 0.5)"",
+    };
+
+    private async Task ShowRed()
+    {
+        if (tour != null)
+        {
+            await tour.HighlightAsync(""#target"",
+                title: ""Pass any RGB Color"",
+                description: ""Here we have set the overlay color to be red."");
+        }
+    }
+}")" />
+    </div>
+
+    <h2 id="overlay-opacity">Overlay Opacity <a class="docs-anchor" href="#overlay-opacity">#</a></h2>
+    <p>You can also adjust the overlay opacity to make it more or less transparent.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__buttons" style="grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowLight">Light (0.2)</button>
+            <button class="docs-btn" @onclick="ShowMedium">Medium (0.5)</button>
+            <button class="docs-btn" @onclick="ShowDark">Dark (0.8)</button>
+        </div>
+    </div>
+
+    <div id="overlay-opacity-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    OverlayOpacity = 0.3, // 0.0 to 1.0
+    OverlayColor = ""#000"",
+};")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="redTour" TourOptions="redOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+<GuideFlowTour @ref="blueTour" TourOptions="blueOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+<GuideFlowTour @ref="yellowTour" TourOptions="yellowOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+<GuideFlowTour @ref="lightTour" TourOptions="lightOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+<GuideFlowTour @ref="mediumTour" TourOptions="mediumOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+<GuideFlowTour @ref="darkTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+
+@code {
+    private GuideFlowTour? redTour, blueTour, yellowTour, lightTour, mediumTour, darkTour;
+    private bool busy;
+
+    private TourOptions redOpts = new() { OverlayColor = "rgba(255, 0, 0, 0.5)" };
+    private TourOptions blueOpts = new() { OverlayColor = "rgba(0, 0, 255, 0.5)" };
+    private TourOptions yellowOpts = new() { OverlayColor = "rgba(255, 255, 0, 0.5)" };
+    private TourOptions lightOpts = new() { OverlayOpacity = 0.2 };
+    private TourOptions mediumOpts = new() { OverlayOpacity = 0.5 };
+    private TourOptions darkOpts = new() { OverlayOpacity = 0.8 };
+
+    private async Task ShowRed() { if (redTour != null && !busy) { busy = true; await redTour.HighlightAsync("#overlay-color-target", "Pass any RGB Color", "Here we have set the overlay color to be red. You can pass any RGB color to OverlayColor option."); } }
+    private async Task ShowBlue() { if (blueTour != null && !busy) { busy = true; await blueTour.HighlightAsync("#overlay-color-target", "Blue Overlay", "Overlay color set to blue."); } }
+    private async Task ShowYellow() { if (yellowTour != null && !busy) { busy = true; await yellowTour.HighlightAsync("#overlay-color-target", "Yellow Overlay", "Overlay color set to yellow."); } }
+    private async Task ShowLight() { if (lightTour != null && !busy) { busy = true; await lightTour.HighlightAsync("#overlay-color-target", "Light Overlay", "Overlay opacity set to 0.2."); } }
+    private async Task ShowMedium() { if (mediumTour != null && !busy) { busy = true; await mediumTour.HighlightAsync("#overlay-color-target", "Medium Overlay", "Overlay opacity set to 0.5."); } }
+    private async Task ShowDark() { if (darkTour != null && !busy) { busy = true; await darkTour.HighlightAsync("#overlay-color-target", "Dark Overlay", "Overlay opacity set to 0.8."); } }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

@@ -1,22 +1,41 @@
 @page "/docs/confirm-on-exit"
 @using GuideFlow.Services
 @using GuideFlow.Enums
+@inject IJSRuntime JS
 
 <PageTitle>Confirm On Exit - GuideFlow</PageTitle>
 
 <div class="docs-content">
-    <h1 id="confirm-on-exit-title">Confirm On Exit</h1>
-    <p class="docs-lead" id="confirm-on-exit-lead">Show a confirmation dialog when the user presses Escape or clicks the overlay to exit mid-tour. Prevents accidental dismissal of important onboarding flows and lets you run custom logic before the tour closes.</p>
+    <h1 id="confirm-on-exit-title">Confirm on Exit</h1>
+    <p class="docs-lead" id="confirm-on-exit-lead">You can use the <code>OnDestroyStarted</code> callback to add a confirmation dialog or some other logic when the user tries to exit the tour. In the example below, upon exit we check if there are any tour steps left and ask for confirmation before we exit.</p>
 
-    <button class="docs-demo__run" @onclick="StartTour" id="confirm-on-exit-run-btn">▶ Show me the example</button>
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="confirm-destroy-example" style="cursor:pointer;">
+            <span>Confirm on Exit</span>
+        </div>
+        <div style="text-align:center;margin-top:1rem;">
+            <button class="docs-btn" @onclick="StartTour">Show me an Example</button>
+        </div>
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> By overriding the <code>OnDestroyStarted</code> callback, you are responsible for calling <code>DestroyAsync()</code> to exit the tour.
+    </div>
 
     <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
 
     <div id="confirm-on-exit-code">
-        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#confirm-on-exit-title"" Title=""Step 1"" Order=""0""
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options""
+             OnDestroyStarted=""OnDestroyStarted"">
+    <GuideFlowStep Element=""#my-element"" Title=""Step 1"" Order=""0""
                    Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
         <p>Try to close this tour.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#my-element"" Title=""Step 2"" Order=""1""
+                   Side=""Placement.Top"">
+        <p>Another step.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
@@ -24,24 +43,38 @@
     private GuideFlowTour? tour;
     private TourOptions options = new()
     {
-        AllowClose = false, // Prevent closing without confirmation
+        ShowProgress = true,
     };
 
-    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+    private async Task<bool> OnDestroyStarted()
+    {
+        if (!tour!.HasNextStep())
+            return true; // Last step - allow exit
 
-    // In the component logic:
-    // private async Task<bool> OnBeforeDestroy() {
-    //     return await JSRuntime.InvokeAsync<bool>(""confirm"", ""Are you sure?"");
-    // }
+        // Ask for confirmation
+        return await JS.InvokeAsync<bool>(""confirm"", ""Are you sure you want to exit the tour?"");
+    }
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
 }")" />
     </div>
 
 </div>
 
-<GuideFlowTour @ref="tour" TourOptions="options">
-    <GuideFlowStep Element="#confirm-on-exit-title" Title="Step 1" Order="0"
+<GuideFlowTour @ref="tour" TourOptions="options" OnDestroyStarted="OnDestroyStarted">
+    <GuideFlowStep Element="#confirm-destroy-example" Title="Animated Tour Example" Order="0"
+                   Side="Placement.Left" Align="PopoverAlign.Start">
+        <p>Here is the code example showing the confirm on exit feature.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#confirm-on-exit-code" Title="The Code" Order="1"
                    Side="Placement.Bottom" Align="PopoverAlign.Start">
-        <p>Try to close this tour.</p>
+        <p>This is where you define the OnDestroyStarted callback.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Title="Happy Coding" Order="2">
+        <p>And that is all, go ahead and start adding tours to your applications.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
@@ -50,8 +83,16 @@
 
     private TourOptions options = new()
     {
-        AllowClose = false,
+        ShowProgress = true,
     };
+
+    private async Task<bool> OnDestroyStarted()
+    {
+        if (!tour!.HasNextStep())
+            return true; // Last step - allow exit
+
+        return await JS.InvokeAsync<bool>("confirm", "Are you sure you want to exit the tour?");
+    }
 
     private async Task StartTour()
     {

@@ -24,7 +24,7 @@
             {
                 <div class="gf-step__header">
                     <h3 class="gf-step__title">@Title</h3>
-                    @if (ShowClose)
+                    @if (ResolvedShowClose)
                     {
                         <button class="gf-step__close" @onclick="HandleCloseClick" aria-label="@ResolvedCloseLabel">
                             &times;
@@ -72,15 +72,15 @@
                     }
                     else
                     {
-                        @if (ShowSkip && (_tour?.ActiveIndex ?? 0) < (_tour?.TotalSteps ?? 0) - 1)
+                        @if (ResolvedShowSkip && (_tour?.ActiveIndex ?? 0) < (_tour?.TotalSteps ?? 0) - 1)
                         {
                             <button class="gf-btn gf-btn--skip" @onclick="OnSkipClick">@ResolvedSkipText</button>
                         }
-                        @if (ShowBack && (_tour?.ActiveIndex ?? 0) > 0)
+                        @if (ResolvedShowBack && (_tour?.ActiveIndex ?? 0) > 0)
                         {
                             <button class="gf-btn gf-btn--back" @onclick="HandleBackClick">@ResolvedBackText</button>
                         }
-                        @if (ShowNext)
+                        @if (ResolvedShowNext)
                         {
                             <button class="gf-btn gf-btn--next" @onclick="HandleNextClick" @ref="nextButton">
                                 @((_tour?.ActiveIndex ?? 0) >= (_tour?.TotalSteps ?? 0) - 1 ? ResolvedFinishText : ResolvedNextText)
@@ -231,6 +231,45 @@
     }
 
     private Placement ResolvedSide => Side;
+
+    /// <summary>Effective ShowButtons: step-level overrides tour-level.</summary>
+    private ButtonType[]? EffectiveShowButtons => ShowButtons ?? _tour?.TourOptions?.ShowButtons;
+
+    private bool ResolvedShowNext
+    {
+        get
+        {
+            var buttons = EffectiveShowButtons;
+            return buttons != null ? buttons.Contains(ButtonType.Next) : ShowNext;
+        }
+    }
+
+    private bool ResolvedShowBack
+    {
+        get
+        {
+            var buttons = EffectiveShowButtons;
+            return buttons != null ? buttons.Contains(ButtonType.Previous) : ShowBack;
+        }
+    }
+
+    private bool ResolvedShowClose
+    {
+        get
+        {
+            var buttons = EffectiveShowButtons;
+            return buttons != null ? buttons.Contains(ButtonType.Close) : ShowClose;
+        }
+    }
+
+    private bool ResolvedShowSkip
+    {
+        get
+        {
+            var buttons = EffectiveShowButtons;
+            return buttons != null ? buttons.Contains(ButtonType.Skip) : ShowSkip;
+        }
+    }
 
     internal bool ResolvedDisableActiveInteraction =>
         DisableActiveInteraction ?? _tour?.TourOptions?.DisableActiveInteraction ?? false;

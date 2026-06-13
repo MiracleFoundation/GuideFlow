@@ -1292,6 +1292,114 @@ body {
 }
 
 /* ============================================
+   Callout Box
+   ============================================ */
+
+.docs-callout {
+    margin: 1rem 0 1.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--docs-radius-md);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    border: 1px solid;
+}
+
+.docs-callout--info {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1e40af;
+}
+
+.docs-callout code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+    font-size: 0.85em;
+}
+
+/* ============================================
+   Generic Docs Button
+   ============================================ */
+
+.docs-btn {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--docs-fg);
+    background: var(--docs-surface);
+    border: 1px solid var(--docs-border);
+    border-radius: var(--docs-radius-sm);
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: all 0.15s var(--docs-ease);
+    font-family: var(--docs-font);
+    line-height: 1.4;
+}
+
+.docs-btn:hover {
+    border-color: var(--docs-accent);
+    color: var(--docs-accent);
+    background: var(--docs-accent-light);
+}
+
+.docs-btn:active {
+    transform: scale(0.97);
+}
+
+/* ============================================
+   Popover Position Demo
+   ============================================ */
+
+.popover-demo {
+    margin: 1rem 0 1.5rem;
+    border: 1px solid var(--docs-border);
+    border-radius: var(--docs-radius-lg);
+    padding: 2rem;
+    background: var(--docs-surface);
+}
+
+.popover-demo__target {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 220px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: var(--docs-accent-light);
+    border: 2px dashed var(--docs-accent);
+    border-radius: var(--docs-radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--docs-accent-hover);
+}
+
+.popover-demo__buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.popover-demo__group h4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--docs-fg-tertiary);
+    margin: 0 0 0.4rem;
+}
+
+.popover-demo__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+@media (max-width: 600px) {
+    .popover-demo__buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================================
    Prism.js - Theme-aware tokens
    ============================================ */
 

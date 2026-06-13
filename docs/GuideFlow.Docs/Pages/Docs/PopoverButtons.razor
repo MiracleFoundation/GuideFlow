@@ -6,72 +6,101 @@
 
 <div class="docs-content">
     <h1 id="popover-buttons-title">Popover Buttons</h1>
-    <p class="docs-lead" id="popover-buttons-lead">Show, hide, or relabel the Next, Previous, Skip, and Done buttons in the popover. Add custom button classes, control visibility per-step, or use the built-in progress counter as a button label.</p>
+    <p class="docs-lead" id="popover-buttons-lead">You can use the <code>ShowButtons</code> option to choose which buttons to show in the popover. The default value is <code>Next</code>, <code>Previous</code>, <code>Close</code>.</p>
 
-    <button class="docs-demo__run" @onclick="StartTour" id="popover-buttons-run-btn">▶ Show me the example</button>
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> When using the <code>HighlightAsync</code> method to highlight a single element, the only button shown is the close button. However, you can use the <code>ShowButtons</code> option to show other buttons as well. But the buttons won't do anything. You will have to use the <code>OnNextClick</code> and <code>OnPrevClick</code> callbacks to implement the functionality.
+    </div>
 
     <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
 
     <div id="popover-buttons-code">
         <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
-    <GuideFlowStep Element=""#popover-buttons-title"" Title=""Step 1"" Order=""0""
-                   Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
-        <p>Custom button text example.</p>
+    <GuideFlowStep Element=""#first-element"" Title=""Popover Title"" Order=""0"">
+        <p>Popover Description</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#popover-buttons-code"" Title=""Step 2"" Order=""1""
-                   Side=""Placement.Top"">
-        <p>Skipping the skip button.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element=""#popover-buttons-run-btn"" Title=""Step 3"" Order=""2""
-                   Side=""Placement.Right"">
-        <p>Final step with custom Done text.</p>
+    <GuideFlowStep Element=""#second-element"" Title=""Popover Title"" Order=""1"">
+        <p>Popover Description</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 @code {
-    private GuideFlowTour? tour;
     private TourOptions options = new()
     {
-        NextBtnText = ""Continue"",
-        PrevBtnText = ""Back"",
-        DoneBtnText = ""Finish"",
-        SkipBtnText = ""Exit"",
-        ShowButtons = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
     };
-    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
 }")" />
+    </div>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Use the buttons below to run examples with different button configurations.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="popover-buttons-target-1">
+            <span>First Element</span>
+        </div>
+
+        <div class="popover-demo__target" id="popover-buttons-target-2" style="margin-top: 1rem;">
+            <span>Second Element</span>
+        </div>
+
+        <div class="popover-demo__buttons" style="margin-top: 1.5rem;">
+            <button class="docs-btn" @onclick="ShowAllButtons">Show All Buttons</button>
+            <button class="docs-btn" @onclick="NoCloseButton">No Close Button</button>
+            <button class="docs-btn" @onclick="OnlyNext">Only Next</button>
+            <button class="docs-btn" @onclick="WithSkip">With Skip Button</button>
+        </div>
     </div>
 
 </div>
 
-<GuideFlowTour @ref="tour" TourOptions="options">
-    <GuideFlowStep Element="#popover-buttons-title" Title="Step 1" Order="0"
-                   Side="Placement.Bottom" Align="PopoverAlign.Start">
-        <p>Custom button text example.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element="#popover-buttons-code" Title="Step 2" Order="1"
-                   Side="Placement.Top">
-        <p>Skipping the skip button.</p>
-    </GuideFlowStep>
-    <GuideFlowStep Element="#popover-buttons-run-btn" Title="Step 3" Order="2"
-                   Side="Placement.Right">
-        <p>Final step with custom Done text.</p>
-    </GuideFlowStep>
-</GuideFlowTour>
+<GuideFlowTour @ref="tour" TourOptions="_options" />
 
 @code {
     private GuideFlowTour? tour;
+    private TourOptions _options = new();
 
-    private TourOptions options = new()
+    private async Task ShowAllButtons()
     {
-        NextBtnText = "Continue",
-        PrevBtnText = "Back",
-        DoneBtnText = "Finish",
-        SkipBtnText = "Exit",
-    };
+        if (tour == null) return;
+        _options = new()
+        {
+            ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+        };
+        StateHasChanged();
+        await tour.DriveAsync();
+    }
 
-    private async Task StartTour()
+    private async Task NoCloseButton()
     {
-        if (tour != null) await tour.DriveAsync();
+        if (tour == null) return;
+        _options = new()
+        {
+            ShowButtons = new[] { ButtonType.Next, ButtonType.Previous },
+        };
+        StateHasChanged();
+        await tour.DriveAsync();
+    }
+
+    private async Task OnlyNext()
+    {
+        if (tour == null) return;
+        _options = new()
+        {
+            ShowButtons = new[] { ButtonType.Next },
+        };
+        StateHasChanged();
+        await tour.DriveAsync();
+    }
+
+    private async Task WithSkip()
+    {
+        if (tour == null) return;
+        _options = new()
+        {
+            ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
+        };
+        StateHasChanged();
+        await tour.DriveAsync();
     }
 }
