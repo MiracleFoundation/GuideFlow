@@ -55,12 +55,25 @@
     @* --- Stage / Highlight --- *@
     <h3 id="to-stage">Stage / Highlight <a class="docs-anchor" href="#to-stage">#</a></h3>
     <ApiTable>
-        <ApiRow Name="StagePadding" Type="int" Default="8" Desc="Padding around highlighted element in pixels." />
-        <ApiRow Name="StageRadius" Type="int" Default="4" Desc="Border radius of highlighted area." />
-        <ApiRow Name="HighlightShape" Type="HighlightShape" Default="RoundedRect" Desc="Shape: RoundedRect, Rectangle, Circle, Ellipse." />
+        <ApiRow Name="StagePadding" Type="int" Default="10" Desc="Padding around highlighted element in pixels." />
+        <ApiRow Name="StageRadius" Type="int" Default="5" Desc="Border radius of highlighted area (only for RoundedRect)." />
+        <ApiRow Name="HighlightShape" Type="HighlightShape" Default="RoundedRect" Desc="Shape of the highlighted area." />
         <ApiRow Name="OverlayMode" Type="OverlayMode" Default="Cutout" Desc="Overlay mode: Cutout (SVG mask) or Stage (4 panels)." />
         <ApiRow Name="ZIndex" Type="int" Default="10000" Desc="z-index for overlay and popovers." />
     </ApiTable>
+
+    <h4>HighlightShape Values</h4>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Shape</th><th>Description</th><th>Best for</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>RoundedRect</code></td><td>Rounded rectangle with configurable border radius</td><td>Buttons, cards, inputs</td></tr>
+            <tr><td><code>Rectangle</code></td><td>Sharp-corner rectangle (no border radius)</td><td>Images, tables</td></tr>
+            <tr><td><code>Circle</code></td><td>Circle based on the larger dimension of the target</td><td>Avatars, icons</td></tr>
+            <tr><td><code>Ellipse</code></td><td>Ellipse matching the target's aspect ratio</td><td>Non-square rounded elements</td></tr>
+        </tbody>
+    </table>
 
     @* --- Popover --- *@
     <h3 id="to-popover">Popover <a class="docs-anchor" href="#to-popover">#</a></h3>

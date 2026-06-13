@@ -55,11 +55,11 @@
 | # | Test Case | Steps | Expected | OK? |
 |---|-----------|-------|----------|-----|
 | 5.1 | RoundedRect (default) | Default settings | Rounded rectangle cutout | ✅ |
-| 5.2 | Rectangle | Set `HighlightShape = Rectangle` | Sharp-corner rectangle cutout | ❌ BUG |
-| 5.3 | Circle | Set `HighlightShape = Circle` | Circular cutout | ❌ BUG |
-| 5.4 | Ellipse | Set `HighlightShape = Ellipse` | Elliptical cutout | ❌ BUG |
-| 5.5 | Stage padding | Set `StagePadding = 20` | 20px padding around target | (chưa có demo) |
-| 5.6 | Stage radius | Set `StageRadius = 15` | Rounded corners with 15px radius | (chưa có demo) |
+| 5.2 | Rectangle | Set `HighlightShape = Rectangle` | Sharp-corner rectangle cutout | ✅ |
+| 5.3 | Circle | Set `HighlightShape = Circle` | Circular cutout | ✅ |
+| 5.4 | Ellipse | Set `HighlightShape = Ellipse` | Elliptical cutout | ✅ |
+| 5.5 | Stage padding | Click 0px/10px/30px buttons on Stage Overlay page | Gap around target changes | ✅ |
+| 5.6 | Stage radius | Click 0px/5px/20px buttons on Stage Overlay page | Border radius changes | ✅ |
 
 ## 6. Animation ✅
 
@@ -248,7 +248,7 @@
 | 2. Overlay | 7 | 5 | 0 | 0 |
 | 3. Popover Positioning | 13 | 13 | 0 | 0 |
 | 4. Arrow | 3 | 3 | 0 | 0 |
-| 5. Highlight Shapes | 6 | 1 | 3 | 0 |
+| 5. Highlight Shapes | 6 | 6 | 0 | 0 |
 | 6. Animation | 8 | 8 | 0 | 0 |
 | 7. Step Content | 6 | | | |
 | 8. Buttons | 13 | | | |
@@ -264,7 +264,7 @@
 | 18. Async Tour | 3 | | | |
 | 19. Edge Cases | 10 | | | |
 | 20. Persist State | 4 | | | |
-| **Total** | **136** | **37** | **3** | **0** |
+| **Total** | **136** | **42** | **0** | **0** |
 
 ## Notes
 

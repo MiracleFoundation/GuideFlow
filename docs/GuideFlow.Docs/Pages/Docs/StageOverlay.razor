@@ -31,9 +31,55 @@
 }")" />
     </div>
 
+    <h2 id="stage-padding">Stage Padding <a class="docs-anchor" href="#stage-padding">#</a></h2>
+    <p><code>StagePadding</code> controls the gap (in pixels) between the target element and the edge of the highlight area. Default is 10.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="padding-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="() => ShowPaddingAsync(0)">0px (Tight)</button>
+            <button class="docs-btn" @onclick="() => ShowPaddingAsync(10)">10px (Default)</button>
+            <button class="docs-btn" @onclick="() => ShowPaddingAsync(30)">30px (Large)</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="padding-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    OverlayMode = OverlayMode.Stage,
+    StagePadding = 20,   // 20px gap around target
+};")" />
+    </div>
+
+    <h2 id="stage-radius">Stage Radius <a class="docs-anchor" href="#stage-radius">#</a></h2>
+    <p><code>StageRadius</code> controls the border radius (in pixels) of the highlighted area. Only applies when <code>HighlightShape</code> is <code>RoundedRect</code>. Default is 5.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="radius-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="() => ShowRadiusAsync(0)">0px (Sharp)</button>
+            <button class="docs-btn" @onclick="() => ShowRadiusAsync(5)">5px (Default)</button>
+            <button class="docs-btn" @onclick="() => ShowRadiusAsync(20)">20px (Rounded)</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="radius-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    OverlayMode = OverlayMode.Stage,
+    StageRadius = 20,   // 20px border radius
+};")" />
+    </div>
+
 </div>
 
-<GuideFlowTour @ref="tour" TourOptions="options">
+<GuideFlowTour @ref="tour" TourOptions="options" OnComplete="OnEnd" OnCancel="OnEnd">
     <GuideFlowStep Element="#stage-overlay-title" Title="Stage Step 1" Order="0">
         <p>This step uses stage overlay mode.</p>
     </GuideFlowStep>
@@ -42,8 +88,23 @@
     </GuideFlowStep>
 </GuideFlowTour>
 
+<GuideFlowTour @ref="paddingTour" TourOptions="paddingOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#padding-demo-target" Title="Stage Padding" Order="0" Side="Placement.Bottom">
+        <p>StagePadding: <strong>@_padding px</strong></p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="radiusTour" TourOptions="radiusOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#radius-demo-target" Title="Stage Radius" Order="0" Side="Placement.Bottom">
+        <p>StageRadius: <strong>@_radius px</strong></p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
 @code {
-    private GuideFlowTour? tour;
+    private GuideFlowTour? tour, paddingTour, radiusTour;
+    private bool busy;
+    private int _padding = 10;
+    private int _radius = 5;
 
     private TourOptions options = new()
     {
@@ -52,8 +113,48 @@
         StageRadius = 5,
     };
 
+    private TourOptions paddingOpts = new()
+    {
+        OverlayMode = OverlayMode.Stage,
+        StagePadding = 10,
+        StageRadius = 5,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private TourOptions radiusOpts = new()
+    {
+        OverlayMode = OverlayMode.Stage,
+        StagePadding = 10,
+        StageRadius = 5,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
     private async Task StartTour()
     {
-        if (tour != null) await tour.DriveAsync();
+        if (tour != null && !busy) { busy = true; await tour.DriveAsync(); }
     }
+
+    private async Task ShowPaddingAsync(int padding)
+    {
+        if (paddingTour == null || busy) return;
+        busy = true;
+        _padding = padding;
+        paddingOpts.StagePadding = padding;
+        StateHasChanged();
+        await paddingTour.ResetAsync();
+        await paddingTour.DriveAsync();
+    }
+
+    private async Task ShowRadiusAsync(int radius)
+    {
+        if (radiusTour == null || busy) return;
+        busy = true;
+        _radius = radius;
+        radiusOpts.StageRadius = radius;
+        StateHasChanged();
+        await radiusTour.ResetAsync();
+        await radiusTour.DriveAsync();
+    }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
 }

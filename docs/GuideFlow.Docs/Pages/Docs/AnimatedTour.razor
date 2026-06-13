@@ -51,10 +51,110 @@
 }")" />
     </div>
 
+    <h2 id="animation-type">Animation Type <a class="docs-anchor" href="#animation-type">#</a></h2>
+    <p>Control the popover entrance animation using <code>AnimationType</code>. Four types are available:</p>
+    <ul>
+        <li><strong>Fade</strong> (default) - Smooth fade in with slight upward movement</li>
+        <li><strong>Slide</strong> - Slides in from the direction of the placement</li>
+        <li><strong>Bounce</strong> - Bouncy entrance effect</li>
+        <li><strong>None</strong> - Instant appearance, no animation</li>
+    </ul>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="anim-type-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(4, 1fr);">
+            <button class="docs-btn" @onclick="ShowFade">Fade (default)</button>
+            <button class="docs-btn" @onclick="ShowSlide">Slide</button>
+            <button class="docs-btn" @onclick="ShowBounce">Bounce</button>
+            <button class="docs-btn" @onclick="ShowNone">None</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="anim-type-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    AnimationType = AnimationType.Slide,   // Fade, Slide, Bounce, None
+};")" />
+    </div>
+
+    <h2 id="animate-toggle">Enable / Disable Animation <a class="docs-anchor" href="#animate-toggle">#</a></h2>
+    <p>Set <code>Animate = false</code> to disable all animations globally. The tour will switch steps instantly with no transitions.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="anim-toggle-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="ShowAnimated">Animated (default)</button>
+            <button class="docs-btn" @onclick="ShowNotAnimated">No Animation</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="anim-toggle-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    Animate = false,   // disables all animations
+};")" />
+    </div>
+
+    <h2 id="animation-duration">Animation Duration <a class="docs-anchor" href="#animation-duration">#</a></h2>
+    <p>Use <code>AnimationDuration</code> to control how long the animation takes in milliseconds. Default is 300ms.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="anim-duration-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowFast">Fast (150ms)</button>
+            <button class="docs-btn" @onclick="ShowDefaultDuration">Default (300ms)</button>
+            <button class="docs-btn" @onclick="ShowSlow">Slow (800ms)</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="anim-duration-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    AnimationDuration = 600,   // 600ms transition
+};")" />
+    </div>
+
+    <h2 id="cutout-animation">Cutout Animation <a class="docs-anchor" href="#cutout-animation">#</a></h2>
+    <p>When <code>AnimateCutout = true</code> (default), the overlay cutout smoothly moves between elements as you navigate steps. Set to <code>false</code> to make the cutout jump instantly.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="anim-cutout-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="ShowCutoutAnimated">Animated Cutout</button>
+            <button class="docs-btn" @onclick="ShowCutoutStatic">Static Cutout</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="anim-cutout-code">
+        <CodeBlock Language="razor" Code="@(@"// Animated cutout (default) - smooth transition between elements
+private TourOptions animatedCutout = new()
+{
+    AnimateCutout = true,
+};
+
+// Static cutout - instant jump
+private TourOptions staticCutout = new()
+{
+    AnimateCutout = false,
+};")" />
+    </div>
+
 </div>
 
-@* --- Tour: highlight actual page elements --- *@
-<GuideFlowTour @ref="tour" TourOptions="options">
+@* --- Default animated tour (multi-step) --- *@
+<GuideFlowTour @ref="tour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
     <GuideFlowStep Element="#anim-title" Title="Animated Tour" Order="0"
                    Side="Placement.Bottom" Align="PopoverAlign.Start">
         <p>The default tour mode with smooth animations between steps.</p>
@@ -80,16 +180,227 @@
     </GuideFlowStep>
 </GuideFlowTour>
 
-@code {
-    private GuideFlowTour? tour;
+@* --- Animation Type demos (2-step each to show transition) --- *@
+<GuideFlowTour @ref="fadeTour" TourOptions="fadeOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-type-target" Title="Fade Animation" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.Fade">
+        <p>This is the default <strong>Fade</strong> animation - smooth fade in with upward movement.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-type-target" Title="Fade - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.Fade">
+        <p>Watch the fade transition as you move between steps.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
-    private TourOptions options = new()
+<GuideFlowTour @ref="slideTour" TourOptions="slideOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-type-target" Title="Slide Animation" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.Slide">
+        <p>This uses the <strong>Slide</strong> animation - slides in from the placement direction.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-type-target" Title="Slide - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.Slide">
+        <p>Notice how the popover slides in from the right side.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="bounceTour" TourOptions="bounceOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-type-target" Title="Bounce Animation" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.Bounce">
+        <p>This uses the <strong>Bounce</strong> animation - a bouncy entrance effect.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-type-target" Title="Bounce - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.Bounce">
+        <p>Watch the bounce as the popover appears!</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="noneTour" TourOptions="noneOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-type-target" Title="No Animation" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.None">
+        <p>This uses <strong>AnimationType.None</strong> - instant appearance with no animation.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-type-target" Title="No Anim - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.None">
+        <p>The popover appears instantly with no transition.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Animate toggle demos --- *@
+<GuideFlowTour @ref="animatedTour" TourOptions="animatedOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-toggle-target" Title="Animated (default)" Order="0"
+                   Side="Placement.Bottom">
+        <p>Animations are enabled. <code>Animate = true</code> (default).</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-toggle-target" Title="Step 2" Order="1"
+                   Side="Placement.Right">
+        <p>Watch the smooth transition between steps.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="notAnimatedTour" TourOptions="notAnimatedOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-toggle-target" Title="No Animation" Order="0"
+                   Side="Placement.Bottom">
+        <p>Animations are disabled. <code>Animate = false</code>.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-toggle-target" Title="Step 2" Order="1"
+                   Side="Placement.Right">
+        <p>The step switches instantly with no transition.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Duration demos --- *@
+<GuideFlowTour @ref="fastTour" TourOptions="fastOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-duration-target" Title="Fast (150ms)" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.Fade">
+        <p>Animation duration is <strong>150ms</strong> - quick and snappy.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-duration-target" Title="Fast - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.Fade">
+        <p>Notice how fast the transition is.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="defaultDurationTour" TourOptions="defaultDurationOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-duration-target" Title="Default (300ms)" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.Fade">
+        <p>Animation duration is <strong>300ms</strong> - the default speed.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-duration-target" Title="Default - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.Fade">
+        <p>This is the standard transition speed.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="slowTour" TourOptions="slowOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-duration-target" Title="Slow (800ms)" Order="0"
+                   Side="Placement.Bottom" Animation="AnimationType.Fade">
+        <p>Animation duration is <strong>800ms</strong> - slow and deliberate.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-duration-target" Title="Slow - Step 2" Order="1"
+                   Side="Placement.Right" Animation="AnimationType.Fade">
+        <p>Notice how slow and smooth the transition is.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Cutout animation demos (2 steps to show cutout movement) --- *@
+<GuideFlowTour @ref="cutoutAnimatedTour" TourOptions="cutoutAnimatedOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-cutout-target" Title="Animated Cutout" Order="0"
+                   Side="Placement.Bottom">
+        <p>The cutout will <strong>smoothly animate</strong> to the next element. <code>AnimateCutout = true</code>.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-cutout-target" Title="Cutout Moved" Order="1"
+                   Side="Placement.Right">
+        <p>Watch how the overlay cutout smoothly transitioned here.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="cutoutStaticTour" TourOptions="cutoutStaticOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#anim-cutout-target" Title="Static Cutout" Order="0"
+                   Side="Placement.Bottom">
+        <p>The cutout will <strong>jump instantly</strong> to the next element. <code>AnimateCutout = false</code>.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#anim-cutout-target" Title="Cutout Jumped" Order="1"
+                   Side="Placement.Right">
+        <p>Notice the cutout jumped to this position instantly with no animation.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    // Default tour
+    private GuideFlowTour? tour;
+    private TourOptions defaultOpts = new()
     {
         ShowProgress = true,
     };
+
+    // Animation type tours
+    private GuideFlowTour? fadeTour, slideTour, bounceTour, noneTour;
+    private TourOptions fadeOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions slideOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions bounceOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions noneOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    // Animate toggle tours
+    private GuideFlowTour? animatedTour, notAnimatedTour;
+    private TourOptions animatedOpts = new()
+    {
+        Animate = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions notAnimatedOpts = new()
+    {
+        Animate = false,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    // Duration tours
+    private GuideFlowTour? fastTour, defaultDurationTour, slowTour;
+    private TourOptions fastOpts = new()
+    {
+        AnimationDuration = 150,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions defaultDurationOpts = new()
+    {
+        AnimationDuration = 300,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions slowOpts = new()
+    {
+        AnimationDuration = 800,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    // Cutout animation tours
+    private GuideFlowTour? cutoutAnimatedTour, cutoutStaticTour;
+    private TourOptions cutoutAnimatedOpts = new()
+    {
+        AnimateCutout = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions cutoutStaticOpts = new()
+    {
+        AnimateCutout = false,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private bool busy;
 
     private async Task StartTour()
     {
         if (tour != null) await tour.DriveAsync();
     }
+
+    // Animation type handlers
+    private async Task ShowFade() { if (fadeTour != null && !busy) { busy = true; await fadeTour.ResetAsync(); await fadeTour.DriveAsync(); } }
+    private async Task ShowSlide() { if (slideTour != null && !busy) { busy = true; await slideTour.ResetAsync(); await slideTour.DriveAsync(); } }
+    private async Task ShowBounce() { if (bounceTour != null && !busy) { busy = true; await bounceTour.ResetAsync(); await bounceTour.DriveAsync(); } }
+    private async Task ShowNone() { if (noneTour != null && !busy) { busy = true; await noneTour.ResetAsync(); await noneTour.DriveAsync(); } }
+
+    // Animate toggle handlers
+    private async Task ShowAnimated() { if (animatedTour != null && !busy) { busy = true; await animatedTour.ResetAsync(); await animatedTour.DriveAsync(); } }
+    private async Task ShowNotAnimated() { if (notAnimatedTour != null && !busy) { busy = true; await notAnimatedTour.ResetAsync(); await notAnimatedTour.DriveAsync(); } }
+
+    // Duration handlers
+    private async Task ShowFast() { if (fastTour != null && !busy) { busy = true; await fastTour.ResetAsync(); await fastTour.DriveAsync(); } }
+    private async Task ShowDefaultDuration() { if (defaultDurationTour != null && !busy) { busy = true; await defaultDurationTour.ResetAsync(); await defaultDurationTour.DriveAsync(); } }
+    private async Task ShowSlow() { if (slowTour != null && !busy) { busy = true; await slowTour.ResetAsync(); await slowTour.DriveAsync(); } }
+
+    // Cutout animation handlers
+    private async Task ShowCutoutAnimated() { if (cutoutAnimatedTour != null && !busy) { busy = true; await cutoutAnimatedTour.ResetAsync(); await cutoutAnimatedTour.DriveAsync(); } }
+    private async Task ShowCutoutStatic() { if (cutoutStaticTour != null && !busy) { busy = true; await cutoutStaticTour.ResetAsync(); await cutoutStaticTour.DriveAsync(); } }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
 }

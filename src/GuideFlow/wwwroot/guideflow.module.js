@@ -347,7 +347,8 @@ function updateArrow(stepElement, target, placement) {
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 let _overlaySvg = null;
-let _overlayCutoutRect = null;
+let _overlayCutoutEl = null;
+let _overlayShape = 'RoundedRect';
 let _overlayDotNetRef = null;
 let _overlayAnimFrame = null;
 // Last cutout target config, so scroll/resize can re-sync the fixed overlay to the moving target.
@@ -420,7 +421,56 @@ export function createOverlay(zIndex, opacity, dotNetRef, color) {
 
     document.body.appendChild(svg);
     _overlaySvg = svg;
-    _overlayCutoutRect = cutoutRect;
+    _overlayCutoutEl = cutoutRect;
+    _overlayShape = 'RoundedRect';
+}
+
+/**
+ * Ensure the mask cutout element matches the requested shape.
+ * Swaps <rect> ↔ <ellipse> in the SVG mask when the shape changes.
+ */
+function ensureCutoutElement(shape) {
+    if (shape === _overlayShape && _overlayCutoutEl) return;
+    _overlayShape = shape;
+    const mask = _overlaySvg?.querySelector('#gf-cutout');
+    if (!mask) return;
+    if (_overlayCutoutEl) _overlayCutoutEl.remove();
+
+    if (shape === 'Circle' || shape === 'Ellipse') {
+        const el = document.createElementNS(SVG_NS, 'ellipse');
+        el.setAttribute('fill', 'black');
+        mask.appendChild(el);
+        _overlayCutoutEl = el;
+    } else {
+        const el = document.createElementNS(SVG_NS, 'rect');
+        el.setAttribute('fill', 'black');
+        mask.appendChild(el);
+        _overlayCutoutEl = el;
+    }
+}
+
+/**
+ * Read the current bounding box from the cutout element (rect or ellipse).
+ * Returns { x, y, w, h, r } where r is the rect rx or 0 for ellipses.
+ */
+function readCutoutBounds() {
+    const el = _overlayCutoutEl;
+    if (!el) return { x: 0, y: 0, w: 0, h: 0, r: 0 };
+    const tag = el.tagName;
+    if (tag === 'ellipse') {
+        const cx = parseFloat(el.getAttribute('cx')) || 0;
+        const cy = parseFloat(el.getAttribute('cy')) || 0;
+        const rx = parseFloat(el.getAttribute('rx')) || 0;
+        const ry = parseFloat(el.getAttribute('ry')) || 0;
+        return { x: cx - rx, y: cy - ry, w: rx * 2, h: ry * 2, r: 0 };
+    }
+    return {
+        x: parseFloat(el.getAttribute('x')) || 0,
+        y: parseFloat(el.getAttribute('y')) || 0,
+        w: parseFloat(el.getAttribute('width')) || 0,
+        h: parseFloat(el.getAttribute('height')) || 0,
+        r: parseFloat(el.getAttribute('rx')) || 0,
+    };
 }
 
 /**
@@ -433,15 +483,21 @@ export function createOverlay(zIndex, opacity, dotNetRef, color) {
  * @param {number} duration - Animation duration in ms (0 = instant)
  * @param {boolean} stageMode - Also create/update 4 stage panels
  * @param {number} stageOpacity - Background opacity for stage panels
+ * @param {string} shape - HighlightShape: 'RoundedRect', 'Rectangle', 'Circle', 'Ellipse'
  */
-export function animateCutoutTo(selector, padding, radius, duration, stageMode, stageOpacity) {
-    if (!_overlayCutoutRect) return;
+export function animateCutoutTo(selector, padding, radius, duration, stageMode, stageOpacity, shape) {
+    if (!_overlaySvg) return;
 
     const target = document.querySelector(selector);
     if (!target) return;
 
+    // Swap mask element if shape changed
+    ensureCutoutElement(shape || 'RoundedRect');
+
+    if (!_overlayCutoutEl) return;
+
     // Remember this target so scroll/resize can re-sync the fixed overlay to the moving element.
-    _overlayTargetConfig = { selector, padding, radius, stageMode, stageOpacity };
+    _overlayTargetConfig = { selector, padding, radius, stageMode, stageOpacity, shape: shape || 'RoundedRect' };
 
     const targetRect = target.getBoundingClientRect();
     const toRect = {
@@ -458,18 +514,11 @@ export function animateCutoutTo(selector, padding, radius, duration, stageMode, 
         _overlayAnimFrame = null;
     }
 
-    const cr = _overlayCutoutRect;
-    const fromRect = {
-        x: parseFloat(cr.getAttribute('x')) || 0,
-        y: parseFloat(cr.getAttribute('y')) || 0,
-        w: parseFloat(cr.getAttribute('width')) || 0,
-        h: parseFloat(cr.getAttribute('height')) || 0,
-        r: parseFloat(cr.getAttribute('rx')) || 0,
-    };
+    const fromRect = readCutoutBounds();
 
     // First cutout (w=0) or no animation requested → jump instantly
     if (duration <= 0 || fromRect.w === 0) {
-        applyCutoutRect(toRect);
+        applyCutoutShape(toRect);
         if (stageMode) createStagePanels(toRect, stageOpacity);
         return;
     }
@@ -488,7 +537,7 @@ export function animateCutoutTo(selector, padding, radius, duration, stageMode, 
             h: fromRect.h + (toRect.h - fromRect.h) * e,
             r: fromRect.r + (toRect.r - fromRect.r) * e,
         };
-        applyCutoutRect(current);
+        applyCutoutShape(current);
         if (stageMode) createStagePanels(current, stageOpacity);
 
         if (t < 1) {
@@ -506,11 +555,14 @@ export function animateCutoutTo(selector, padding, radius, duration, stageMode, 
  * leaving a stale "ghost" highlight frozen on screen. Always instant (no animation).
  */
 export function repositionOverlay() {
-    if (!_overlayCutoutRect || !_overlayTargetConfig) return;
+    if (!_overlayCutoutEl || !_overlayTargetConfig) return;
 
-    const { selector, padding, radius, stageMode, stageOpacity } = _overlayTargetConfig;
+    const { selector, padding, radius, stageMode, stageOpacity, shape } = _overlayTargetConfig;
     const target = document.querySelector(selector);
     if (!target) return;
+
+    // Ensure correct shape element
+    if (shape) ensureCutoutElement(shape);
 
     // Cancel any in-flight step-transition animation so it doesn't fight the scroll sync.
     if (_overlayAnimFrame) {
@@ -526,17 +578,32 @@ export function repositionOverlay() {
         h: targetRect.height + padding * 2,
         r: radius,
     };
-    applyCutoutRect(toRect);
+    applyCutoutShape(toRect);
     if (stageMode) createStagePanels(toRect, stageOpacity);
 }
 
-function applyCutoutRect(r) {
-    if (!_overlayCutoutRect) return;
-    _overlayCutoutRect.setAttribute('x', r.x);
-    _overlayCutoutRect.setAttribute('y', r.y);
-    _overlayCutoutRect.setAttribute('width', Math.max(0, r.w));
-    _overlayCutoutRect.setAttribute('height', Math.max(0, r.h));
-    _overlayCutoutRect.setAttribute('rx', r.r);
+function applyCutoutShape(r) {
+    if (!_overlayCutoutEl) return;
+    const shape = _overlayShape;
+    if (shape === 'Circle') {
+        const radius = Math.max(r.w, r.h) / 2;
+        _overlayCutoutEl.setAttribute('cx', r.x + r.w / 2);
+        _overlayCutoutEl.setAttribute('cy', r.y + r.h / 2);
+        _overlayCutoutEl.setAttribute('rx', radius);
+        _overlayCutoutEl.setAttribute('ry', radius);
+    } else if (shape === 'Ellipse') {
+        _overlayCutoutEl.setAttribute('cx', r.x + r.w / 2);
+        _overlayCutoutEl.setAttribute('cy', r.y + r.h / 2);
+        _overlayCutoutEl.setAttribute('rx', r.w / 2);
+        _overlayCutoutEl.setAttribute('ry', r.h / 2);
+    } else {
+        // RoundedRect or Rectangle
+        _overlayCutoutEl.setAttribute('x', r.x);
+        _overlayCutoutEl.setAttribute('y', r.y);
+        _overlayCutoutEl.setAttribute('width', Math.max(0, r.w));
+        _overlayCutoutEl.setAttribute('height', Math.max(0, r.h));
+        _overlayCutoutEl.setAttribute('rx', shape === 'Rectangle' ? 0 : r.r);
+    }
 }
 
 // easeInOutCubic
@@ -606,10 +673,11 @@ export function removeOverlay() {
     if (_overlaySvg) {
         _overlaySvg.remove();
         _overlaySvg = null;
-        _overlayCutoutRect = null;
+        _overlayCutoutEl = null;
     }
     _overlayDotNetRef = null;
     _overlayTargetConfig = null;
+    _overlayShape = 'RoundedRect';
     removeStagePanels();
 }
 
@@ -621,7 +689,7 @@ function removeStagePanels() {
 // Legacy aliases for backward compatibility
 export function createStageOverlay(selector, zIndex, opacity, borderRadius, padding, dotNetRef, color) {
     createOverlay(zIndex, opacity, dotNetRef, color);
-    animateCutoutTo(selector, padding, borderRadius, 0, true, opacity);
+    animateCutoutTo(selector, padding, borderRadius, 0, true, opacity, 'RoundedRect');
 }
 
 export function removeStageOverlay(selector) {
@@ -785,7 +853,7 @@ export function highlightElement(selector, zIndex, opacity, padding, radius, col
 
     // Use the same animated overlay system
     createOverlay(zIndex, opacity, null, color);
-    animateCutoutTo(selector, padding, radius, 0, false, 0);
+    animateCutoutTo(selector, padding, radius, 0, false, 0, 'RoundedRect');
 
     // Click overlay to dismiss
     if (_overlaySvg) {

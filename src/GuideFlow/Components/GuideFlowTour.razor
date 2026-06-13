@@ -489,7 +489,7 @@
                         await SafeInvokeVoidAsync("animateCutoutTo",
                             step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
                             TourOptions.AnimateCutout ? TourOptions.AnimationDuration : 0,
-                            true, TourOptions.OverlayOpacity);
+                            true, TourOptions.OverlayOpacity, TourOptions.HighlightShape.ToString());
                     }
                     else
                     {
@@ -502,7 +502,7 @@
                         await SafeInvokeVoidAsync("animateCutoutTo",
                             step.Element, TourOptions.StagePadding, TourOptions.StageRadius,
                             TourOptions.AnimateCutout ? TourOptions.AnimationDuration : 0,
-                            false, 0);
+                            false, 0, TourOptions.HighlightShape.ToString());
                     }
                 }
 
