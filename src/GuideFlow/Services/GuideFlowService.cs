@@ -208,7 +208,7 @@ public class GuideFlowService : IGuideFlowService
         if (state == null) return;
 
         var key = _tourOptions?.StorageKey ?? $"{Constants.StorageKeyPrefix}{_tourName}";
-        var json = JsonSerializer.Serialize(state);
+        var json = JsonSerializer.Serialize(state, GuideFlowJsonContext.Default.TourState);
         try
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
@@ -223,7 +223,7 @@ public class GuideFlowService : IGuideFlowService
         {
             var json = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
             if (string.IsNullOrEmpty(json)) return null;
-            return JsonSerializer.Deserialize<TourState>(json);
+            return JsonSerializer.Deserialize(json, GuideFlowJsonContext.Default.TourState);
         }
         catch (JSDisconnectedException) { return null; }
     }

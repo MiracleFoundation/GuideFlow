@@ -283,21 +283,25 @@
     /// <summary>Driver.js: getState(). Returns the current tour state as JSON.</summary>
     public string GetState()
     {
-        var state = new
+        var state = new TourSnapshot
         {
-            TourName,
+            TourName = TourName,
             IsActive = _isActive,
-            ActiveIndex,
-            TotalSteps,
+            ActiveIndex = ActiveIndex,
+            TotalSteps = TotalSteps,
             Status = _isActive ? "Active" : "Inactive",
             VisitedSteps = _visitedSteps.ToList(),
-            Steps = _steps.Select(s => new
+            Steps = _steps.Select(s => new TourSnapshotStep
             {
-                s.Element, s.Title, s.Order, s.StepId, s.Side,
+                Element = s.Element,
+                Title = s.Title,
+                Order = s.Order,
+                StepId = s.StepId,
+                Side = s.Side,
                 IsVisited = IsStepVisited(s),
             }).ToList(),
         };
-        return System.Text.Json.JsonSerializer.Serialize(state, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        return System.Text.Json.JsonSerializer.Serialize(state, GuideFlowJsonContext.Default.TourSnapshot);
     }
 
     /// <summary>Build the current state object for hooks (Driver.js style).</summary>
