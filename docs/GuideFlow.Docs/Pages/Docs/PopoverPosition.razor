@@ -9,7 +9,7 @@
     <p class="docs-lead" id="popover-position-lead">You can control the popover position using the <code>Side</code> and <code>Align</code> options. The <code>Side</code> option controls the side of the element where the popover will be shown and the <code>Align</code> option controls the alignment of the popover with the element.</p>
 
     <div class="docs-callout docs-callout--info">
-        <strong>Note:</strong> Popover is intelligent enough to adjust itself to fit in the viewport. So, if you set <code>Side</code> to <code>Left</code> and <code>Align</code> to <code>Start</code>, but the popover doesn't fit in the viewport, it will automatically adjust itself to fit in the viewport. Consider highlighting and scrolling the browser to the element below to see this in action.
+        <strong>Note:</strong> Popover is intelligent enough to adjust itself to fit in the viewport. So, if you set <code>Side</code> to <code>Left</code> and <code>Align</code> to <code>Start</code>, but the popover doesn't fit in the viewport, it will automatically adjust itself to fit in the viewport.
     </div>
 
     <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
@@ -64,21 +64,33 @@
 
 </div>
 
-<GuideFlowTour @ref="tour" TourOptions="options" />
+<GuideFlowTour @ref="tour" TourOptions="options" OnComplete="OnTourEnd" OnCancel="OnTourEnd">
+    <GuideFlowStep Element="#popover-demo-target" Title="Popover Title" Order="0"
+                   Side="@_side" Align="@_align">
+        <p>Popover at <strong>@_side.ToString().ToLower() - @_align.ToString().ToLower()</strong>.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 @code {
     private GuideFlowTour? tour;
+    private Placement _side = Placement.Bottom;
+    private PopoverAlign _align = PopoverAlign.Center;
 
     private TourOptions options = new()
     {
         ShowProgress = false,
+        ShowButtons = new[] { ButtonType.Close },
     };
 
     private async Task ShowAsync(Placement side, PopoverAlign align)
     {
         if (tour == null) return;
-        await tour.HighlightAsync("#popover-demo-target", "Popover Title",
-            $"Popover positioned at {side.ToString().ToLower()} - {align.ToString().ToLower()}.",
-            side, align);
+        _side = side;
+        _align = align;
+        StateHasChanged();
+        await tour.ResetAsync();
+        await tour.DriveAsync();
     }
+
+    private void OnTourEnd() { StateHasChanged(); }
 }

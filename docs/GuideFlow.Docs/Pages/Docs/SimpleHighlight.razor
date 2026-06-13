@@ -20,7 +20,12 @@
     <p>Here is the code for the above example:</p>
 
     <div id="highlight-code">
-        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"" />
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#highlight-me"" Title=""This is a title"" Order=""0""
+                   Side=""Placement.Bottom"">
+        <p>This is a description</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 <button @onclick=""HighlightElement"">Highlight Me</button>
 
@@ -30,17 +35,13 @@
     {
         PopoverClass = ""gf-theme-dark"",
         StagePadding = 4,
+        ShowBack = false,
+        ShowNext = false,
     };
 
     private async Task HighlightElement()
     {
-        if (tour != null)
-        {
-            await tour.HighlightAsync(""#highlight-me"",
-                title: ""This is a title"",
-                description: ""This is a description"",
-                side: Placement.Bottom);
-        }
+        if (tour != null) await tour.DriveAsync();
     }
 }")" />
     </div>
@@ -57,7 +58,11 @@
     <p>Here is the code for the above example:</p>
 
     <div id="modal-code">
-        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"" />
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Title=""Simple Modal"" Order=""0"" Mode=""StepMode.Modal"">
+        <p>This is a modal popover without highlighting any element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 <button @onclick=""ShowModal"">Show Popover</button>
 
@@ -67,20 +72,24 @@
 
     private async Task ShowModal()
     {
-        if (tour != null)
-        {
-            await tour.ShowPopoverAsync(
-                title: ""Simple Modal"",
-                description: ""This is a modal popover without highlighting any element."");
-        }
+        if (tour != null) await tour.DriveAsync();
     }
 }")" />
     </div>
 
 </div>
 
-<GuideFlowTour @ref="highlightTour" TourOptions="highlightOpts" OnComplete="OnHighlightEnd" OnCancel="OnHighlightEnd" />
-<GuideFlowTour @ref="modalTour" TourOptions="modalOpts" OnComplete="OnModalEnd" OnCancel="OnModalEnd" />
+<GuideFlowTour @ref="highlightTour" TourOptions="highlightOpts" OnComplete="OnHighlightEnd" OnCancel="OnHighlightEnd">
+    <GuideFlowStep Element="#highlight-me" Title="This is a title" Order="0" Side="Placement.Bottom">
+        <p>This is a description.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="modalTour" TourOptions="modalOpts" OnComplete="OnModalEnd" OnCancel="OnModalEnd">
+    <GuideFlowStep Title="Simple Modal" Order="0" Mode="StepMode.Modal">
+        <p>This is a modal popover without highlighting any element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 @code {
     private GuideFlowTour? highlightTour, modalTour;
@@ -89,28 +98,18 @@
     {
         PopoverClass = "gf-theme-dark",
         StagePadding = 4,
+        ShowButtons = new[] { ButtonType.Close },
     };
     private TourOptions modalOpts = new() { };
 
     private async Task HighlightElement()
     {
-        if (highlightTour != null)
-        {
-            await highlightTour.HighlightAsync("#highlight-me",
-                title: "This is a title",
-                description: "This is a description",
-                side: Placement.Bottom);
-        }
+        if (highlightTour != null) await highlightTour.DriveAsync();
     }
 
     private async Task ShowModal()
     {
-        if (modalTour != null)
-        {
-            await modalTour.ShowPopoverAsync(
-                title: "Simple Modal",
-                description: "This is a modal popover without highlighting any element.");
-        }
+        if (modalTour != null) await modalTour.DriveAsync();
     }
 
     private void OnHighlightEnd() { StateHasChanged(); }

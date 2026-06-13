@@ -54,53 +54,66 @@
 
 </div>
 
-<GuideFlowTour @ref="tour" TourOptions="_options" />
+<GuideFlowTour @ref="allTour" TourOptions="allOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-buttons-target-1" Title="All Buttons" Order="0" Side="Placement.Bottom">
+        <p>This step shows Next, Previous, and Close buttons.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with all buttons.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="noCloseTour" TourOptions="noCloseOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-buttons-target-1" Title="No Close Button" Order="0" Side="Placement.Bottom">
+        <p>This step hides the Close button.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step without close button.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="onlyNextTour" TourOptions="onlyNextOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-buttons-target-1" Title="Only Next" Order="0" Side="Placement.Bottom">
+        <p>This step only shows the Next button.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with only next.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="skipTour" TourOptions="skipOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#popover-buttons-target-1" Title="With Skip" Order="0" Side="Placement.Bottom">
+        <p>This step includes a Skip button.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#popover-buttons-target-2" Title="Step 2" Order="1" Side="Placement.Top">
+        <p>Second step with skip button.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 @code {
-    private GuideFlowTour? tour;
-    private TourOptions _options = new();
+    private GuideFlowTour? allTour, noCloseTour, onlyNextTour, skipTour;
+    private bool busy;
 
-    private async Task ShowAllButtons()
+    private TourOptions allOpts = new()
     {
-        if (tour == null) return;
-        _options = new()
-        {
-            ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
-        };
-        StateHasChanged();
-        await tour.DriveAsync();
-    }
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+    private TourOptions noCloseOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous },
+    };
+    private TourOptions onlyNextOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next },
+    };
+    private TourOptions skipOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
+    };
 
-    private async Task NoCloseButton()
-    {
-        if (tour == null) return;
-        _options = new()
-        {
-            ShowButtons = new[] { ButtonType.Next, ButtonType.Previous },
-        };
-        StateHasChanged();
-        await tour.DriveAsync();
-    }
-
-    private async Task OnlyNext()
-    {
-        if (tour == null) return;
-        _options = new()
-        {
-            ShowButtons = new[] { ButtonType.Next },
-        };
-        StateHasChanged();
-        await tour.DriveAsync();
-    }
-
-    private async Task WithSkip()
-    {
-        if (tour == null) return;
-        _options = new()
-        {
-            ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close, ButtonType.Skip },
-        };
-        StateHasChanged();
-        await tour.DriveAsync();
-    }
+    private async Task ShowAllButtons() { if (allTour != null && !busy) { busy = true; await allTour.DriveAsync(); } }
+    private async Task NoCloseButton() { if (noCloseTour != null && !busy) { busy = true; await noCloseTour.DriveAsync(); } }
+    private async Task OnlyNext() { if (onlyNextTour != null && !busy) { busy = true; await onlyNextTour.DriveAsync(); } }
+    private async Task WithSkip() { if (skipTour != null && !busy) { busy = true; await skipTour.DriveAsync(); } }
+    private void OnEnd() { busy = false; StateHasChanged(); }
 }

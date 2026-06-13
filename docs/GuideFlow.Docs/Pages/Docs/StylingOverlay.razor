@@ -28,26 +28,20 @@
 
     <h3>Code for the above example</h3>
     <div id="overlay-color-code">
-        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"" />
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#target"" Title=""Pass any RGB Color"" Order=""0""
+                   Side=""Placement.Bottom"">
+        <p>Overlay color set to red.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 <button @onclick=""ShowRed"">Red Color</button>
 
 @code {
-    private GuideFlowTour? tour;
     private TourOptions options = new()
     {
         OverlayColor = ""rgba(255, 0, 0, 0.5)"",
     };
-
-    private async Task ShowRed()
-    {
-        if (tour != null)
-        {
-            await tour.HighlightAsync(""#target"",
-                title: ""Pass any RGB Color"",
-                description: ""Here we have set the overlay color to be red."");
-        }
-    }
 }")" />
     </div>
 
@@ -65,37 +59,66 @@
     <div id="overlay-opacity-code">
         <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
 {
-    OverlayOpacity = 0.3, // 0.0 to 1.0
+    OverlayOpacity = 0.3,
     OverlayColor = ""#000"",
 };")" />
     </div>
 
 </div>
 
-<GuideFlowTour @ref="redTour" TourOptions="redOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
-<GuideFlowTour @ref="blueTour" TourOptions="blueOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
-<GuideFlowTour @ref="yellowTour" TourOptions="yellowOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
-<GuideFlowTour @ref="lightTour" TourOptions="lightOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
-<GuideFlowTour @ref="mediumTour" TourOptions="mediumOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
-<GuideFlowTour @ref="darkTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd" />
+<GuideFlowTour @ref="redTour" TourOptions="redOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Pass any RGB Color" Order="0" Side="Placement.Bottom">
+        <p>Here we have set the overlay color to be red. You can pass any RGB color to OverlayColor option.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="blueTour" TourOptions="blueOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Blue Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay color set to blue.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="yellowTour" TourOptions="yellowOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Yellow Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay color set to yellow.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="lightTour" TourOptions="lightOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Light Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay opacity set to 0.2.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="mediumTour" TourOptions="mediumOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Medium Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay opacity set to 0.5.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="darkOverlayTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Dark Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay opacity set to 0.8.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 @code {
-    private GuideFlowTour? redTour, blueTour, yellowTour, lightTour, mediumTour, darkTour;
+    private GuideFlowTour? redTour, blueTour, yellowTour, lightTour, mediumTour, darkOverlayTour;
     private bool busy;
 
-    private TourOptions redOpts = new() { OverlayColor = "rgba(255, 0, 0, 0.5)" };
-    private TourOptions blueOpts = new() { OverlayColor = "rgba(0, 0, 255, 0.5)" };
-    private TourOptions yellowOpts = new() { OverlayColor = "rgba(255, 255, 0, 0.5)" };
-    private TourOptions lightOpts = new() { OverlayOpacity = 0.2 };
-    private TourOptions mediumOpts = new() { OverlayOpacity = 0.5 };
-    private TourOptions darkOpts = new() { OverlayOpacity = 0.8 };
+    private TourOptions redOpts = new() { OverlayColor = "rgba(255, 0, 0, 0.5)", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions blueOpts = new() { OverlayColor = "rgba(0, 0, 255, 0.5)", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions yellowOpts = new() { OverlayColor = "rgba(255, 255, 0, 0.5)", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions lightOpts = new() { OverlayOpacity = 0.2, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions mediumOpts = new() { OverlayOpacity = 0.5, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions darkOpts = new() { OverlayOpacity = 0.8, ShowButtons = new[] { ButtonType.Close } };
 
-    private async Task ShowRed() { if (redTour != null && !busy) { busy = true; await redTour.HighlightAsync("#overlay-color-target", "Pass any RGB Color", "Here we have set the overlay color to be red. You can pass any RGB color to OverlayColor option."); } }
-    private async Task ShowBlue() { if (blueTour != null && !busy) { busy = true; await blueTour.HighlightAsync("#overlay-color-target", "Blue Overlay", "Overlay color set to blue."); } }
-    private async Task ShowYellow() { if (yellowTour != null && !busy) { busy = true; await yellowTour.HighlightAsync("#overlay-color-target", "Yellow Overlay", "Overlay color set to yellow."); } }
-    private async Task ShowLight() { if (lightTour != null && !busy) { busy = true; await lightTour.HighlightAsync("#overlay-color-target", "Light Overlay", "Overlay opacity set to 0.2."); } }
-    private async Task ShowMedium() { if (mediumTour != null && !busy) { busy = true; await mediumTour.HighlightAsync("#overlay-color-target", "Medium Overlay", "Overlay opacity set to 0.5."); } }
-    private async Task ShowDark() { if (darkTour != null && !busy) { busy = true; await darkTour.HighlightAsync("#overlay-color-target", "Dark Overlay", "Overlay opacity set to 0.8."); } }
+    private async Task ShowRed() { if (redTour != null && !busy) { busy = true; await redTour.DriveAsync(); } }
+    private async Task ShowBlue() { if (blueTour != null && !busy) { busy = true; await blueTour.DriveAsync(); } }
+    private async Task ShowYellow() { if (yellowTour != null && !busy) { busy = true; await yellowTour.DriveAsync(); } }
+    private async Task ShowLight() { if (lightTour != null && !busy) { busy = true; await lightTour.DriveAsync(); } }
+    private async Task ShowMedium() { if (mediumTour != null && !busy) { busy = true; await mediumTour.DriveAsync(); } }
+    private async Task ShowDark() { if (darkOverlayTour != null && !busy) { busy = true; await darkOverlayTour.DriveAsync(); } }
 
     private void OnEnd() { busy = false; StateHasChanged(); }
 }

@@ -9,7 +9,7 @@
     <p class="docs-lead" id="async-tour-lead">You can also have async steps in your tour. This is useful when you want to load some data from the server and then show the tour.</p>
 
     <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
-    <p>Click the button below to start the async tour. The second step's content is loaded dynamically.</p>
+    <p>Click the button below to start the async tour. The second step's element is loaded dynamically.</p>
 
     <div class="popover-demo">
         <div style="text-align:center;">
@@ -68,7 +68,7 @@
     </div>
 
     <div class="docs-callout docs-callout--info">
-        <strong>Note:</strong> When using <code>OnNextClick</code> at the step level, you override the default behavior of the next button. The driver will not move to the next step automatically. You must call <code>MoveNextAsync()</code> manually. When configured at the tour level via <code>TourOptions.OnNextClick</code>, you control the navigation for all the steps. When configured at the step level, you control the navigation for that particular step only.
+        <strong>Note:</strong> When using <code>OnNextClick</code> at the step level, you override the default behavior of the next button. The driver will not move to the next step automatically. You must call <code>MoveNextAsync()</code> manually. When configured at the tour level, you control the navigation for all the steps. When configured at the step level, you control the navigation for that particular step only.
     </div>
 
 </div>
@@ -100,7 +100,7 @@
     {
         _showDynamicElement = true;
         StateHasChanged();
-        await Task.Delay(100); // Wait for DOM to render
+        await Task.Delay(100);
         await tour!.MoveNextAsync();
     }
 

@@ -12,7 +12,7 @@
     <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
 
     <div class="popover-demo">
-        <div class="popover-demo__target" id="confirm-destroy-example" style="cursor:pointer;">
+        <div class="popover-demo__target" id="confirm-destroy-example">
             <span>Confirm on Exit</span>
         </div>
         <div style="text-align:center;margin-top:1rem;">
@@ -33,8 +33,7 @@
                    Side=""Placement.Bottom"" Align=""PopoverAlign.Start"">
         <p>Try to close this tour.</p>
     </GuideFlowStep>
-    <GuideFlowStep Element=""#my-element"" Title=""Step 2"" Order=""1""
-                   Side=""Placement.Top"">
+    <GuideFlowStep Title=""Step 2"" Order=""1"">
         <p>Another step.</p>
     </GuideFlowStep>
 </GuideFlowTour>
@@ -51,7 +50,6 @@
         if (!tour!.HasNextStep())
             return true; // Last step - allow exit
 
-        // Ask for confirmation
         return await JS.InvokeAsync<bool>(""confirm"", ""Are you sure you want to exit the tour?"");
     }
 
@@ -89,7 +87,7 @@
     private async Task<bool> OnDestroyStarted()
     {
         if (!tour!.HasNextStep())
-            return true; // Last step - allow exit
+            return true;
 
         return await JS.InvokeAsync<bool>("confirm", "Are you sure you want to exit the tour?");
     }

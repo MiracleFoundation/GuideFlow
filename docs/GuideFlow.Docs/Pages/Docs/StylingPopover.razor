@@ -85,22 +85,19 @@
 </div>
 
 <GuideFlowTour @ref="defaultTour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#styling-demo-target" Title="Default Theme" Order="0"
-                   Side="Placement.Bottom">
+    <GuideFlowStep Element="#styling-demo-target" Title="Default Theme" Order="0" Side="Placement.Bottom">
         <p>This uses the default light theme with no custom styling.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 <GuideFlowTour @ref="darkTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#styling-demo-target" Title="Dark Theme" Order="0"
-                   Side="Placement.Bottom">
+    <GuideFlowStep Element="#styling-demo-target" Title="Dark Theme" Order="0" Side="Placement.Bottom">
         <p>This uses the built-in <code>gf-theme-dark</code> class.</p>
     </GuideFlowStep>
 </GuideFlowTour>
 
 <GuideFlowTour @ref="customTour" TourOptions="customOpts" OnComplete="OnEnd" OnCancel="OnEnd">
-    <GuideFlowStep Element="#styling-demo-target" Title="Custom CSS Theme" Order="0"
-                   Side="Placement.Bottom">
+    <GuideFlowStep Element="#styling-demo-target" Title="Custom CSS Theme" Order="0" Side="Placement.Bottom">
         <p>This uses a custom CSS class with overridden CSS variables.</p>
     </GuideFlowStep>
 </GuideFlowTour>
