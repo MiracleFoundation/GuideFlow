@@ -1,6 +1,7 @@
 @page "/docs/styling-popover"
 @using GuideFlow.Services
 @using GuideFlow.Enums
+@inject IJSRuntime JS
 
 <PageTitle>Styling Popover - GuideFlow</PageTitle>
 
@@ -65,24 +66,55 @@
 
     <h2 id="popover-dom">Manipulating Popover DOM <a class="docs-anchor" href="#popover-dom">#</a></h2>
 
-    <p>You can use the <code>OnPopoverRender</code> callback to manipulate the popover DOM element directly:</p>
+    <p>You can use the <code>OnPopoverRender</code> callback to manipulate the popover DOM element directly after it is rendered:</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="styling-dom-target">
+            <span>Target Element</span>
+        </div>
+        <div style="text-align:center;margin-top:1rem;">
+            <button class="docs-btn" @onclick="ShowDomDemo">Manipulating Popover DOM</button>
+        </div>
+    </div>
+
+    <p>Here is the code for the above example:</p>
 
     <div id="styling-dom-code">
-        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""Custom DOM""
-               Order=""0"" OnPopoverRender=""OnPopoverRender"">
-    <p>This popover has custom DOM manipulation.</p>
-</GuideFlowStep>
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#my-element"" Title=""Custom DOM""
+                   Order=""0"" OnPopoverRender=""OnPopoverRender"">
+        <p>This popover has a custom badge added via DOM manipulation.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 @code {
-    private void OnPopoverRender()
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private async Task OnPopoverRender()
     {
-        // Access the popover DOM element via JS interop
-        // and modify it as needed before it is rendered.
+        // Add a custom badge to the popover header
+        await JS.InvokeVoidAsync(""eval"", @""
+            const title = document.querySelector('.gf-step__title');
+            if (title && !title.querySelector('.custom-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'custom-badge';
+                badge.textContent = ' NEW';
+                badge.style.cssText = 'font-size:11px;background:#10b981;color:white;padding:2px 6px;border-radius:4px;margin-left:8px;';
+                title.appendChild(badge);
+            }
+        "");
     }
 }")" />
     </div>
 
 </div>
+
+<GuideFlowTour @ref="domTour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-dom-target" Title="Custom DOM" Order="0" Side="Placement.Bottom"
+                   OnPopoverRender="OnPopoverRender">
+        <p>This popover has a custom badge added via DOM manipulation.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
 
 <GuideFlowTour @ref="defaultTour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
     <GuideFlowStep Element="#styling-demo-target" Title="Default Theme" Order="0" Side="Placement.Bottom">
@@ -103,7 +135,7 @@
 </GuideFlowTour>
 
 @code {
-    private GuideFlowTour? defaultTour, darkTour, customTour;
+    private GuideFlowTour? defaultTour, darkTour, customTour, domTour;
     private bool busy;
 
     private TourOptions defaultOpts = new() { };
@@ -113,6 +145,22 @@
     private async Task ShowDefault() { if (defaultTour != null && !busy) { busy = true; await defaultTour.DriveAsync(); } }
     private async Task ShowDark() { if (darkTour != null && !busy) { busy = true; await darkTour.DriveAsync(); } }
     private async Task ShowCustom() { if (customTour != null && !busy) { busy = true; await customTour.DriveAsync(); } }
+    private async Task ShowDomDemo() { if (domTour != null && !busy) { busy = true; await domTour.DriveAsync(); } }
+
+    private async Task OnPopoverRender()
+    {
+        await JS.InvokeVoidAsync("eval", @"
+            const title = document.querySelector('.gf-step__title');
+            if (title && !title.querySelector('.custom-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'custom-badge';
+                badge.textContent = ' NEW';
+                badge.style.cssText = 'font-size:11px;background:#10b981;color:white;padding:2px 6px;border-radius:4px;margin-left:8px;';
+                title.appendChild(badge);
+            }
+        ");
+    }
+
     private void OnEnd() { busy = false; StateHasChanged(); }
 }
 
