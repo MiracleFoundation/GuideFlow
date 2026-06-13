@@ -181,6 +181,7 @@
         {
             // Show highlight with popover — create a single-step tour
             _steps.Clear();
+#pragma warning disable BL0005 // Component parameter should not be set outside of its component - intentional for programmatic step creation
             var step = new GuideFlowStep
             {
                 Element = selector,
@@ -192,6 +193,7 @@
                 ShowBack = false,
                 ShowSkip = false,
             };
+#pragma warning restore BL0005
             RegisterStep(step);
             _isActive = true;
             ActiveIndex = 0;
@@ -343,6 +345,7 @@
     public void SetSteps(IReadOnlyList<ProgrammaticStep> steps)
     {
         _steps.Clear();
+#pragma warning disable BL0005 // Component parameter should not be set outside of its component - intentional for programmatic step creation
         foreach (var step in steps)
         {
             var component = new GuideFlowStep
@@ -371,6 +374,7 @@
             };
             RegisterStep(component);
         }
+#pragma warning restore BL0005
         StateHasChanged();
     }
 
@@ -596,6 +600,7 @@
         var data = await SafeInvokeAsync<DataStep[]>("scanDataSteps");
         if (data == null) return;
 
+#pragma warning disable BL0005 // Component parameter should not be set outside of its component - intentional for programmatic step creation
         foreach (var d in data)
         {
             var step = new GuideFlowStep
@@ -608,6 +613,7 @@
             };
             RegisterStep(step);
         }
+#pragma warning restore BL0005
     }
 
     private class DataStep
