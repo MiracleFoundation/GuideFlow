@@ -58,7 +58,7 @@
 
     private async Task SavePersistedStateAsync()
     {
-        if (!TourOptions.PersistState || !_jsAvailable) return;
+        if (!TourOptions.PersistState) return;
         try
         {
             var state = System.Text.Json.JsonSerializer.Serialize(new { index = ActiveIndex, visited = _visitedSteps.ToList() });
@@ -69,7 +69,7 @@
 
     private async Task<int?> LoadPersistedStateAsync()
     {
-        if (!TourOptions.PersistState || !_jsAvailable) return null;
+        if (!TourOptions.PersistState) return null;
         try
         {
             var json = await JS.InvokeAsync<string?>("localStorage.getItem", StorageKey);
@@ -84,7 +84,7 @@
 
     private async Task ClearPersistedStateAsync()
     {
-        if (!TourOptions.PersistState || !_jsAvailable) return;
+        if (!TourOptions.PersistState) return;
         try { await JS.InvokeVoidAsync("localStorage.removeItem", StorageKey); } catch { }
     }
 
