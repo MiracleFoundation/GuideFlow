@@ -1,0 +1,177 @@
+@page "/docs/styling-popover"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+@inject IJSRuntime JS
+
+<PageTitle>Styling Popover - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="styling-popover-title">Styling Popover</h1>
+    <p class="docs-lead" id="styling-popover-lead">You can either use the default class names and override the styles or you can pass a custom class name to the <code>PopoverClass</code> option either globally or per step.</p>
+
+    <div class="docs-callout docs-callout--info">
+        Alternatively, if you want to modify the Popover DOM, you can use the <code>OnPopoverRender</code> callback to get the popover DOM element and do whatever you want with it before popover is rendered.
+    </div>
+
+    <p>We have added a few examples below but have a look at the <a href="/docs/theming">theming section</a> for detailed guide including class names to target etc.</p>
+
+    <h2 id="using-css">Using CSS <a class="docs-anchor" href="#using-css">#</a></h2>
+
+    <div id="styling-popover-css-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#styling-demo-target"" Title=""Default Theme""
+                   Order=""0"" Side=""Placement.Bottom"">
+        <p>This uses the default light theme with no custom styling.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private TourOptions options = new()
+    {
+        PopoverClass = ""my-custom-theme"",
+    };
+}")" />
+    </div>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="styling-demo-target">
+            <span>Target Element</span>
+        </div>
+
+        <div class="popover-demo__buttons" style="margin-top: 1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowDefault">Default Theme</button>
+            <button class="docs-btn" @onclick="ShowDark">Dark Theme</button>
+            <button class="docs-btn" @onclick="ShowCustom">Custom CSS Theme</button>
+        </div>
+    </div>
+
+    <h3>Custom CSS for the above example</h3>
+    <div id="styling-custom-css-code">
+        <CodeBlock Language="css" Code="@(@".my-custom-theme {
+    --gf-popover-bg: #1a1a2e;
+    --gf-title-color: #667eea;
+    --gf-text-color: #a0a0b0;
+    --gf-btn-primary-bg: #667eea;
+    --gf-btn-primary-color: #ffffff;
+    --gf-btn-secondary-bg: #2a2a3e;
+    --gf-btn-secondary-color: #a0a0b0;
+    --gf-popover-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --gf-popover-radius: 12px;
+}")" />
+    </div>
+
+    <h2 id="popover-dom">Manipulating Popover DOM <a class="docs-anchor" href="#popover-dom">#</a></h2>
+
+    <p>You can use the <code>OnPopoverRender</code> callback to manipulate the popover DOM element directly after it is rendered:</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="styling-dom-target">
+            <span>Target Element</span>
+        </div>
+        <div style="text-align:center;margin-top:1rem;">
+            <button class="docs-btn" @onclick="ShowDomDemo">Manipulating Popover DOM</button>
+        </div>
+    </div>
+
+    <p>Here is the code for the above example:</p>
+
+    <div id="styling-dom-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#styling-dom-target"" Title=""Custom DOM""
+                   Order=""0"" Side=""Placement.Bottom"" OnPopoverRender=""OnPopoverRender"">
+        <p>This popover has a custom badge added via DOM manipulation.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private async Task OnPopoverRender()
+    {
+        // Add a custom badge to the popover header
+        await JS.InvokeVoidAsync(""eval"", @""
+            const title = document.querySelector('.gf-step__title');
+            if (title && !title.querySelector('.custom-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'custom-badge';
+                badge.textContent = ' NEW';
+                badge.style.cssText = 'font-size:11px;background:#10b981;color:white;padding:2px 6px;border-radius:4px;margin-left:8px;';
+                title.appendChild(badge);
+            }
+        "");
+    }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="domTour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-dom-target" Title="Custom DOM" Order="0" Side="Placement.Bottom"
+                   OnPopoverRender="OnPopoverRender">
+        <p>This popover has a custom badge added via DOM manipulation.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="defaultTour" TourOptions="defaultOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-demo-target" Title="Default Theme" Order="0" Side="Placement.Bottom">
+        <p>This uses the default light theme with no custom styling.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="darkTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-demo-target" Title="Dark Theme" Order="0" Side="Placement.Bottom">
+        <p>This uses the built-in <code>gf-theme-dark</code> class.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="customTour" TourOptions="customOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#styling-demo-target" Title="Custom CSS Theme" Order="0" Side="Placement.Bottom">
+        <p>This uses a custom CSS class with overridden CSS variables.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? defaultTour, darkTour, customTour, domTour;
+    private bool busy;
+
+    private TourOptions defaultOpts = new() { };
+    private TourOptions darkOpts = new() { PopoverClass = "gf-theme-dark" };
+    private TourOptions customOpts = new() { PopoverClass = "my-custom-theme" };
+
+    private async Task ShowDefault() { if (defaultTour != null && !busy) { busy = true; await defaultTour.DriveAsync(); } }
+    private async Task ShowDark() { if (darkTour != null && !busy) { busy = true; await darkTour.DriveAsync(); } }
+    private async Task ShowCustom() { if (customTour != null && !busy) { busy = true; await customTour.DriveAsync(); } }
+    private async Task ShowDomDemo() { if (domTour != null && !busy) { busy = true; await domTour.DriveAsync(); } }
+
+    private async Task OnPopoverRender()
+    {
+        await JS.InvokeVoidAsync("eval", @"
+            const title = document.querySelector('.gf-step__title');
+            if (title && !title.querySelector('.custom-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'custom-badge';
+                badge.textContent = ' NEW';
+                badge.style.cssText = 'font-size:11px;background:#10b981;color:white;padding:2px 6px;border-radius:4px;margin-left:8px;';
+                title.appendChild(badge);
+            }
+        ");
+    }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}
+
+<style>
+    .my-custom-theme {
+        --gf-popover-bg: #1a1a2e;
+        --gf-title-color: #667eea;
+        --gf-text-color: #a0a0b0;
+        --gf-btn-primary-bg: #667eea;
+        --gf-btn-primary-color: #ffffff;
+        --gf-btn-secondary-bg: #2a2a3e;
+        --gf-btn-secondary-color: #a0a0b0;
+        --gf-popover-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --gf-popover-radius: 12px;
+    }
+</style>

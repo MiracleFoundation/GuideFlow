@@ -1,0 +1,221 @@
+@page "/docs/async-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Async Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="async-tour-title">Async Tour</h1>
+    <p class="docs-lead" id="async-tour-lead">You can also have async steps in your tour. This is useful when you want to load some data from the server and then show the tour.</p>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Click the button below to start the async tour. The second step's element is loaded dynamically.</p>
+
+    <div class="popover-demo">
+        <div style="text-align:center;">
+            <button class="docs-btn" @onclick="StartTour">Asynchronous Tour</button>
+        </div>
+
+        @if (_showDynamicElement)
+        {
+            <div id="async-dynamic-el" class="popover-demo__target" style="margin-top:1rem;">
+                <span>Dynamic Element (loaded async)</span>
+            </div>
+        }
+    </div>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="async-tour-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Title=""First Step"" Order=""0""
+                   OnNextClick=""OnFirstStepNext"">
+        <p>This is the first step. Next element will be loaded dynamically.</p>
+    </GuideFlowStep>
+
+    @if (_showDynamicElement)
+    {
+        <GuideFlowStep Element=""#async-dynamic-el"" Title=""Async Element"" Order=""1"">
+            <p>This element is loaded dynamically after clicking Next on the first step.</p>
+        </GuideFlowStep>
+    }
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private bool _showDynamicElement;
+
+    private TourOptions options = new()
+    {
+        ShowProgress = true,
+    };
+
+    // Override next button to load element before moving to next step
+    private async Task OnFirstStepNext()
+    {
+        _showDynamicElement = true;
+        StateHasChanged();
+        await Task.Delay(100); // Wait for DOM to render
+        await tour!.MoveNextAsync();
+    }
+
+    private async Task StartTour()
+    {
+        _showDynamicElement = false;
+        if (tour != null) await tour.DriveAsync();
+    }
+}")" />
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> When using <code>OnNextClick</code> at the step level, you override the default behavior of the next button. The driver will not move to the next step automatically. You must call <code>MoveNextAsync()</code> manually. When configured at the tour level, you control the navigation for all the steps. When configured at the step level, you control the navigation for that particular step only.
+    </div>
+
+    <h2 id="async-content">Async Content <a class="docs-anchor" href="#async-content">#</a></h2>
+    <p>You can load step content dynamically using <code>OnLoadContent</code> (callback) or <code>ContentUrl</code> (HTTP fetch). The content is loaded before the step is shown.</p>
+    <ul>
+        <li><code>OnLoadContent</code> - A <code>Func&lt;Task&lt;string&gt;&gt;</code> that returns HTML content</li>
+        <li><code>ContentUrl</code> - A URL to fetch HTML content from (requires <code>HttpClient</code>)</li>
+    </ul>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="async-content-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartContentTour">Load Content Async</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="async-content-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""Async Content""
+               OnLoadContent=""LoadContent"">
+    <p>Loading...</p>
+</GuideFlowStep>
+
+@code {
+    private async Task<string> LoadContent()
+    {
+        // Simulate async data fetch
+        await Task.Delay(1000);
+        return ""<p>This content was <strong>loaded asynchronously</strong>!</p>"";
+    }
+}")" />
+    </div>
+
+    <h2 id="content-url">Content from URL <a class="docs-anchor" href="#content-url">#</a></h2>
+    <p>Use <code>ContentUrl</code> to fetch step content from a URL. Requires <code>HttpClient</code> to be registered in DI.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="content-url-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartContentUrlTour">Content from URL</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="content-url-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""From URL""
+               ContentUrl=""/demo-content.html"">
+    <p>Loading...</p>
+</GuideFlowStep>
+
+// Requires HttpClient in DI:
+// services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="contentTour" TourOptions="contentOpts" OnComplete="OnContentEnd" OnCancel="OnContentEnd">
+    <GuideFlowStep Element="#async-content-target" Title="Async Content" Order="0"
+                   Side="Placement.Bottom" OnLoadContent="LoadContent">
+        <p>Loading...</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="contentUrlTour" TourOptions="contentUrlOpts" OnComplete="OnContentUrlEnd" OnCancel="OnContentUrlEnd">
+    <GuideFlowStep Element="#content-url-target" Title="Content from URL" Order="0"
+                   Side="Placement.Bottom" ContentUrl="/demo-content.html">
+        <p>Loading from URL...</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="tour" TourOptions="options">
+    <GuideFlowStep Title="First Step" Order="0"
+                   OnNextClick="OnFirstStepNext">
+        <p>This is the first step. Next element will be loaded dynamically.</p>
+    </GuideFlowStep>
+
+    @if (_showDynamicElement)
+    {
+        <GuideFlowStep Element="#async-dynamic-el" Title="Async Element" Order="1">
+            <p>This element is loaded dynamically after clicking Next on the first step.</p>
+        </GuideFlowStep>
+    }
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private bool _showDynamicElement;
+
+    private TourOptions options = new()
+    {
+        ShowProgress = true,
+    };
+
+    private async Task OnFirstStepNext()
+    {
+        _showDynamicElement = true;
+        StateHasChanged();
+        await Task.Delay(100);
+        await tour!.MoveNextAsync();
+    }
+
+    private async Task StartTour()
+    {
+        _showDynamicElement = false;
+        if (tour != null) await tour.DriveAsync();
+    }
+
+    // --- Async Content demo ---
+    private GuideFlowTour? contentTour;
+    private bool contentBusy;
+
+    private TourOptions contentOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    // --- Content from URL demo ---
+    private GuideFlowTour? contentUrlTour;
+    private bool contentUrlBusy;
+
+    private TourOptions contentUrlOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task<string> LoadContent()
+    {
+        await Task.Delay(1500); // simulate network delay
+        return "<p>This content was <strong>loaded asynchronously</strong> after a 1.5s delay!</p>";
+    }
+
+    private async Task StartContentTour()
+    {
+        if (contentTour != null && !contentBusy) { contentBusy = true; await contentTour.DriveAsync(); }
+    }
+
+    private void OnContentEnd() { contentBusy = false; StateHasChanged(); }
+
+    // --- Content from URL ---
+    private async Task StartContentUrlTour()
+    {
+        if (contentUrlTour != null && !contentUrlBusy) { contentUrlBusy = true; await contentUrlTour.DriveAsync(); }
+    }
+
+    private void OnContentUrlEnd() { contentUrlBusy = false; StateHasChanged(); }
+}

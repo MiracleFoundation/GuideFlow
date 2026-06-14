@@ -1,0 +1,339 @@
+@page "/docs/api"
+
+<PageTitle>API Reference - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1>API Reference</h1>
+    <p class="docs-lead">Full reference for every component, service, and configuration object in GuideFlow. Covers <code>TourOptions</code>, <code>StepOptions</code>, the <code>GuideFlowBuilder</code> fluent API, event callbacks, and the <code>GuideFlowTooltip</code> component.</p>
+
+    @* ================================================================== *@
+    @* === TourOptions === *@
+    @* ================================================================== *@
+
+    <h2 id="tour-options">TourOptions <a class="docs-anchor" href="#tour-options">#</a></h2>
+    <p>Global configuration for a tour. Pass to <code>GuideFlowTour</code> or <code>GuideFlowBuilder.WithOptions()</code>.</p>
+
+    <CodeBlock Language="csharp" Code="@(@"var options = new TourOptions
+{
+    Animate = true,
+    OverlayColor = ""#000"",
+    OverlayOpacity = 0.5,
+    AllowClose = true,
+    ShowProgress = true,
+    PopoverClass = ""gf-theme-dark"",
+    PopoverOffset = 12,
+};")" />
+
+    @* --- Overlay --- *@
+    <h3 id="to-overlay">Overlay <a class="docs-anchor" href="#to-overlay">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="Overlay" Type="bool" Default="true" Desc="Show semi-transparent overlay behind active step." />
+        <ApiRow Name="OverlayOpacity" Type="double" Default="0.5" Desc="Opacity of the overlay (0.0 to 1.0)." />
+        <ApiRow Name="OverlayColor" Type="string?" Default="null" Desc="Custom overlay color (e.g., '#000', 'rgba(0,0,0,0.5)')." />
+        <ApiRow Name="AllowClose" Type="bool" Default="true" Desc="Allow closing via overlay click or close button." />
+        <ApiRow Name="OverlayClickBehavior" Type="OverlayClickBehavior" Default="Close" Desc="Action on overlay click: Close, NextStep, or None." />
+    </ApiTable>
+
+    @* --- Animation --- *@
+    <h3 id="to-animation">Animation <a class="docs-anchor" href="#to-animation">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="Animate" Type="bool" Default="true" Desc="Animate transitions between steps." />
+        <ApiRow Name="AnimationType" Type="AnimationType" Default="Fade" Desc="Animation style: Fade, Slide, Bounce, None." />
+        <ApiRow Name="AnimationDuration" Type="int" Default="300" Desc="Animation duration in milliseconds." />
+        <ApiRow Name="AnimateCutout" Type="bool" Default="true" Desc="Animate the overlay cutout between steps." />
+    </ApiTable>
+
+    @* --- Navigation --- *@
+    <h3 id="to-navigation">Navigation <a class="docs-anchor" href="#to-navigation">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="AllowKeyboardControl" Type="bool" Default="true" Desc="Enable keyboard navigation (Arrow keys, Enter, Escape)." />
+        <ApiRow Name="SmoothScroll" Type="bool" Default="true" Desc="Smooth scroll to target element." />
+        <ApiRow Name="ScrollBehavior" Type="ScrollBehavior" Default="Smooth" Desc="Extended: Smooth, Instant, or None." />
+        <ApiRow Name="ScrollBlock" Type="string" Default="center" Desc="ScrollIntoView block: center, start, end, nearest." />
+    </ApiTable>
+
+    @* --- Stage / Highlight --- *@
+    <h3 id="to-stage">Stage / Highlight <a class="docs-anchor" href="#to-stage">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="StagePadding" Type="int" Default="10" Desc="Padding around highlighted element in pixels." />
+        <ApiRow Name="StageRadius" Type="int" Default="5" Desc="Border radius of highlighted area (only for RoundedRect)." />
+        <ApiRow Name="HighlightShape" Type="HighlightShape" Default="RoundedRect" Desc="Shape of the highlighted area." />
+        <ApiRow Name="OverlayMode" Type="OverlayMode" Default="Cutout" Desc="Overlay mode: Cutout (SVG mask) or Stage (4 panels)." />
+        <ApiRow Name="ZIndex" Type="int" Default="10000" Desc="z-index for overlay and popovers." />
+    </ApiTable>
+
+    <h4>HighlightShape Values</h4>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Shape</th><th>Description</th><th>Best for</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>RoundedRect</code></td><td>Rounded rectangle with configurable border radius</td><td>Buttons, cards, inputs</td></tr>
+            <tr><td><code>Rectangle</code></td><td>Sharp-corner rectangle (no border radius)</td><td>Images, tables</td></tr>
+            <tr><td><code>Circle</code></td><td>Circle based on the larger dimension of the target</td><td>Avatars, icons</td></tr>
+            <tr><td><code>Ellipse</code></td><td>Ellipse matching the target's aspect ratio</td><td>Non-square rounded elements</td></tr>
+        </tbody>
+    </table>
+
+    @* --- Popover --- *@
+    <h3 id="to-popover">Popover <a class="docs-anchor" href="#to-popover">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="PopoverClass" Type="string?" Default="null" Desc="CSS theme class for popovers." />
+        <ApiRow Name="PopoverOffset" Type="int" Default="12" Desc="Distance between popover and target in pixels." />
+        <ApiRow Name="StepMode" Type="StepMode" Default="Bubble" Desc="Default mode: Bubble (near target) or Modal (centered)." />
+    </ApiTable>
+
+    @* --- Progress --- *@
+    <h3 id="to-progress">Progress <a class="docs-anchor" href="#to-progress">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="ShowProgress" Type="bool" Default="true" Desc="Show progress text (e.g., '2 of 5')." />
+        <ApiRow Name="ShowProgressBar" Type="bool" Default="false" Desc="Show visual progress bar." />
+    </ApiTable>
+
+    @* --- Button Text --- *@
+    <h3 id="to-buttons">Button Text <a class="docs-anchor" href="#to-buttons">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="NextBtnText" Type="string" Default="Next" Desc="Text for the Next button." />
+        <ApiRow Name="PrevBtnText" Type="string" Default="Back" Desc="Text for the Previous button." />
+        <ApiRow Name="SkipBtnText" Type="string" Default="Skip" Desc="Text for the Skip button." />
+        <ApiRow Name="DoneBtnText" Type="string" Default="Done" Desc="Text for the Done button (last step)." />
+    </ApiTable>
+
+    @* --- Focus & Auto --- *@
+    <h3 id="to-focus">Focus & Auto <a class="docs-anchor" href="#to-focus">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="TrapFocus" Type="bool" Default="true" Desc="Trap Tab key within active popover." />
+        <ApiRow Name="AutoReposition" Type="bool" Default="true" Desc="Auto-reposition on resize/scroll." />
+        <ApiRow Name="TrackVisited" Type="bool" Default="true" Desc="Track and mark visited steps." />
+        <ApiRow Name="HighlightClass" Type="string" Default="gf-highlight-active" Desc="CSS class on highlighted target." />
+        <ApiRow Name="LazyRender" Type="bool" Default="false" Desc="Render step content only when active." />
+    </ApiTable>
+
+    @* --- State --- *@
+    <h3 id="to-state">State <a class="docs-anchor" href="#to-state">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="PersistState" Type="bool" Default="false" Desc="Auto-save/load state to localStorage." />
+        <ApiRow Name="StorageKey" Type="string?" Default="null" Desc="Custom storage key (defaults to tour name)." />
+    </ApiTable>
+
+    @* ================================================================== *@
+    @* === StepOptions === *@
+    @* ================================================================== *@
+
+    <h2 id="step-options">Step Options <a class="docs-anchor" href="#step-options">#</a></h2>
+    <p>Configuration for individual steps. Set via Razor attributes or the <code>StepBuilder</code>.</p>
+
+    @* --- Content --- *@
+    <h3 id="so-content">Content <a class="docs-anchor" href="#so-content">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="Element" Type="string" Default='""' Desc="CSS selector for target element." />
+        <ApiRow Name="Title" Type="string" Default='""' Desc="Popover title text." />
+        <ApiRow Name="Text" Type="string?" Default="null" Desc="Popover description text." />
+        <ApiRow Name="ChildContent" Type="RenderFragment?" Default="null" Desc="Rich HTML content (overrides Text)." />
+    </ApiTable>
+
+    @* --- Position --- *@
+    <h3 id="so-position">Position <a class="docs-anchor" href="#so-position">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="Side" Type="Placement" Default="Bottom" Desc="Popover side: Top, Bottom, Left, Right (+ Start/End variants)." />
+        <ApiRow Name="Align" Type="PopoverAlign?" Default="null" Desc="Alignment: Start, Center, End." />
+        <ApiRow Name="Mode" Type="StepMode?" Default="null" Desc="Override: Bubble or Modal." />
+    </ApiTable>
+
+    @* --- Appearance --- *@
+    <h3 id="so-appearance">Appearance <a class="docs-anchor" href="#so-appearance">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="PopoverClass" Type="string?" Default="null" Desc="CSS class for this step's popover." />
+        <ApiRow Name="Animation" Type="AnimationType?" Default="null" Desc="Override animation for this step." />
+        <ApiRow Name="Order" Type="int" Default="0" Desc="Step order (sorted ascending)." />
+        <ApiRow Name="StepId" Type="string?" Default="null" Desc="Unique identifier for this step." />
+        <ApiRow Name="Disabled" Type="bool" Default="false" Desc="Skip this step." />
+    </ApiTable>
+
+    @* --- Controls --- *@
+    <h3 id="so-controls">Controls <a class="docs-anchor" href="#so-controls">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="ShowBack" Type="bool" Default="true" Desc="Show Back button." />
+        <ApiRow Name="ShowNext" Type="bool" Default="true" Desc="Show Next button." />
+        <ApiRow Name="ShowSkip" Type="bool" Default="false" Desc="Show Skip button." />
+        <ApiRow Name="ShowClose" Type="bool" Default="true" Desc="Show Close button." />
+        <ApiRow Name="ShowArrow" Type="bool" Default="true" Desc="Show arrow pointing to target." />
+        <ApiRow Name="ShowProgress" Type="bool" Default="true" Desc="Show progress text." />
+        <ApiRow Name="ShowProgressBar" Type="bool" Default="true" Desc="Show progress bar." />
+        <ApiRow Name="DisableActiveInteraction" Type="bool" Default="false" Desc="Block interaction with highlighted element." />
+    </ApiTable>
+
+    @* --- Buttons --- *@
+    <h3 id="so-buttons">Buttons <a class="docs-anchor" href="#so-buttons">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="ShowButtons" Type="string[]?" Default="null" Desc="Which buttons to show (overrides Show* flags)." />
+        <ApiRow Name="DisableButtons" Type="string[]?" Default="null" Desc="Which buttons to disable (visible but not clickable)." />
+        <ApiRow Name="ButtonsContent" Type="RenderFragment?" Default="null" Desc="Custom button content (replaces default buttons)." />
+        <ApiRow Name="NextBtnText" Type="string?" Default="null" Desc="Override Next button text." />
+        <ApiRow Name="PrevBtnText" Type="string?" Default="null" Desc="Override Previous button text." />
+        <ApiRow Name="SkipBtnText" Type="string?" Default="null" Desc="Override Skip button text." />
+        <ApiRow Name="DoneBtnText" Type="string?" Default="null" Desc="Override Done button text." />
+    </ApiTable>
+
+    @* --- Async --- *@
+    <h3 id="so-async">Async Content <a class="docs-anchor" href="#so-async">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="OnLoadContent" Type="Func&lt;Task&lt;string&gt;&gt;?" Default="null" Desc="Async function returning HTML content." />
+        <ApiRow Name="ContentUrl" Type="string?" Default="null" Desc="URL to fetch content from." />
+    </ApiTable>
+
+    @* ================================================================== *@
+    @* === Methods === *@
+    @* ================================================================== *@
+
+    <h2 id="methods">Methods <a class="docs-anchor" href="#methods">#</a></h2>
+    <p>Methods available on <code>GuideFlowTour</code> (via <code>@("@ref")</code>) and <code>GuideFlowService</code>.</p>
+
+    <h3 id="methods-navigation">Navigation <a class="docs-anchor" href="#methods-navigation">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="DriveAsync()" Type="Task" Default="-" Desc="Start the tour from step 0." />
+        <ApiRow Name="DriveAsync(int)" Type="Task" Default="-" Desc="Start the tour from a specific step index." />
+        <ApiRow Name="MoveNextAsync()" Type="Task" Default="-" Desc="Move to the next step." />
+        <ApiRow Name="MovePreviousAsync()" Type="Task" Default="-" Desc="Move to the previous step." />
+        <ApiRow Name="MoveToAsync(int)" Type="Task" Default="-" Desc="Move to a specific step by index." />
+        <ApiRow Name="DestroyAsync()" Type="Task" Default="-" Desc="Destroy the tour and clean up." />
+        <ApiRow Name="CompleteAsync()" Type="Task" Default="-" Desc="Mark tour as completed." />
+        <ApiRow Name="HighlightAsync(string)" Type="Task" Default="-" Desc="Highlight a single element (no tour)." />
+    </ApiTable>
+
+    <h3 id="methods-state">State <a class="docs-anchor" href="#methods-state">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="HasNextStep()" Type="bool" Default="-" Desc="True if there is a next step." />
+        <ApiRow Name="HasPreviousStep()" Type="bool" Default="-" Desc="True if there is a previous step." />
+        <ApiRow Name="IsFirstStep()" Type="bool" Default="-" Desc="True if current step is first." />
+        <ApiRow Name="IsLastStep()" Type="bool" Default="-" Desc="True if current step is last." />
+        <ApiRow Name="GetActiveIndex()" Type="int" Default="-" Desc="Current step index." />
+        <ApiRow Name="GetActiveStep()" Type="GuideFlowStep?" Default="-" Desc="Current step component." />
+        <ApiRow Name="GetPreviousStep()" Type="GuideFlowStep?" Default="-" Desc="Previous step component." />
+        <ApiRow Name="GetActiveElement()" Type="string?" Default="-" Desc="Selector of current step's target." />
+        <ApiRow Name="GetPreviousElement()" Type="string?" Default="-" Desc="Selector of previous step's target." />
+        <ApiRow Name="GetState()" Type="string" Default="-" Desc="Current tour state as JSON." />
+        <ApiRow Name="GetConfig()" Type="TourOptions" Default="-" Desc="Current tour options." />
+        <ApiRow Name="SetConfig(TourOptions)" Type="void" Default="-" Desc="Update tour options at runtime." />
+        <ApiRow Name="SetSteps(steps)" Type="void" Default="-" Desc="Replace tour steps at runtime." />
+        <ApiRow Name="Refresh()" Type="void" Default="-" Desc="Force re-render." />
+    </ApiTable>
+
+    @* ================================================================== *@
+    @* === Events === *@
+    @* ================================================================== *@
+
+    <h2 id="events">Events <a class="docs-anchor" href="#events">#</a></h2>
+    <p>EventCallbacks on <code>GuideFlowTour</code>.</p>
+
+    <h3 id="events-tour">Tour Lifecycle <a class="docs-anchor" href="#events-tour">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="OnStart" Type="EventCallback" Default="-" Desc="Fired when tour starts." />
+        <ApiRow Name="OnComplete" Type="EventCallback" Default="-" Desc="Fired when tour completes." />
+        <ApiRow Name="OnCancel" Type="EventCallback" Default="-" Desc="Fired when tour is cancelled." />
+        <ApiRow Name="OnBeforeDestroy" Type="EventCallback" Default="-" Desc="Fired before tour is destroyed." />
+        <ApiRow Name="OnDestroyed" Type="EventCallback" Default="-" Desc="Fired after tour is destroyed." />
+    </ApiTable>
+
+    <h3 id="events-step">Step Events <a class="docs-anchor" href="#events-step">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="OnStepChange" Type="EventCallback&lt;StepChangeEventArgs&gt;" Default="-" Desc="Fired when step changes." />
+        <ApiRow Name="OnBeforeStepChange" Type="EventCallback&lt;BeforeStepChangeEventArgs&gt;" Default="-" Desc="Fired before step change (cancelable)." />
+    </ApiTable>
+
+    <h3 id="events-buttons">Button Overrides (Tour-Level) <a class="docs-anchor" href="#events-buttons">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="OnNextClick" Type="EventCallback" Default="-" Desc="Override all Next button clicks." />
+        <ApiRow Name="OnPrevClick" Type="EventCallback" Default="-" Desc="Override all Previous button clicks." />
+        <ApiRow Name="OnCloseClick" Type="EventCallback" Default="-" Desc="Override all Close button clicks." />
+    </ApiTable>
+
+    <h3 id="events-step-buttons">Button Overrides (Per-Step) <a class="docs-anchor" href="#events-step-buttons">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="OnNextClick" Type="EventCallback" Default="-" Desc="Override Next click for this step." />
+        <ApiRow Name="OnPrevClick" Type="EventCallback" Default="-" Desc="Override Previous click for this step." />
+        <ApiRow Name="OnCloseClick" Type="EventCallback" Default="-" Desc="Override Close click for this step." />
+        <ApiRow Name="OnBeforeShow" Type="EventCallback" Default="-" Desc="Fired before step is shown." />
+        <ApiRow Name="OnAfterShow" Type="EventCallback" Default="-" Desc="Fired after step is shown." />
+        <ApiRow Name="OnBeforeHide" Type="EventCallback" Default="-" Desc="Fired before step is hidden." />
+        <ApiRow Name="OnAfterHide" Type="EventCallback" Default="-" Desc="Fired after step is hidden." />
+    </ApiTable>
+
+    @* ================================================================== *@
+    @* === Builder === *@
+    @* ================================================================== *@
+
+    <h2 id="builder">GuideFlowBuilder <a class="docs-anchor" href="#builder">#</a></h2>
+    <p>Fluent API for creating tours programmatically.</p>
+
+    <CodeBlock Language="csharp" Code="@(@"var builder = new GuideFlowBuilder()
+    .WithName(""my-tour"")
+    .WithOptions(o => {
+        o.ShowProgress = true;
+        o.AnimationType = AnimationType.Slide;
+    })
+    .AddStep(""#header"", ""Welcome"", ""Hello world"", side: Placement.Bottom)
+    .AddStep(""#sidebar"", ""Navigation"", ""Use this to navigate"",
+        side: Placement.Right, configure: s => s.ShowSkip(false));")" />
+
+    <h3 id="builder-methods">Builder Methods <a class="docs-anchor" href="#builder-methods">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="WithName(string)" Type="GuideFlowBuilder" Default="-" Desc="Set tour name." />
+        <ApiRow Name="WithOptions(Action)" Type="GuideFlowBuilder" Default="-" Desc="Configure tour options." />
+        <ApiRow Name="WithOptions(TourOptions)" Type="GuideFlowBuilder" Default="-" Desc="Set tour options directly." />
+        <ApiRow Name="AddStep(element, title, ...)" Type="GuideFlowBuilder" Default="-" Desc="Add a step." />
+    </ApiTable>
+
+    <h3 id="builder-step">StepBuilder Methods <a class="docs-anchor" href="#builder-step">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="WithText(string)" Type="StepBuilder" Default="-" Desc="Set step text." />
+        <ApiRow Name="WithDescription(string)" Type="StepBuilder" Default="-" Desc="Alias for WithText." />
+        <ApiRow Name="WithSide(Placement)" Type="StepBuilder" Default="-" Desc="Set popover side." />
+        <ApiRow Name="WithAlign(PopoverAlign)" Type="StepBuilder" Default="-" Desc="Set popover alignment." />
+        <ApiRow Name="WithOrder(int)" Type="StepBuilder" Default="-" Desc="Set step order." />
+        <ApiRow Name="WithStepId(string)" Type="StepBuilder" Default="-" Desc="Set step ID." />
+        <ApiRow Name="WithMode(StepMode)" Type="StepBuilder" Default="-" Desc="Set Bubble or Modal." />
+        <ApiRow Name="WithAnimation(AnimationType)" Type="StepBuilder" Default="-" Desc="Set animation type." />
+        <ApiRow Name="WithPopoverClass(string)" Type="StepBuilder" Default="-" Desc="Set popover CSS class." />
+        <ApiRow Name="DisableActiveInteraction()" Type="StepBuilder" Default="-" Desc="Block interaction with target." />
+        <ApiRow Name="ShowBack/ShowNext/ShowSkip/ShowClose(bool)" Type="StepBuilder" Default="-" Desc="Toggle button visibility." />
+        <ApiRow Name="WithButtons(next, back, skip, finish)" Type="StepBuilder" Default="-" Desc="Set button labels." />
+    </ApiTable>
+
+    @* ================================================================== *@
+    @* === Tooltip === *@
+    @* ================================================================== *@
+
+    <h2 id="tooltip">GuideFlowTooltip <a class="docs-anchor" href="#tooltip">#</a></h2>
+    <p>Standalone tooltip component (not part of a tour).</p>
+
+    <CodeBlock Language="razor" Code="@(@"<GuideFlowTooltip @ref=""tooltip""
+    Element=""#my-target""
+    Title=""Hello!""
+    Side=""Placement.Top""
+    ShowArrow=""true"" />
+
+<button @onclick=""() => tooltip.ShowAsync()"">Show</button>")" />
+
+    <h3 id="tooltip-params">Parameters <a class="docs-anchor" href="#tooltip-params">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="Element" Type="string" Default='""' Desc="CSS selector for target." />
+        <ApiRow Name="Title" Type="string" Default='""' Desc="Tooltip title." />
+        <ApiRow Name="Text" Type="string?" Default="null" Desc="Tooltip text." />
+        <ApiRow Name="ChildContent" Type="RenderFragment?" Default="null" Desc="Rich content." />
+        <ApiRow Name="Side" Type="Placement" Default="Bottom" Desc="Tooltip side." />
+        <ApiRow Name="Mode" Type="StepMode" Default="Bubble" Desc="Bubble or Modal." />
+        <ApiRow Name="ShowArrow" Type="bool" Default="true" Desc="Show arrow." />
+        <ApiRow Name="ShowClose" Type="bool" Default="true" Desc="Show close button." />
+        <ApiRow Name="PopoverClass" Type="string?" Default="null" Desc="CSS class." />
+        <ApiRow Name="ZIndex" Type="int" Default="10001" Desc="z-index." />
+    </ApiTable>
+
+    <h3 id="tooltip-methods">Methods <a class="docs-anchor" href="#tooltip-methods">#</a></h3>
+    <ApiTable>
+        <ApiRow Name="ShowAsync()" Type="Task" Default="-" Desc="Show the tooltip." />
+        <ApiRow Name="HideAsync()" Type="Task" Default="-" Desc="Hide the tooltip." />
+        <ApiRow Name="ToggleAsync()" Type="Task" Default="-" Desc="Toggle visibility." />
+        <ApiRow Name="IsVisible" Type="bool" Default="-" Desc="Current visibility state." />
+    </ApiTable>
+</div>

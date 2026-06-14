@@ -1,0 +1,173 @@
+@page "/docs/modal-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Modal Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="modal-tour-title">Modal Tour</h1>
+    <p class="docs-lead" id="modal-tour-lead">Center the popover in a full-screen modal overlay instead of anchoring it to a target element. Ideal for welcome screens, announcements, or steps that don't reference a specific UI element.</p>
+
+    <button class="docs-demo__run" @onclick="StartTour" id="modal-tour-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="modal-tour-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#modal-tour-title"" Title=""Modal Step 1"" Order=""0""
+                   Mode=""StepMode.Modal"">
+        <p>This step is displayed in modal mode.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element=""#modal-tour-code"" Title=""Modal Step 2"" Order=""1""
+                   Mode=""StepMode.Modal"">
+        <p>Another modal step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+    <h2 id="step-modes">Step Modes <a class="docs-anchor" href="#step-modes">#</a></h2>
+    <p>Each step can be displayed in one of two modes:</p>
+    <ul>
+        <li><strong>Bubble</strong> (default) - Popover appears near the target element, anchored to it with an arrow. Best for highlighting specific UI elements.</li>
+        <li><strong>Modal</strong> - Popover is centered on screen with a full overlay. Best for welcome screens, announcements, or steps that don't reference a specific UI element.</li>
+    </ul>
+    <p>You can set the mode globally via <code>TourOptions.StepMode</code> or per-step via the <code>Mode</code> parameter.</p>
+
+    <h3 id="mixed-mode">Mixed Mode</h3>
+    <p>You can mix both modes in a single tour by setting <code>Mode</code> on individual steps. A common pattern is:</p>
+    <ol>
+        <li><strong>Modal</strong> step for the welcome/introduction (no target element needed)</li>
+        <li><strong>Bubble</strong> steps for walkthrough (pointing at specific UI elements)</li>
+        <li><strong>Modal</strong> step for the conclusion/completion message</li>
+    </ol>
+    <p>When a step has <code>Mode = StepMode.Modal</code>, the <code>Element</code> parameter is optional - the popover will be centered on screen regardless.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="mode-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowBubble">Bubble (default)</button>
+            <button class="docs-btn" @onclick="ShowModal">Modal</button>
+            <button class="docs-btn" @onclick="ShowMixed">Mixed Modes</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="mode-code">
+        <CodeBlock Language="razor" Code="@(@"// Bubble mode (default) - popover near target
+private TourOptions bubbleOpts = new()
+{
+    StepMode = StepMode.Bubble,
+};
+
+// Modal mode - popover centered on screen
+private TourOptions modalOpts = new()
+{
+    StepMode = StepMode.Modal,
+};
+
+// Mixed modes - each step uses its own mode
+<GuideFlowStep Title=""Welcome"" Order=""0"" Mode=""StepMode.Modal"">
+    <p>This step is a modal.</p>
+</GuideFlowStep>
+<GuideFlowStep Element=""#target"" Title=""Feature"" Order=""1"" Mode=""StepMode.Bubble"">
+    <p>This step is a bubble near the target.</p>
+</GuideFlowStep>")" />
+    </div>
+
+</div>
+
+@* --- Default modal tour --- *@
+<GuideFlowTour @ref="tour" TourOptions="options" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#modal-tour-title" Title="Modal Step 1" Order="0"
+                   Mode="StepMode.Modal">
+        <p>This step is displayed in modal mode.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#modal-tour-code" Title="Modal Step 2" Order="1"
+                   Mode="StepMode.Modal">
+        <p>Another modal step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Bubble mode demo --- *@
+<GuideFlowTour @ref="bubbleTour" TourOptions="bubbleOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#mode-demo-target" Title="Bubble Mode" Order="0"
+                   Side="Placement.Bottom" Mode="StepMode.Bubble">
+        <p>This is <strong>Bubble</strong> mode - the popover appears near the target element.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#mode-demo-target" Title="Bubble - Step 2" Order="1"
+                   Side="Placement.Right" Mode="StepMode.Bubble">
+        <p>The popover follows the target element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Modal mode demo --- *@
+<GuideFlowTour @ref="modalTour" TourOptions="modalOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#mode-demo-target" Title="Modal Mode" Order="0"
+                   Mode="StepMode.Modal">
+        <p>This is <strong>Modal</strong> mode - the popover is centered on screen.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#mode-demo-target" Title="Modal - Step 2" Order="1"
+                   Mode="StepMode.Modal">
+        <p>Each step stays centered on the screen.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* --- Mixed mode demo --- *@
+<GuideFlowTour @ref="mixedTour" TourOptions="mixedOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Title="Welcome" Order="0"
+                   Mode="StepMode.Modal">
+        <p>This is a <strong>Modal</strong> step - great for introductions.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#mode-demo-target" Title="This Feature" Order="1"
+                   Side="Placement.Bottom" Mode="StepMode.Bubble">
+        <p>This is a <strong>Bubble</strong> step - pointing at a specific element.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Title="All Done!" Order="2"
+                   Mode="StepMode.Modal">
+        <p>Back to <strong>Modal</strong> for the conclusion.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private GuideFlowTour? bubbleTour, modalTour, mixedTour;
+    private bool busy;
+
+    private TourOptions options = new() { };
+
+    private TourOptions bubbleOpts = new()
+    {
+        StepMode = StepMode.Bubble,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions modalOpts = new()
+    {
+        StepMode = StepMode.Modal,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions mixedOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+
+    private async Task ShowBubble() { if (bubbleTour != null && !busy) { busy = true; await bubbleTour.ResetAsync(); await bubbleTour.DriveAsync(); } }
+    private async Task ShowModal() { if (modalTour != null && !busy) { busy = true; await modalTour.ResetAsync(); await modalTour.DriveAsync(); } }
+    private async Task ShowMixed() { if (mixedTour != null && !busy) { busy = true; await mixedTour.ResetAsync(); await mixedTour.DriveAsync(); } }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

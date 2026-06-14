@@ -1,0 +1,213 @@
+@page "/docs/accessibility"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Accessibility - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>Accessibility</h1>
+    <p class="docs-lead">Every tour step is fully accessible out of the box. Keyboard users can navigate with arrow keys and Tab, screen readers announce step content via ARIA live regions, and focus is trapped inside the popover to prevent interaction with background elements.</p>
+
+    <h2 id="keyboard-nav">
+        Keyboard Navigation
+        <a class="docs-anchor" href="#keyboard-nav">#</a>
+    </h2>
+
+    <p>When a tour is active, users can navigate with keyboard:</p>
+
+    <table class="docs-table">
+        <thead>
+            <tr><th>Key</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>→</strong> or <strong>↓</strong></td><td>Next step</td></tr>
+            <tr><td><strong>←</strong> or <strong>↑</strong></td><td>Previous step</td></tr>
+            <tr><td><strong>Enter</strong></td><td>Next step</td></tr>
+            <tr><td><strong>Escape</strong></td><td>Close/cancel tour</td></tr>
+            <tr><td><strong>Tab</strong></td><td>Trapped within popover (focus doesn't leak)</td></tr>
+        </tbody>
+    </table>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="kb-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="StartKbTour">Keyboard Enabled</button>
+            <button class="docs-btn" @onclick="StartKbDisabledTour">Keyboard Disabled</button>
+        </div>
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Test:</strong> Click "Keyboard Enabled" then try arrow keys, Enter, Escape, and Tab. Click "Keyboard Disabled" then try the same keys - they should do nothing.
+    </div>
+
+    <h3>Code</h3>
+    <CodeBlock Language="csharp" Code="@(@"// Keyboard enabled (default)
+private TourOptions options = new()
+{
+    AllowKeyboardControl = true,   // arrow keys, Enter, Escape work
+    TrapFocus = true,              // Tab stays within popover
+};
+
+// Keyboard disabled
+private TourOptions options = new()
+{
+    AllowKeyboardControl = false,  // keyboard does nothing
+    TrapFocus = false,             // Tab can leave popover
+};")" />
+
+    <h2 id="aria">
+        ARIA Attributes
+        <a class="docs-anchor" href="#aria">#</a>
+    </h2>
+
+    <p>GuideFlow automatically applies ARIA attributes to tour elements:</p>
+
+    <ul>
+        <li><code>role="dialog"</code> on the popover</li>
+        <li><code>aria-modal="true"</code> for modal steps</li>
+        <li><code>aria-describedby</code> linking to step content</li>
+        <li><code>aria-live</code> region for screen reader announcements</li>
+    </ul>
+
+    <h2 id="focus-management">
+        Focus Management
+        <a class="docs-anchor" href="#focus-management">#</a>
+    </h2>
+
+    <p>When a tour starts, focus moves to the popover. When it ends, focus returns to the previously focused element. This ensures screen reader users don't lose context.</p>
+
+    <h2 id="high-contrast">
+        High Contrast Theme
+        <a class="docs-anchor" href="#high-contrast">#</a>
+    </h2>
+
+    <p>The built-in high-contrast theme provides maximum readability:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+{
+    PopoverClass =""gf-theme-high-contrast"",
+    HighlightShape = HighlightShape.Rectangle,
+    AnimationType = AnimationType.None,
+    OverlayOpacity = 0.8,
+};")" />
+
+    <h2 id="best-practices">
+        Best Practices
+        <a class="docs-anchor" href="#best-practices">#</a>
+    </h2>
+
+    <ul>
+        <li>Always keep <code>KeyboardNavigation = true</code> and <code>TrapFocus = true</code></li>
+        <li>Use <code>ExitOnEsc = true</code> so users can exit at any time</li>
+        <li>Write descriptive <code>Title</code> and content for screen readers</li>
+        <li>Test with a screen reader (NVDA, VoiceOver, JAWS)</li>
+        <li>Use the high-contrast theme for users with visual impairments</li>
+        <li>Keep step content concise - long blocks are hard to follow via audio</li>
+    </ul>
+
+    <h2 id="live-demo">
+        Live Demo
+        <a class="docs-anchor" href="#live-demo">#</a>
+    </h2>
+
+    <div class="docs-demo">
+        <div class="docs-demo__header">
+            <span class="docs-demo__label">Live Demo - High Contrast</span>
+            <button class="docs-demo__run" @onclick="StartDemo">▶ Run Tour</button>
+        </div>
+        <div class="docs-demo__body" style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div id="a11y-el1" style="padding:1rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-weight:600;">
+                ♿ Accessible Element
+            </div>
+            <div id="a11y-el2" style="padding:1rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-weight:600;">
+                ⌨️ Keyboard Friendly
+            </div>
+        </div>
+    </div>
+
+    <GuideFlowTour @ref="kbTour" TourOptions="kbOpts" OnComplete="OnKbEnd" OnCancel="OnKbEnd">
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 1 - Try Keyboard" Order="0" Side="Placement.Bottom">
+            <p><strong>→</strong> or <strong>Enter</strong> = Next &bull; <strong>←</strong> = Back &bull; <strong>Esc</strong> = Close</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 2 - Keep Trying" Order="1" Side="Placement.Bottom">
+            <p>Try <strong>Tab</strong> - focus stays trapped in this popover.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 3 - Done!" Order="2" Side="Placement.Bottom">
+            <p>Keyboard navigation works. Press <strong>Esc</strong> or click Close to exit.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+
+    <GuideFlowTour @ref="kbDisabledTour" TourOptions="kbDisabledOpts" OnComplete="OnKbEnd" OnCancel="OnKbEnd">
+        <GuideFlowStep Element="#kb-demo-target" Title="Keyboard Disabled" Order="0" Side="Placement.Bottom">
+            <p>Arrow keys, Enter, and Escape <strong>do nothing</strong>. Use the buttons to navigate.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#kb-demo-target" Title="Step 2" Order="1" Side="Placement.Bottom">
+            <p>Tab is also not trapped - focus can leave the popover.</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+
+    <GuideFlowTour @ref="demoTour" TourOptions="demoOptions" OnComplete="OnEnd" OnCancel="OnEnd">
+        <GuideFlowStep Element="#a11y-el1" Title="High Contrast" Order="0" Side="Placement.Bottom">
+            <p><strong>High contrast</strong> theme for accessibility compliance.</p>
+        </GuideFlowStep>
+        <GuideFlowStep Element="#a11y-el2" Title="Keyboard Nav" Order="1" Side="Placement.Bottom" ShowSkip="false">
+            <p><strong>→</strong> Next &bull; <strong>←</strong> Back &bull; <strong>Esc</strong> Cancel &bull; <strong>Tab</strong> trapped</p>
+        </GuideFlowStep>
+    </GuideFlowTour>
+</div>
+
+@code {
+    private GuideFlowTour? demoTour;
+    private bool busy;
+
+    private TourOptions demoOptions = new()
+    {
+        Overlay = true,
+        OverlayOpacity = 0.8,
+        ShowProgress = true,
+        AllowClose = true,
+        PopoverClass ="gf-theme-high-contrast",
+        HighlightShape = HighlightShape.Rectangle,
+        AnimationType = AnimationType.None,
+    };
+
+    private async Task StartDemo()
+    {
+        if (demoTour != null && !busy) { busy = true; await demoTour.DriveAsync(); }
+    }
+    private void OnEnd() { busy = false; StateHasChanged(); }
+
+    // --- Keyboard demo ---
+    private GuideFlowTour? kbTour, kbDisabledTour;
+    private bool kbBusy;
+
+    private TourOptions kbOpts = new()
+    {
+        AllowKeyboardControl = true,
+        TrapFocus = true,
+        ShowProgress = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions kbDisabledOpts = new()
+    {
+        AllowKeyboardControl = false,
+        TrapFocus = false,
+        ShowProgress = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private async Task StartKbTour()
+    {
+        if (kbTour != null && !kbBusy) { kbBusy = true; await kbTour.DriveAsync(); }
+    }
+
+    private async Task StartKbDisabledTour()
+    {
+        if (kbDisabledTour != null && !kbBusy) { kbBusy = true; await kbDisabledTour.DriveAsync(); }
+    }
+
+    private void OnKbEnd() { kbBusy = false; StateHasChanged(); }
+}

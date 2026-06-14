@@ -1,0 +1,86 @@
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@using GuideFlow.Services
+@namespace GuideFlow.Components
+
+<GuideFlowTour @ref="tour"
+               TourOptions="TourOptions"
+               TourName="TourName"
+               OnStart="OnStart"
+               OnComplete="OnComplete"
+               OnCancel="OnCancel"
+               OnStepChange="OnStepChange">
+
+    @foreach (var step in _steps)
+    {
+        <GuideFlowStep Element="@step.Element"
+                       Title="@step.Title"
+                       Text="@step.Text"
+                       Side="@step.Side"
+                       Align="@step.Align"
+                       Order="@step.Order"
+                       StepId="@step.StepId"
+                       ShowBack="@step.ShowBack"
+                       ShowNext="@step.ShowNext"
+                       ShowSkip="@step.ShowSkip"
+                       ShowClose="@step.ShowClose"
+                       ShowArrow="@step.ShowArrow"
+                       ShowProgress="@step.ShowProgress"
+                       Disabled="@step.Disabled"
+                       PopoverClass="@step.PopoverClass"
+                       Mode="@step.Mode"
+                       Animation="@step.Animation"
+                       ContentUrl="@step.ContentUrl"
+                       DisableActiveInteraction="@step.DisableActiveInteraction"
+                       NextBtnText="@step.NextBtnText"
+                       PrevBtnText="@step.PrevBtnText"
+                       SkipBtnText="@step.SkipBtnText"
+                       DoneBtnText="@step.DoneBtnText" />
+    }
+</GuideFlowTour>
+
+@code {
+    [Parameter] public GuideFlowBuilder Builder { get; set; } = default!;
+    [Parameter] public EventCallback OnStart { get; set; }
+    [Parameter] public EventCallback OnComplete { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback<StepChangeEventArgs> OnStepChange { get; set; }
+
+    private GuideFlowTour? tour;
+    private IReadOnlyList<ProgrammaticStep> _steps = Array.Empty<ProgrammaticStep>();
+    private TourOptions TourOptions { get; set; } = new();
+    private string TourName { get; set; } = Constants.DefaultTourName;
+
+    protected override void OnParametersSet()
+    {
+        if (Builder != null)
+        {
+            var (name, options, steps) = Builder.Build();
+            TourName = name;
+            TourOptions = options;
+            _steps = steps;
+        }
+    }
+
+    /// <summary>
+    /// Start the programmatic tour.
+    /// </summary>
+    public async Task DriveAsync()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+
+    /// <summary>Alias for DriveAsync (backward-compatible).</summary>
+    public async Task StartAsync()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+
+    /// <summary>
+    /// Reset the tour so it can be restarted.
+    /// </summary>
+    public async Task ResetAsync()
+    {
+        if (tour != null) await tour.ResetAsync();
+    }
+}

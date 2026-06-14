@@ -1,0 +1,124 @@
+@page "/docs/persist-state"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+@inject IJSRuntime JS
+
+<PageTitle>Persist State - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="persist-title">Persist State</h1>
+    <p class="docs-lead" id="persist-lead">Save tour progress to localStorage so users can resume where they left off after refreshing the page.</p>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Start the tour, navigate to a step, then <strong>refresh the page</strong> and click the button again - the tour resumes from the last step.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="persist-target-1">
+            <span>Step 1 Target</span>
+        </div>
+        <div class="popover-demo__target" id="persist-target-2" style="margin-top:1rem;">
+            <span>Step 2 Target</span>
+        </div>
+        <div class="popover-demo__target" id="persist-target-3" style="margin-top:1rem;">
+            <span>Step 3 Target</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="StartPersistTour">Start Tour (Persist)</button>
+            <button class="docs-btn" @onclick="ClearState">Clear Saved State</button>
+        </div>
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>How to test:</strong>
+        <ol style="margin:0.5rem 0 0 1.25rem;">
+            <li>Click "Start Tour (Persist)" - tour starts at Step 1</li>
+            <li>Navigate to Step 2 or 3</li>
+            <li><strong>Refresh the page</strong> (F5)</li>
+            <li>Click "Start Tour (Persist)" again - tour resumes from where you left off</li>
+            <li>Click "Clear Saved State" to reset</li>
+        </ol>
+    </div>
+
+    <h2 id="track-visited">Track Visited <a class="docs-anchor" href="#track-visited">#</a></h2>
+    <p>When <code>TrackVisited = true</code>, visited steps are marked. Steps you've already seen get a visual indicator.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="visited-target-1">
+            <span>Step 1</span>
+        </div>
+        <div class="popover-demo__target" id="visited-target-2" style="margin-top:1rem;">
+            <span>Step 2</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartVisitedTour">Track Visited Tour</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <CodeBlock Language="csharp" Code="@(@"private TourOptions options = new()
+{
+    PersistState = true,       // save to localStorage
+    StorageKey = ""my-tour"",  // custom key (optional)
+    TrackVisited = true,       // mark visited steps
+};")" />
+
+</div>
+
+<GuideFlowTour @ref="persistTour" TourOptions="persistOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#persist-target-1" Title="Step 1" Order="0" Side="Placement.Bottom">
+        <p>This is step 1. Navigate forward, refresh the page, and start again.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#persist-target-2" Title="Step 2" Order="1" Side="Placement.Bottom">
+        <p>This is step 2. Your position is saved to localStorage.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#persist-target-3" Title="Step 3" Order="2" Side="Placement.Bottom">
+        <p>This is step 3. Try refreshing and resuming!</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="visitedTour" TourOptions="visitedOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#visited-target-1" Title="Step 1" Order="0" Side="Placement.Bottom">
+        <p>Navigate to step 2, then back - this step is now "visited".</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#visited-target-2" Title="Step 2" Order="1" Side="Placement.Bottom">
+        <p>This is step 2.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? persistTour, visitedTour;
+    private bool busy;
+
+    private TourOptions persistOpts = new()
+    {
+        PersistState = true,
+        StorageKey = "gf-persist-demo",
+        TrackVisited = true,
+        ShowProgress = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private TourOptions visitedOpts = new()
+    {
+        TrackVisited = true,
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private async Task StartPersistTour()
+    {
+        if (persistTour != null && !busy) { busy = true; await persistTour.DriveAsync(); }
+    }
+
+    private async Task ClearState()
+    {
+        // Clear localStorage directly
+        await JS.InvokeVoidAsync("localStorage.removeItem", "gf-persist-demo");
+    }
+
+    private async Task StartVisitedTour()
+    {
+        if (visitedTour != null && !busy) { busy = true; await visitedTour.DriveAsync(); }
+    }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

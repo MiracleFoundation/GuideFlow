@@ -1,0 +1,37 @@
+name: Publish to NuGet
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore src/GuideFlow/GuideFlow.csproj
+
+      - name: Build
+        run: dotnet build src/GuideFlow/GuideFlow.csproj -c Release --no-restore
+
+      - name: Test
+        run: dotnet test tests/GuideFlow.Tests/GuideFlow.Tests.csproj -c Release --no-build
+
+      - name: Pack
+        run: dotnet pack src/GuideFlow/GuideFlow.csproj -c Release --no-build -o ./nupkg
+
+      - name: Push to NuGet
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -1,0 +1,196 @@
+@page "/docs/configuration"
+
+<PageTitle>Configuration - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1>Configuration</h1>
+    <p class="docs-lead">Customize every aspect of your tour - overlay behavior, animation type, popover position, keyboard shortcuts, progress display, and more. Pass a <code>TourOptions</code> object to <code>GuideFlowTour</code> or <code>GuideFlowBuilder.WithOptions()</code>.</p>
+
+    <CodeBlock Language="csharp" Code="@(@"var options = new TourOptions
+{
+    // Overlay
+    Overlay = true,
+    OverlayOpacity = 0.5,
+    OverlayColor = ""#000"",
+    AllowClose = true,
+    OverlayClickBehavior = OverlayClickBehavior.Close,
+
+    // Animation
+    Animate = true,
+    AnimationType = AnimationType.Fade,
+    AnimationDuration = 300,
+
+    // Navigation
+    AllowKeyboardControl = true,
+    SmoothScroll = true,
+
+    // Popover
+    PopoverClass = ""gf-theme-dark"",
+    PopoverOffset = 12,
+    StagePadding = 8,
+    StageRadius = 4,
+
+    // Progress
+    ShowProgress = true,
+    ShowProgressBar = false,
+
+    // Button Text
+    NextBtnText = ""Next"",
+    PrevBtnText = ""Back"",
+    DoneBtnText = ""Done"",
+};
+
+<GuideFlowTour TourOptions=""options"">
+    @* steps *@
+</GuideFlowTour>")" />
+
+    <h2 id="overlay">
+        Overlay
+        <a class="docs-anchor" href="#overlay">#</a>
+    </h2>
+
+    <p>Control the backdrop overlay that appears behind the active step.</p>
+
+    <ApiTable>
+        <ApiRow Name="Overlay" Type="bool" Default="true" Desc="Whether to show the overlay." />
+        <ApiRow Name="OverlayOpacity" Type="double" Default="0.5" Desc="Opacity of the overlay (0.0 to 1.0)." />
+        <ApiRow Name="OverlayColor" Type="string?" Default="null" Desc="Custom color (e.g., '#000', 'rgba(0,0,0,0.5)')." />
+        <ApiRow Name="AllowClose" Type="bool" Default="true" Desc="Allow closing via overlay click or close button." />
+        <ApiRow Name="OverlayClickBehavior" Type="OverlayClickBehavior" Default="Close" Desc="Action on overlay click: Close, NextStep, None." />
+    </ApiTable>
+
+    <h2 id="animation">
+        Animation
+        <a class="docs-anchor" href="#animation">#</a>
+    </h2>
+
+    <ApiTable>
+        <ApiRow Name="Animate" Type="bool" Default="true" Desc="Animate transitions between steps." />
+        <ApiRow Name="AnimationType" Type="AnimationType" Default="Fade" Desc="Style: Fade, Slide, Bounce, None." />
+        <ApiRow Name="AnimationDuration" Type="int" Default="300" Desc="Duration in milliseconds." />
+        <ApiRow Name="AnimateCutout" Type="bool" Default="true" Desc="Animate the overlay cutout." />
+    </ApiTable>
+
+    <h2 id="navigation">
+        Navigation
+        <a class="docs-anchor" href="#navigation">#</a>
+    </h2>
+
+    <ApiTable>
+        <ApiRow Name="AllowKeyboardControl" Type="bool" Default="true" Desc="Arrow keys, Enter, Escape." />
+        <ApiRow Name="SmoothScroll" Type="bool" Default="false" Desc="Smooth scroll to target." />
+        <ApiRow Name="ScrollBehavior" Type="ScrollBehavior" Default="Smooth" Desc="Extended: Smooth, Instant, None." />
+        <ApiRow Name="ScrollBlock" Type="ScrollBlock" Default="Center" Desc="ScrollIntoView block position: Center, Start, End, Nearest." />
+    </ApiTable>
+
+    <h2 id="scrolling-demo">Scrolling Demo <a class="docs-anchor" href="#scrolling-demo">#</a></h2>
+    <p>When the target element is off-screen, GuideFlow scrolls it into view. Use <code>ScrollBehavior</code> to control how, and <code>ScrollBlock</code> to control where in the viewport it lands.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__buttons" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="popover-demo__group">
+                <h4>Scroll Behavior</h4>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Center)">Smooth</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Instant, ScrollBlock.Center)">Instant</button>
+            </div>
+            <div class="popover-demo__group">
+                <h4>Scroll Block</h4>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Center)">Center</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Start)">Start</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.End)">End</button>
+                <button class="docs-btn" @onclick="() => ShowScrollAsync(ScrollBehavior.Smooth, ScrollBlock.Nearest)">Nearest</button>
+            </div>
+        </div>
+    </div>
+
+    @* Spacer to push the target off-screen *@
+    <div style="height: 80vh;"></div>
+
+    <div id="scroll-target" class="popover-demo__target" style="margin: 0 auto;">
+        <span>Scroll Target (off-screen above)</span>
+    </div>
+
+    <div style="height: 2rem;"></div>
+
+    <h2 id="popover">
+        Popover
+        <a class="docs-anchor" href="#popover">#</a>
+    </h2>
+
+    <ApiTable>
+        <ApiRow Name="PopoverClass" Type="string?" Default="null" Desc="CSS theme class for popovers." />
+        <ApiRow Name="PopoverOffset" Type="int" Default="12" Desc="Distance between popover and target (px)." />
+        <ApiRow Name="StepMode" Type="StepMode" Default="Bubble" Desc="Default mode: Bubble or Modal." />
+        <ApiRow Name="StagePadding" Type="int" Default="8" Desc="Padding around highlighted element." />
+        <ApiRow Name="StageRadius" Type="int" Default="4" Desc="Border radius of highlight." />
+    </ApiTable>
+
+    <h2 id="progress">
+        Progress
+        <a class="docs-anchor" href="#progress">#</a>
+    </h2>
+
+    <ApiTable>
+        <ApiRow Name="ShowProgress" Type="bool" Default="true" Desc="Show '2 of 5' text." />
+        <ApiRow Name="ShowProgressBar" Type="bool" Default="false" Desc="Show visual progress bar." />
+        <ApiRow Name="NextBtnText" Type="string" Default="Next" Desc="Next button text." />
+        <ApiRow Name="PrevBtnText" Type="string" Default="Back" Desc="Previous button text." />
+        <ApiRow Name="DoneBtnText" Type="string" Default="Done" Desc="Done button text." />
+        <ApiRow Name="SkipBtnText" Type="string" Default="Skip" Desc="Skip button text." />
+    </ApiTable>
+
+    <h2 id="advanced">
+        Advanced
+        <a class="docs-anchor" href="#advanced">#</a>
+    </h2>
+
+    <ApiTable>
+        <ApiRow Name="TrapFocus" Type="bool" Default="true" Desc="Trap Tab key within popover." />
+        <ApiRow Name="AutoReposition" Type="bool" Default="true" Desc="Reposition on resize/scroll." />
+        <ApiRow Name="TrackVisited" Type="bool" Default="true" Desc="Track visited steps." />
+        <ApiRow Name="HighlightClass" Type="string" Default="gf-highlight-active" Desc="CSS class on target." />
+        <ApiRow Name="HighlightShape" Type="HighlightShape" Default="RoundedRect" Desc="Highlight shape." />
+        <ApiRow Name="OverlayMode" Type="OverlayMode" Default="Cutout" Desc="Cutout or Stage." />
+        <ApiRow Name="ZIndex" Type="int" Default="10000" Desc="z-index for overlay/popovers." />
+        <ApiRow Name="PersistState" Type="bool" Default="false" Desc="Save/load state to localStorage." />
+        <ApiRow Name="StorageKey" Type="string?" Default="null" Desc="Custom storage key." />
+        <ApiRow Name="LazyRender" Type="bool" Default="false" Desc="Lazy render step content." />
+    </ApiTable>
+</div>
+
+<GuideFlowTour @ref="scrollTour" TourOptions="scrollOpts" OnComplete="OnScrollEnd" OnCancel="OnScrollEnd">
+    <GuideFlowStep Element="#scroll-target" Title="Scroll Demo" Order="0" Side="Placement.Top">
+        <p>Behavior: <strong>@_scrollBehavior</strong> &bull; Block: <strong>@_scrollBlock</strong></p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? scrollTour;
+    private bool scrollBusy;
+    private string _scrollBehavior = "Smooth";
+    private string _scrollBlock = "Center";
+
+    private TourOptions scrollOpts = new()
+    {
+        SmoothScroll = true,
+        ScrollBehavior = ScrollBehavior.Smooth,
+        ScrollBlock = ScrollBlock.Center,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task ShowScrollAsync(ScrollBehavior behavior, ScrollBlock block)
+    {
+        if (scrollTour == null || scrollBusy) return;
+        scrollBusy = true;
+        _scrollBehavior = behavior.ToString();
+        _scrollBlock = block.ToString();
+        scrollOpts.SmoothScroll = behavior != ScrollBehavior.None;
+        scrollOpts.ScrollBehavior = behavior;
+        scrollOpts.ScrollBlock = block;
+        StateHasChanged();
+        await scrollTour.ResetAsync();
+        await scrollTour.DriveAsync();
+    }
+
+    private void OnScrollEnd() { scrollBusy = false; StateHasChanged(); }
+}

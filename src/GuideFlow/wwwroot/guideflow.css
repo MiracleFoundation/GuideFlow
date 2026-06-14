@@ -1,0 +1,169 @@
+/* GuideFlow Global Styles */
+
+/* Body classes — tour active state */
+body.gf-active {}
+
+body.gf-animate {}
+
+body.gf-no-animate {}
+
+/* Fade animation for overlay + popover */
+@keyframes gf-fade-in {
+    0% { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body.gf-animate .gf-overlay {
+    animation: gf-fade-in 200ms ease-in-out;
+}
+
+body.gf-animate .gf-step {
+    animation: gf-fade-in 200ms;
+}
+
+/* Highlighted target element */
+.gf-highlight-active {
+    position: relative;
+    z-index: var(--gf-highlight-zindex, 10001);
+    box-shadow: var(--gf-highlight-shadow, 0 0 0 4px rgba(67, 97, 238, 0.4));
+    border-radius: var(--gf-highlight-radius, 4px);
+    transition: box-shadow 0.2s ease;
+}
+
+.gf-highlight-pulse {
+    animation: gf-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes gf-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(67, 97, 238, 0.2); }
+}
+
+.gf-highlight-glow {
+    animation: gf-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes gf-glow {
+    0%, 100% { box-shadow: 0 0 8px rgba(67, 97, 238, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(67, 97, 238, 0.6); }
+}
+
+/* Click-through passthrough */
+.gf-click-through {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Stage overlay panels */
+.gf-stage-panel {
+    transition: opacity 0.2s ease;
+}
+
+/* =============================================
+   Tour Buttons (global — works inside RenderFragment)
+   ============================================= */
+.gf-btn {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--gf-btn-radius, 3px);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s, opacity 0.15s;
+    white-space: nowrap;
+}
+
+.gf-btn:focus-visible {
+    outline: 2px solid var(--gf-btn-primary-bg, #4361ee);
+    outline-offset: 2px;
+}
+
+.gf-btn--next {
+    background-color: var(--gf-btn-primary-bg, #4361ee);
+    color: var(--gf-btn-primary-color, #ffffff);
+}
+
+.gf-btn--next:hover { opacity: 0.9; }
+
+.gf-btn--back {
+    background-color: var(--gf-btn-secondary-bg, #e9ecef);
+    color: var(--gf-btn-secondary-color, #495057);
+}
+
+.gf-btn--back:hover { opacity: 0.85; }
+
+.gf-btn--skip {
+    background: none;
+    color: var(--gf-text-color, #2d2d2d);
+    opacity: 0.5;
+    text-decoration: none;
+    padding: 6px 8px;
+}
+
+.gf-btn--skip:hover { opacity: 1; }
+
+/* =============================================
+   Theme: Light (explicit)
+   ============================================= */
+.gf-theme-light {
+    --gf-overlay-color: rgba(0, 0, 0, 0.4);
+    --gf-popover-bg: #ffffff;
+    --gf-popover-shadow: 0 1px 10px rgba(0, 0, 0, 0.4);
+    --gf-popover-radius: 5px;
+    --gf-title-color: #2d2d2d;
+    --gf-text-color: #2d2d2d;
+    --gf-btn-primary-bg: #4361ee;
+    --gf-btn-primary-color: #ffffff;
+    --gf-btn-secondary-bg: #e9ecef;
+    --gf-btn-secondary-color: #495057;
+    --gf-progress-bg: #e5e7eb;
+    --gf-progress-color: #4361ee;
+    --gf-visited-color: #10b981;
+}
+
+/* =============================================
+   Theme: Dark
+   ============================================= */
+.gf-theme-dark {
+    --gf-overlay-color: rgba(0, 0, 0, 0.75);
+    --gf-popover-bg: #1e1e2e;
+    --gf-popover-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+    --gf-popover-radius: 5px;
+    --gf-title-color: #e2e8f0;
+    --gf-text-color: #a0aec0;
+    --gf-btn-primary-bg: #6366f1;
+    --gf-btn-primary-color: #ffffff;
+    --gf-btn-secondary-bg: #2d3748;
+    --gf-btn-secondary-color: #e2e8f0;
+    --gf-progress-bg: #2d3748;
+    --gf-progress-color: #6366f1;
+    --gf-visited-color: #34d399;
+    --gf-highlight-shadow: 0 0 0 4px rgba(99, 102, 241, 0.5);
+}
+
+/* =============================================
+   Theme: High Contrast
+   ============================================= */
+.gf-theme-high-contrast {
+    --gf-overlay-color: rgba(0, 0, 0, 0.8);
+    --gf-popover-bg: #000000;
+    --gf-popover-shadow: 0 0 0 3px #ffffff;
+    --gf-popover-radius: 4px;
+    --gf-title-color: #ffffff;
+    --gf-text-color: #ffffff;
+    --gf-btn-primary-bg: #ffff00;
+    --gf-btn-primary-color: #000000;
+    --gf-btn-secondary-bg: #333333;
+    --gf-btn-secondary-color: #ffffff;
+    --gf-progress-bg: #333333;
+    --gf-progress-color: #ffff00;
+    --gf-visited-color: #00ff00;
+    --gf-highlight-shadow: 0 0 0 4px #ffff00;
+}

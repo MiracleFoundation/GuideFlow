@@ -1,0 +1,15 @@
+/* Overlay SVG is rendered via JS — no Blazor CSS needed */
+
+/* Stage panels (4 divs around cutout, also managed by JS) */
+:global(.gf-stage-panel) {
+    pointer-events: auto;
+    user-select: none;
+}
+
+/* Click-through passthrough element (created via JS) */
+:global(.gf-click-through) {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}

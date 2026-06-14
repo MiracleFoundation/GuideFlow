@@ -1,0 +1,127 @@
+@page "/docs"
+
+<PageTitle>Getting Started - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>Getting Started</h1>
+    <p class="docs-lead">
+        GuideFlow is a Blazor component library for building accessible, animated guided tours.
+        Install the NuGet package, register the service, and create your first tour in under 2 minutes.
+    </p>
+
+    <h2 id="installation">
+        Install via NuGet
+        <a class="docs-anchor" href="#installation">#</a>
+    </h2>
+
+    <p>Run the following command in your project directory:</p>
+
+    <CodeBlock Language="bash" Code="dotnet add package GuideFlow" />
+
+    <p>Or install via the NuGet Package Manager:</p>
+
+    <CodeBlock Language="powershell" Code="Install-Package GuideFlow" />
+
+    <h2 id="setup">
+        Setup
+        <a class="docs-anchor" href="#setup">#</a>
+    </h2>
+
+    <h3 id="register-service">Register the Service</h3>
+
+    <p>In your <code>Program.cs</code>, add the GuideFlow service:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"using GuideFlow.Services;
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+// ... other registrations
+
+builder.Services.AddGuideFlow();
+
+await builder.Build().RunAsync();")" />
+
+    <div class="docs-note docs-note--info">
+        <strong>💡 Server-Side Blazor</strong>
+        For Blazor Server projects, use <code>builder.Services.AddGuideFlow()</code> in your <code>Program.cs</code> the same way.
+        GuideFlow supports both WebAssembly and Server hosting models.
+    </div>
+
+    <h3 id="add-css">Add the CSS and JS</h3>
+
+    <p>Reference the GuideFlow stylesheet and JS module in your <code>index.html</code> (WebAssembly) or <code>_Host.cshtml</code> (Server):</p>
+
+    <CodeBlock Language="html" Code="@(@"<link href=""_content/GuideFlow/guideflow.css"" rel=""stylesheet"" />
+<script src=""_content/GuideFlow/guideflow.module.js""></script>")" />
+
+    <h3 id="import-namespaces">Import Namespaces</h3>
+
+    <p>Add these namespaces to your <code>_Imports.razor</code>:</p>
+
+    <CodeBlock Language="razor" Code="@(@"@using GuideFlow.Components
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@using GuideFlow.Services")" />
+
+    <h2 id="first-tour">
+        Your First Tour
+        <a class="docs-anchor" href="#first-tour">#</a>
+    </h2>
+
+    <p>Wrap your page content with <code>GuideFlowTour</code> and add steps:</p>
+
+    <CodeBlock Language="razor" Code="@(@"<button id=""step1"" @onclick=""StartTour"">Start Tour</button>
+<button id=""step2"">Another element</button>
+
+<GuideFlowTour @ref=""tour"" TourOptions=""@options"">
+    <GuideFlowStep Element=""#step1"" Title=""Welcome!"" Order=""0"">
+        <p>This is the first step.</p>
+    </GuideFlowStep>
+
+    <GuideFlowStep Element=""#step2"" Title=""Next"" Order=""1"">
+        <p>Click here to continue.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new()
+    {
+        Overlay = true,
+        ShowProgress = true,
+    };
+
+    private async Task StartTour()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}")" />
+
+    <div class="docs-note docs-note--info">
+        <b>💡 Two ways to build tours</b> GuideFlow supports both <b>declarative</b> (Razor markup) and <b>programmatic</b> (C# fluent API) approaches. See <a href="docs/programmatic-tour">Programmatic Tour</a> for details.
+    </div>
+
+    <h2 id="verify">
+        Verify Installation
+        <a class="docs-anchor" href="#verify">#</a>
+    </h2>
+
+    <p>Run your app and click the "Start Tour" button. You should see the overlay and popover appear. If something doesn't work, check:</p>
+
+    <ul>
+        <li>CSS and JS files are correctly referenced in your HTML</li>
+        <li><code>AddGuideFlow()</code> is called in <code>Program.cs</code></li>
+        <li>Namespaces are imported in <code>_Imports.razor</code></li>
+    </ul>
+
+    <h2 id="next-steps">
+        Next Steps
+        <a class="docs-anchor" href="#next-steps">#</a>
+    </h2>
+
+    <ul>
+        <li><a href="docs/configuration">Configuration</a> - Tour options and customization</li>
+        <li><a href="docs/api">API Reference</a> - Full component and service API</li>
+        <li><a href="docs/theming">Theming</a> - Light, dark, and custom themes</li>
+        <li><a href="docs/animated-tour">Animated Tour</a> - Interactive demo</li>
+    </ul>
+</div>

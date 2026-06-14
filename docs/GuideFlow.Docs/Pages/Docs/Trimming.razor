@@ -1,0 +1,118 @@
+@page "/docs/trimming"
+
+<PageTitle>Trimming - GuideFlow Docs</PageTitle>
+
+<div class="docs-content">
+    <h1>IL Trimming</h1>
+    <p class="docs-lead">GuideFlow is fully compatible with .NET IL trimming, making it ideal for Blazor WebAssembly apps where download size matters. When you publish with trimming enabled, the .NET trimmer removes unused code from GuideFlow and its dependencies.</p>
+
+    <h2 id="overview">
+        Overview
+        <a class="docs-anchor" href="#overview">#</a>
+    </h2>
+
+    <p>IL trimming (also called assembly trimming or tree shaking) is a publish-time feature that analyzes your application and removes unused code paths. This significantly reduces the size of Blazor WebAssembly downloads.</p>
+
+    <p>GuideFlow declares <code>IsTrimmable = true</code> in its package, which means:</p>
+
+    <ul>
+        <li>The .NET trimmer can safely analyze and trim GuideFlow assemblies</li>
+        <li>JSON serialization uses source generators instead of reflection (trimmer-safe)</li>
+        <li>No dynamic code patterns that would break under trimming</li>
+    </ul>
+
+    <h2 id="enable-trimming">
+        Enable Trimming
+        <a class="docs-anchor" href="#enable-trimming">#</a>
+    </h2>
+
+    <p>Add <code>PublishTrimmed</code> to your <code>.csproj</code> file:</p>
+
+    <CodeBlock Language="xml" Code="@(@"<PropertyGroup>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+</PropertyGroup>")" />
+
+    <p>Then publish as usual:</p>
+
+    <CodeBlock Language="bash" Code="@(@"dotnet publish -c Release")" />
+
+    <h2 id="blazor-wasm">
+        Blazor WebAssembly
+        <a class="docs-anchor" href="#blazor-wasm">#</a>
+    </h2>
+
+    <p>For Blazor WebAssembly apps, trimming is especially beneficial. A typical app can see <strong>20-40% size reduction</strong> after trimming. GuideFlow works seamlessly in this mode.</p>
+
+    <CodeBlock Language="xml" Code="@(@"<!-- MyApp.csproj -->
+<PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+</PropertyGroup>")" />
+
+    <h2 id="how-it-works">
+        How It Works
+        <a class="docs-anchor" href="#how-it-works">#</a>
+    </h2>
+
+    <p>GuideFlow achieves trimming compatibility through:</p>
+
+    <h3>JSON Source Generators</h3>
+    <p>All JSON serialization (tour state persistence, diagnostics) uses <code>System.Text.Json</code> source generators instead of reflection-based serialization. This is handled by <code>GuideFlowJsonContext</code>:</p>
+
+    <CodeBlock Language="csharp" Code="@(@"[JsonSerializable(typeof(TourState))]
+[JsonSerializable(typeof(TourSnapshot))]
+[JsonSourceGenerationOptions(WriteIndented = true)]
+internal partial class GuideFlowJsonContext : JsonSerializerContext;")" />
+
+    <h3>No Reflection</h3>
+    <p>GuideFlow does not use <code>Type.GetType()</code>, <code>Activator.CreateInstance()</code>, or other reflection patterns that would break under trimming.</p>
+
+    <h3>Concrete Types</h3>
+    <p>Instead of anonymous types (which can't be analyzed by the trimmer), GuideFlow uses concrete model classes like <code>TourSnapshot</code> and <code>TourSnapshotStep</code>.</p>
+
+    <h2 id="verify">
+        Verify Trimming
+        <a class="docs-anchor" href="#verify">#</a>
+    </h2>
+
+    <p>To verify your app works correctly after trimming:</p>
+
+    <ol>
+        <li>Publish with <code>dotnet publish -c Release</code></li>
+        <li>Run the published output and test all tour functionality</li>
+        <li>Check the publish output size before and after</li>
+    </ol>
+
+    <p>You can also enable the trim analyzer during development to catch issues early:</p>
+
+    <CodeBlock Language="xml" Code="@(@"<PropertyGroup>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+</PropertyGroup>")" />
+
+    <h2 id="troubleshooting">
+        Troubleshooting
+        <a class="docs-anchor" href="#troubleshooting">#</a>
+    </h2>
+
+    <p>If you encounter issues after trimming:</p>
+
+    <ul>
+        <li><strong>Tour state not saving/loading</strong> -Make sure you're using GuideFlow's built-in persistence. Custom JSON serialization of GuideFlow types may need a source generator context.</li>
+        <li><strong>Missing types at runtime</strong> -If you extend GuideFlow with custom types that use JSON serialization, add them to a <code>[JsonSerializable]</code> context.</li>
+        <li><strong>Trim warnings</strong> -Run <code>dotnet publish -c Release</code> and check for trim analysis warnings in the output.</li>
+    </ul>
+
+    <h2 id="best-practices">
+        Best Practices
+        <a class="docs-anchor" href="#best-practices">#</a>
+    </h2>
+
+    <ul>
+        <li>Always test your app after publishing with trimming enabled</li>
+        <li>Use <code>EnableTrimAnalyzer</code> during development</li>
+        <li>If you use custom JSON serialization with GuideFlow types, create a <code>JsonSerializerContext</code></li>
+        <li>Avoid reflection-based patterns when extending GuideFlow</li>
+    </ul>
+</div>

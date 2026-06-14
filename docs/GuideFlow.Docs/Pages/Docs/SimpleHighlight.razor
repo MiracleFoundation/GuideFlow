@@ -1,0 +1,116 @@
+@page "/docs/simple-highlight"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Simple Highlight - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1>Simple Highlight</h1>
+    <p class="docs-lead">Product tours is not the only use case for GuideFlow. You can use it to highlight any element on the page and show a popover with a description. This is useful for providing contextual help to the user e.g. help the user fill a form or explain a feature.</p>
+
+    <h2 id="highlight-element">Highlight Element <a class="docs-anchor" href="#highlight-element">#</a></h2>
+    <p>Example below shows how to highlight an element and simply show a popover.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="highlight-me" style="cursor:pointer;" @onclick="HighlightElement">
+            <span>Highlight Me</span>
+        </div>
+    </div>
+
+    <p>Here is the code for the above example:</p>
+
+    <div id="highlight-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#highlight-me"" Title=""This is a title"" Order=""0""
+                   Side=""Placement.Bottom"">
+        <p>This is a description.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<button @onclick=""HighlightElement"">Highlight Me</button>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new()
+    {
+        PopoverClass = ""gf-theme-dark"",
+        StagePadding = 4,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task HighlightElement()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}")" />
+    </div>
+
+    <h2 id="modal-popover">Simple Modal Popover <a class="docs-anchor" href="#modal-popover">#</a></h2>
+    <p>You can also use it to show a simple modal without highlighting any element.</p>
+
+    <div class="popover-demo">
+        <div style="text-align:center;">
+            <button class="docs-btn" @onclick="ShowModal">Show Popover</button>
+        </div>
+    </div>
+
+    <p>Here is the code for the above example:</p>
+
+    <div id="modal-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Title=""Simple Modal"" Order=""0"" Mode=""StepMode.Modal"">
+        <p>This is a modal popover without highlighting any element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<button @onclick=""ShowModal"">Show Popover</button>
+
+@code {
+    private GuideFlowTour? tour;
+    private TourOptions options = new() { };
+
+    private async Task ShowModal()
+    {
+        if (tour != null) await tour.DriveAsync();
+    }
+}")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="highlightTour" TourOptions="highlightOpts" OnComplete="OnHighlightEnd" OnCancel="OnHighlightEnd">
+    <GuideFlowStep Element="#highlight-me" Title="This is a title" Order="0" Side="Placement.Bottom">
+        <p>This is a description.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="modalTour" TourOptions="modalOpts" OnComplete="OnModalEnd" OnCancel="OnModalEnd">
+    <GuideFlowStep Title="Simple Modal" Order="0" Mode="StepMode.Modal">
+        <p>This is a modal popover without highlighting any element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? highlightTour, modalTour;
+
+    private TourOptions highlightOpts = new()
+    {
+        PopoverClass = "gf-theme-dark",
+        StagePadding = 4,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+    private TourOptions modalOpts = new() { };
+
+    private async Task HighlightElement()
+    {
+        if (highlightTour != null) await highlightTour.DriveAsync();
+    }
+
+    private async Task ShowModal()
+    {
+        if (modalTour != null) await modalTour.DriveAsync();
+    }
+
+    private void OnHighlightEnd() { StateHasChanged(); }
+    private void OnModalEnd() { StateHasChanged(); }
+}

@@ -1,0 +1,15 @@
+@using GuideFlow.Enums
+@namespace GuideFlow.Components
+
+@if (Visible)
+{
+    <div class="gf-arrow gf-arrow--@Placement.ToCssString()" style="@ArrowStyle"></div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public Placement Placement { get; set; } = Placement.Bottom;
+    [Parameter] public int Size { get; set; } = 10;
+
+    private string ArrowStyle => $"--gf-arrow-size:{Size}px;";
+}

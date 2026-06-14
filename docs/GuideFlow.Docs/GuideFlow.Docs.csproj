@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorWasmPrerenderingDeleteLoadingContents>true</BlazorWasmPrerenderingDeleteLoadingContents>
+    <BlazorWasmPrerenderingOutputStyle>AppendHtmlExtension</BlazorWasmPrerenderingOutputStyle>
+    <BlazorWasmPrerenderingUrlPathRegexToIgnore>^/docs</BlazorWasmPrerenderingUrlPathRegexToIgnore>
+    <BlazorWasmPrerenderingUrlPathRegexToIgnore Condition="'$(BlazorWasmPrerenderingPathBase)' != ''">^/$|^/docs</BlazorWasmPrerenderingUrlPathRegexToIgnore>
+  </PropertyGroup>
+
+  <!-- Default: base href = / (local dev). Override: dotnet publish -p:BaseHref=/GuideFlow/ -->
+  <PropertyGroup Condition="'$(BaseHref)' == ''">
+    <BaseHref>/</BaseHref>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorWasmPreRendering.Build" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.27" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.27" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GuideFlow\GuideFlow.csproj" />
+  </ItemGroup>
+
+  <!-- Replace <base href="/"> with correct base href in published output after prerendering -->
+  <Target Name="SetBaseHref" AfterTargets="BlazorWasmPrerendering" Condition="'$(BaseHref)' != '/' AND '$(BaseHref)' != ''">
+    <Exec Command="sed -i 's|&lt;base href=&quot;/&quot;|&lt;base href=&quot;$(BaseHref)&quot;|g' '$(PublishDir)wwwroot/index.html'" />
+  </Target>
+
+</Project>

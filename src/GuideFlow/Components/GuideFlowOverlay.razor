@@ -1,0 +1,31 @@
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@namespace GuideFlow.Components
+
+@* Overlay is now rendered and animated entirely via JS (guideflow.module.js).
+   This component exists only for Blazor lifecycle and event wiring. *@
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public double Opacity { get; set; } = 0.5;
+    [Parameter] public string? Color { get; set; }
+    [Parameter] public int ZIndex { get; set; } = 10000;
+    [Parameter] public bool AnimateCutout { get; set; } = true;
+    [Parameter] public int AnimationDuration { get; set; } = 300;
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public OverlayMode Mode { get; set; } = OverlayMode.Cutout;
+    [Parameter] public HighlightShape Shape { get; set; } = HighlightShape.RoundedRect;
+
+    // Internal highlight position (updated via SetHighlight)
+    private double _highlightLeft, _highlightTop, _highlightWidth, _highlightHeight;
+
+    /// <summary>Update the cutout highlight position around the target element.</summary>
+    public void SetHighlight(double left, double top, double width, double height)
+    {
+        _highlightLeft = left;
+        _highlightTop = top;
+        _highlightWidth = width;
+        _highlightHeight = height;
+        StateHasChanged();
+    }
+}

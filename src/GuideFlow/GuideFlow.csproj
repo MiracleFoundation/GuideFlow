@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsTrimmable>true</IsTrimmable>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+
+    <!-- NuGet Package Info -->
+    <PackageId>GuideFlow</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>GuideFlow Contributors</Authors>
+    <Description>Accessible, animated guided tour component library for Blazor</Description>
+    <PackageTags>blazor;tour;guide;onboarding;walkthrough;accessibility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.27" />
+  </ItemGroup>
+
+  <!-- Include static assets in NuGet package -->
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="wwwroot\**" Pack="true" PackagePath="wwwroot" />
+  </ItemGroup>
+
+</Project>

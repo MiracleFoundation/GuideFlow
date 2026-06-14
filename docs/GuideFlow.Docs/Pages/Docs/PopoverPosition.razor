@@ -1,0 +1,215 @@
+@page "/docs/popover-position"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Popover Position - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="popover-position-title">Popover Position</h1>
+    <p class="docs-lead" id="popover-position-lead">You can control the popover position using the <code>Side</code> and <code>Align</code> options. The <code>Side</code> option controls the side of the element where the popover will be shown and the <code>Align</code> option controls the alignment of the popover with the element.</p>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> Popover is intelligent enough to adjust itself to fit in the viewport. So, if you set <code>Side</code> to <code>Left</code> and <code>Align</code> to <code>Start</code>, but the popover doesn't fit in the viewport, it will automatically adjust itself to fit in the viewport.
+    </div>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="popover-position-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowStep Element=""#my-element"" Title=""Popover Title""
+               Side=""Placement.Left"" Align=""PopoverAlign.Start"">
+    <p>Popover content here.</p>
+</GuideFlowStep>
+
+@code {
+    // Side: Top, Bottom, Left, Right
+    // Align: Start, Center, End
+}")" />
+    </div>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Use the buttons below to show the popover at different positions.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="popover-demo-target">
+            <span>Target Element</span>
+        </div>
+
+        <div class="popover-demo__buttons">
+            <div class="popover-demo__group">
+                <h4>Left</h4>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Left, PopoverAlign.Start)">Start</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Left, PopoverAlign.Center)">Center</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Left, PopoverAlign.End)">End</button>
+            </div>
+            <div class="popover-demo__group">
+                <h4>Top</h4>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Top, PopoverAlign.Start)">Start</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Top, PopoverAlign.Center)">Center</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Top, PopoverAlign.End)">End</button>
+            </div>
+            <div class="popover-demo__group">
+                <h4>Right</h4>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Right, PopoverAlign.Start)">Start</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Right, PopoverAlign.Center)">Center</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Right, PopoverAlign.End)">End</button>
+            </div>
+            <div class="popover-demo__group">
+                <h4>Bottom</h4>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Bottom, PopoverAlign.Start)">Start</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Bottom, PopoverAlign.Center)">Center</button>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Bottom, PopoverAlign.End)">End</button>
+            </div>
+            <div class="popover-demo__group">
+                <h4>Auto</h4>
+                <button class="docs-btn" @onclick="() => ShowAsync(Placement.Auto, null)">Auto Flip</button>
+            </div>
+        </div>
+    </div>
+
+    <h2 id="popover-offset">Popover Offset <a class="docs-anchor" href="#popover-offset">#</a></h2>
+    <p>Use <code>PopoverOffset</code> to control the distance (in pixels) between the popover and the target element. Default is 10.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="popover-offset-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="() => ShowOffsetAsync(5)">5px (Tight)</button>
+            <button class="docs-btn" @onclick="() => ShowOffsetAsync(10)">10px (Default)</button>
+            <button class="docs-btn" @onclick="() => ShowOffsetAsync(30)">30px (Far)</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="popover-offset-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    PopoverOffset = 20,   // 20px gap between popover and target
+};")" />
+    </div>
+
+    <h2 id="arrow">Arrow <a class="docs-anchor" href="#arrow">#</a></h2>
+    <p>The arrow is a small pointer that connects the popover to the target element. It is visible by default and rotates based on the popover's placement.</p>
+    <ul>
+        <li><strong>Show</strong> - Arrow visible, pointing from popover to target (default)</li>
+        <li><strong>Hide</strong> - No arrow shown</li>
+        <li><strong>Direction</strong> - Arrow auto-rotates when you change placement (try the placement buttons above)</li>
+    </ul>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="arrow-demo-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="ShowArrowOn">Show Arrow</button>
+            <button class="docs-btn" @onclick="ShowArrowOff">Hide Arrow</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="arrow-code">
+        <CodeBlock Language="razor" Code="@(@"// Per-step: hide arrow for a specific step
+<GuideFlowStep Element=""#my-element"" Title=""No Arrow""
+               ShowArrow=""false"">
+    <p>This step has no arrow.</p>
+</GuideFlowStep>
+
+// Global: hide arrow for all steps
+private TourOptions options = new()
+{
+    // ShowArrow is per-step, no global option
+};")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="options" OnComplete="OnTourEnd" OnCancel="OnTourEnd">
+    <GuideFlowStep Element="#popover-demo-target" Title="Popover Title" Order="0"
+                   Side="@_side" Align="@_align">
+        <p>Popover at <strong>@_side.ToString().ToLower()@(_align.HasValue ? $" - {_align.Value.ToString().ToLower()}" : "")</strong>.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="offsetTour" TourOptions="offsetOptions" OnComplete="OnOffsetTourEnd" OnCancel="OnOffsetTourEnd">
+    <GuideFlowStep Element="#popover-offset-target" Title="Popover Offset" Order="0"
+                   Side="Placement.Bottom">
+        <p>Popover offset: <strong>@_offset px</strong></p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="arrowOnTour" TourOptions="arrowOnOpts" OnComplete="OnArrowTourEnd" OnCancel="OnArrowTourEnd">
+    <GuideFlowStep Element="#arrow-demo-target" Title="Arrow Visible" Order="0"
+                   Side="Placement.Bottom" ShowArrow="true">
+        <p>Arrow is visible, pointing from this popover to the target element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="arrowOffTour" TourOptions="arrowOffOpts" OnComplete="OnArrowTourEnd" OnCancel="OnArrowTourEnd">
+    <GuideFlowStep Element="#arrow-demo-target" Title="No Arrow" Order="0"
+                   Side="Placement.Bottom" ShowArrow="false">
+        <p>Arrow is hidden. The popover has no pointer.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private Placement _side = Placement.Bottom;
+    private PopoverAlign? _align = PopoverAlign.Center;
+
+    private TourOptions options = new()
+    {
+        ShowProgress = false,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private GuideFlowTour? offsetTour;
+    private int _offset = 10;
+
+    private TourOptions offsetOptions = new()
+    {
+        ShowProgress = false,
+        ShowButtons = new[] { ButtonType.Close },
+        PopoverOffset = 10,
+    };
+
+    private GuideFlowTour? arrowOnTour, arrowOffTour;
+
+    private TourOptions arrowOnOpts = new()
+    {
+        ShowProgress = false,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private TourOptions arrowOffOpts = new()
+    {
+        ShowProgress = false,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task ShowAsync(Placement side, PopoverAlign? align)
+    {
+        if (tour == null) return;
+        _side = side;
+        _align = align;
+        StateHasChanged();
+        await tour.ResetAsync();
+        await tour.DriveAsync();
+    }
+
+    private async Task ShowOffsetAsync(int offset)
+    {
+        if (offsetTour == null) return;
+        _offset = offset;
+        offsetOptions.PopoverOffset = offset;
+        StateHasChanged();
+        await offsetTour.ResetAsync();
+        await offsetTour.DriveAsync();
+    }
+
+    private async Task ShowArrowOn() { if (arrowOnTour != null) { await arrowOnTour.ResetAsync(); await arrowOnTour.DriveAsync(); } }
+    private async Task ShowArrowOff() { if (arrowOffTour != null) { await arrowOffTour.ResetAsync(); await arrowOffTour.DriveAsync(); } }
+
+    private void OnTourEnd() { StateHasChanged(); }
+    private void OnOffsetTourEnd() { StateHasChanged(); }
+    private void OnArrowTourEnd() { StateHasChanged(); }
+}

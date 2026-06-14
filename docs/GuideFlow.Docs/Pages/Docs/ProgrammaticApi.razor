@@ -1,0 +1,246 @@
+@page "/docs/programmatic-tour"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+@using GuideFlow.Models
+@using GuideFlow.Components
+
+<PageTitle>Programmatic Tour - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="programmatic-tour-title">Programmatic Tour</h1>
+    <p class="docs-lead" id="programmatic-tour-lead">Build and control tours entirely from C# code using the fluent <code>GuideFlowBuilder</code> API. Add steps, configure options, attach event handlers, and start tours programmatically - no Razor markup required.</p>
+
+    <button class="docs-demo__run" @onclick="StartBuilderTour" id="programmatic-tour-run-btn">▶ Show me the example</button>
+
+    <h2 id="usage">Usage <a class="docs-anchor" href="#usage">#</a></h2>
+
+    <div id="programmatic-tour-code">
+        <CodeBlock Language="razor" Code="@(@"<ProgrammaticTour @ref=""tour"" Builder=""builder"" />
+
+@code {
+    private ProgrammaticTour? tour;
+    private GuideFlowBuilder builder = new GuideFlowBuilder()
+        .WithName(""my-tour"")
+        .WithOptions(o => {
+            o.ShowProgress = true;
+        })
+        .AddStep(""#target-1"", ""Step 1"", ""Content for step 1."", Placement.Bottom)
+        .AddStep(""#target-2"", ""Step 2"", ""Content for step 2."", Placement.Top);
+
+    private async Task StartTour() { if (tour != null) await tour.DriveAsync(); }
+}")" />
+    </div>
+
+    <h2 id="api-methods">API Methods <a class="docs-anchor" href="#api-methods">#</a></h2>
+    <table class="docs-table">
+        <thead>
+            <tr><th>Method</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>DriveAsync()</code></td><td>Start the tour from step 0</td></tr>
+            <tr><td><code>DriveAsync(stepIndex)</code></td><td>Start the tour from a specific step</td></tr>
+            <tr><td><code>MoveToAsync(index)</code></td><td>Jump to a specific step</td></tr>
+            <tr><td><code>MoveNextAsync()</code></td><td>Go to the next step</td></tr>
+            <tr><td><code>MovePreviousAsync()</code></td><td>Go to the previous step</td></tr>
+            <tr><td><code>ResetAsync()</code></td><td>Reset the tour to initial state</td></tr>
+            <tr><td><code>DestroyAsync()</code></td><td>Close and destroy the tour</td></tr>
+            <tr><td><code>HighlightAsync(selector, title?)</code></td><td>Highlight a single element with overlay cutout. Shows popover anchored to the element if title is provided.</td></tr>
+            <tr><td><code>ShowPopoverAsync(title)</code></td><td>Show a modal popover centered on screen. No element highlighted, no overlay.</td></tr>
+            <tr><td><code>GetState()</code></td><td>Returns JSON string with current tour state</td></tr>
+            <tr><td><code>GetConfig()</code></td><td>Returns the current TourOptions</td></tr>
+            <tr><td><code>SetConfig(options)</code></td><td>Replace the tour configuration</td></tr>
+            <tr><td><code>SetSteps(steps)</code></td><td>Replace all steps at runtime</td></tr>
+        </tbody>
+    </table>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Use the buttons below to test each API method. The status panel shows the result.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="prog-target-1" style="margin-bottom:1rem;">
+            <span>Target 1</span>
+        </div>
+        <div class="popover-demo__target" id="prog-target-2">
+            <span>Target 2</span>
+        </div>
+
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="TestDriveAsync">DriveAsync</button>
+            <button class="docs-btn" @onclick="TestDriveFromStep">DriveAsync(1)</button>
+            <button class="docs-btn" @onclick="TestMoveTo">MoveToAsync(1)</button>
+            <button class="docs-btn" @onclick="TestReset">ResetAsync</button>
+            <button class="docs-btn" @onclick="TestHighlight">HighlightAsync</button>
+            <button class="docs-btn" @onclick="TestShowPopover">ShowPopoverAsync</button>
+            <button class="docs-btn" @onclick="TestGetState">GetState</button>
+            <button class="docs-btn" @onclick="TestGetConfig">GetConfig</button>
+            <button class="docs-btn" @onclick="TestSetSteps">SetSteps</button>
+        </div>
+    </div>
+
+    <h3>Status</h3>
+    <div id="prog-status" style="background: var(--docs-code-bg, #1e1e2e); color: var(--docs-code-text, #cdd6f4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 13px; max-height: 200px; overflow-y: auto; margin-top: 0.5rem; white-space: pre-wrap;">@((MarkupString)_status)</div>
+</div>
+
+@* --- Builder tour (17.1, 17.2) --- *@
+<ProgrammaticTour @ref="builderTour" Builder="builder" OnComplete="OnBuilderEnd" OnCancel="OnBuilderEnd" />
+
+@* --- Direct tour for API methods (17.3-17.9) --- *@
+<GuideFlowTour @ref="directTour" TourOptions="directOpts" TourName="api-demo"
+    OnComplete="OnDirectEnd" OnCancel="OnDirectEnd">
+    <GuideFlowStep Element="#prog-target-1" Title="Step 1" Order="0"
+                   Side="Placement.Bottom">
+        <p>This is Step 1. Use the API buttons to navigate.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#prog-target-2" Title="Step 2" Order="1"
+                   Side="Placement.Bottom">
+        <p>This is Step 2. Try MoveToAsync, GetState, etc.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#prog-target-1" Title="Step 3" Order="2"
+                   Side="Placement.Right">
+        <p>Step 3. Click Done to finish.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private ProgrammaticTour? builderTour;
+    private GuideFlowTour? directTour;
+    private bool busy;
+    private string _status = "Click a button to test an API method...";
+
+    private GuideFlowBuilder builder = new GuideFlowBuilder()
+        .WithName("builder-demo")
+        .WithOptions(o =>
+        {
+            o.ShowProgress = true;
+            o.ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close };
+        })
+        .AddStep("#programmatic-tour-title", "Programmatic Tour", "Built entirely with C# code using GuideFlowBuilder.", Placement.Bottom)
+        .AddStep("#programmatic-tour-code", "Code Example", "This is how you create a tour programmatically.", Placement.Top)
+        .AddStep("#programmatic-tour-run-btn", "Run Button", "Click to start the tour.", Placement.Right);
+
+    private TourOptions directOpts = new()
+    {
+        ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close },
+    };
+
+    private void SetStatus(string msg)
+    {
+        var ts = DateTime.Now.ToString("HH:mm:ss.fff");
+        _status = $"<strong>[{ts}]</strong> {msg}";
+        StateHasChanged();
+    }
+
+    // 17.1 - Build tour with fluent API
+    private async Task StartBuilderTour()
+    {
+        if (builderTour != null && !busy)
+        {
+            busy = true;
+            await builderTour.ResetAsync();
+            await builderTour.DriveAsync();
+        }
+    }
+    private void OnBuilderEnd() { busy = false; SetStatus("Builder tour ended."); }
+
+    // Direct tour end
+    private void OnDirectEnd() { busy = false; SetStatus("Direct tour ended."); }
+
+    // 17.1 - DriveAsync
+    private async Task TestDriveAsync()
+    {
+        if (directTour == null || busy) return;
+        busy = true;
+        await directTour.ResetAsync();
+        await directTour.DriveAsync();
+        SetStatus("<span style=\"color:#89b4fa\">DriveAsync()</span> - Tour started from step 0.");
+    }
+
+    // 17.4 - DriveAsync(stepIndex) / MoveToAsync
+    private async Task TestDriveFromStep()
+    {
+        if (directTour == null || busy) return;
+        busy = true;
+        await directTour.ResetAsync();
+        await directTour.DriveAsync(1);
+        SetStatus("<span style=\"color:#89b4fa\">DriveAsync(1)</span> - Tour started from step 1.");
+    }
+
+    // 17.4 - MoveToAsync
+    private async Task TestMoveTo()
+    {
+        if (directTour == null) return;
+        if (!busy)
+        {
+            busy = true;
+            await directTour.ResetAsync();
+            await directTour.DriveAsync();
+        }
+        await directTour.MoveToAsync(2);
+        SetStatus("<span style=\"color:#89b4fa\">MoveToAsync(2)</span> - Jumped to step 2.");
+    }
+
+    // 17.5 - ResetAsync
+    private async Task TestReset()
+    {
+        if (directTour == null) return;
+        await directTour.ResetAsync();
+        busy = false;
+        SetStatus("<span style=\"color:#89b4fa\">ResetAsync()</span> - Tour reset to initial state.");
+    }
+
+    // 17.6 - HighlightAsync
+    private async Task TestHighlight()
+    {
+        if (directTour == null) return;
+        busy = true;
+        await directTour.HighlightAsync("#prog-target-1", "Highlighted!", "Popover is anchored to this element. Overlay cutout surrounds it.");
+        SetStatus("<span style=\"color:#89b4fa\">HighlightAsync(\"#prog-target-1\")</span> - Element highlighted with overlay cutout + anchored popover.");
+    }
+
+    // 17.7 - ShowPopoverAsync
+    private async Task TestShowPopover()
+    {
+        if (directTour == null) return;
+        busy = true;
+        await directTour.ShowPopoverAsync("Standalone Popover", "This popover has no target element. Click X to close.");
+        SetStatus("<span style=\"color:#89b4fa\">ShowPopoverAsync()</span> - Modal popover centered on screen. No element highlighted.");
+    }
+
+    // 17.8 - GetState
+    private async Task TestGetState()
+    {
+        if (directTour == null) return;
+        if (!busy)
+        {
+            busy = true;
+            await directTour.ResetAsync();
+            await directTour.DriveAsync();
+        }
+        var state = directTour.GetState();
+        SetStatus($"<span style=\"color:#89b4fa\">GetState()</span> returned:\n{state}");
+    }
+
+    // 17.9 - GetConfig
+    private async Task TestGetConfig()
+    {
+        if (directTour == null) return;
+        var config = directTour.GetConfig();
+        SetStatus($"<span style=\"color:#89b4fa\">GetConfig()</span> - ShowProgress={config.ShowProgress}, Overlay={config.Overlay}, ZIndex={config.ZIndex}");
+    }
+
+    // 17.3 - SetSteps
+    private async Task TestSetSteps()
+    {
+        if (directTour == null) return;
+        var newSteps = new List<ProgrammaticStep>
+        {
+            new() { Element = "#prog-target-1", Title = "New Step 1", Text = "Steps were replaced at runtime with SetSteps()!", Side = Placement.Bottom, Order = 0 },
+            new() { Element = "#prog-target-2", Title = "New Step 2", Text = "This step was added dynamically.", Side = Placement.Right, Order = 1 },
+        };
+        directTour.SetSteps(newSteps);
+        busy = true;
+        await directTour.ResetAsync();
+        await directTour.DriveAsync();
+        SetStatus("<span style=\"color:#89b4fa\">SetSteps()</span> - Replaced steps at runtime. Tour restarted with new steps.");
+    }
+}

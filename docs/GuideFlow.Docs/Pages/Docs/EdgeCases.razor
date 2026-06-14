@@ -1,0 +1,238 @@
+@page "/docs/edge-cases"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Edge Cases - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="edge-cases-title">Edge Cases</h1>
+    <p class="docs-lead" id="edge-cases-lead">Test unusual scenarios and boundary conditions to ensure the tour works reliably in all situations.</p>
+
+    <h2 id="target-not-found">Target Not Found <a class="docs-anchor" href="#target-not-found">#</a></h2>
+    <p>When a step targets an element that doesn't exist (invalid CSS selector), the step should be skipped gracefully.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__buttons" style="grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartMissingTargetTour">Missing Target Tour</button>
+        </div>
+    </div>
+
+    <h2 id="disabled-step">Disabled Step <a class="docs-anchor" href="#disabled-step">#</a></h2>
+    <p>Steps with <code>Disabled = true</code> are skipped automatically. Step 2 is disabled in this demo.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="disabled-step-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartDisabledStepTour">Disabled Step Tour</button>
+        </div>
+    </div>
+
+    <h2 id="single-step">Single Step <a class="docs-anchor" href="#single-step">#</a></h2>
+    <p>A tour with only 1 step - no Previous button, Done replaces Next.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="single-step-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartSingleStepTour">Single Step Tour</button>
+        </div>
+    </div>
+
+    <h2 id="many-steps">Many Steps (10+) <a class="docs-anchor" href="#many-steps">#</a></h2>
+    <p>A tour with 12 steps to test performance and progress display.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="many-steps-target" style="width:100%;height:auto;padding:2rem;">
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;">
+                <span id="ms-1" style="padding:0.5rem 1rem;background:#eff6ff;border-radius:6px;">1</span>
+                <span id="ms-2" style="padding:0.5rem 1rem;background:#f0fdf4;border-radius:6px;">2</span>
+                <span id="ms-3" style="padding:0.5rem 1rem;background:#fef2f2;border-radius:6px;">3</span>
+                <span id="ms-4" style="padding:0.5rem 1rem;background:#fefce8;border-radius:6px;">4</span>
+                <span id="ms-5" style="padding:0.5rem 1rem;background:#f5f3ff;border-radius:6px;">5</span>
+                <span id="ms-6" style="padding:0.5rem 1rem;background:#ecfdf5;border-radius:6px;">6</span>
+                <span id="ms-7" style="padding:0.5rem 1rem;background:#fff1f2;border-radius:6px;">7</span>
+                <span id="ms-8" style="padding:0.5rem 1rem;background:#f0f9ff;border-radius:6px;">8</span>
+                <span id="ms-9" style="padding:0.5rem 1rem;background:#fdf4ff;border-radius:6px;">9</span>
+                <span id="ms-10" style="padding:0.5rem 1rem;background:#f7fee7;border-radius:6px;">10</span>
+                <span id="ms-11" style="padding:0.5rem 1rem;background:#fffbeb;border-radius:6px;">11</span>
+                <span id="ms-12" style="padding:0.5rem 1rem;background:#e0f2fe;border-radius:6px;">12</span>
+            </div>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartManyStepsTour">12 Steps Tour</button>
+        </div>
+    </div>
+
+    <h2 id="disable-interaction">Disable Active Interaction <a class="docs-anchor" href="#disable-interaction">#</a></h2>
+    <p>When <code>DisableActiveInteraction = true</code>, the highlighted target element cannot be clicked.</p>
+    <div class="popover-demo">
+        <button id="interaction-target" class="docs-btn" style="padding:1rem 2rem;font-size:1rem;cursor:pointer;" @onclick="() => _clickCount++">
+            Click me (@_clickCount clicks)
+        </button>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartInteractionTour">Block Interaction Tour</button>
+        </div>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">During the tour, clicking the button above should NOT increase the counter.</p>
+    </div>
+
+    <h2 id="resize">Window Resize <a class="docs-anchor" href="#resize">#</a></h2>
+    <p>Resize the browser window during a tour - the popover should reposition automatically.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="resize-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartResizeTour">Resize Test Tour</button>
+        </div>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">Start the tour, then resize the browser window. The popover should follow the target.</p>
+    </div>
+
+    <h2 id="highlight-class">Highlight Class <a class="docs-anchor" href="#highlight-class">#</a></h2>
+    <p>A custom CSS class is added to the target element during the tour.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="highlight-class-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartHighlightClassTour">Highlight Class Tour</button>
+        </div>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">Inspect the target during the tour - it should have class <code>my-custom-highlight</code>.</p>
+    </div>
+
+    <h2 id="z-index">Z-Index Conflicts <a class="docs-anchor" href="#z-index">#</a></h2>
+    <p>When the page has elements with high <code>z-index</code>, the tour should still appear on top. This demo puts a target element inside a <code>z-index: 9999</code> container.</p>
+    <div style="position:relative; z-index:9999; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; padding:1.5rem; margin:1rem 0;">
+        <p style="margin:0 0 0.5rem; font-weight:600; color:#ef4444;">High z-index container (z-index: 9999)</p>
+        <div class="popover-demo__target" id="zindex-target" style="margin:0;">
+            <span>Target inside z-index:9999</span>
+        </div>
+    </div>
+    <div class="popover-demo">
+        <div class="popover-demo__buttons" style="grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartZIndexTour">Z-Index Conflict Tour</button>
+        </div>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">The tour overlay (z-index: 10000) should cover the red container, and the popover should appear on top of everything.</p>
+    </div>
+
+    <h2 id="lazy-render">Lazy Render <a class="docs-anchor" href="#lazy-render">#</a></h2>
+    <p>When <code>LazyRender = true</code>, step content is only rendered when the step becomes active.</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="lazy-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="StartLazyTour">Lazy Render Tour</button>
+        </div>
+    </div>
+
+</div>
+
+@* Missing Target Tour *@
+<GuideFlowTour @ref="missingTargetTour" TourOptions="missingTargetOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#this-element-does-not-exist" Title="Missing Target" Order="0">
+        <p>This step targets a non-existent element.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#edge-cases-title" Title="This Should Show" Order="1">
+        <p>The previous step was skipped because its target doesn't exist.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Disabled Step Tour *@
+<GuideFlowTour @ref="disabledStepTour" TourOptions="disabledStepOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#disabled-step-target" Title="Step 1" Order="0">
+        <p>This is step 1. Step 2 is disabled and will be skipped.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#disabled-step-target" Title="Step 2 (Disabled)" Order="1" Disabled="true">
+        <p>You should NOT see this.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#disabled-step-target" Title="Step 3" Order="2">
+        <p>This is step 3. Step 2 was skipped.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Single Step Tour *@
+<GuideFlowTour @ref="singleStepTour" TourOptions="singleStepOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#single-step-target" Title="Only Step" Order="0">
+        <p>This is the only step. No Previous button, Done instead of Next.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Many Steps Tour *@
+<GuideFlowTour @ref="manyStepsTour" TourOptions="manyStepsOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    @for (int i = 1; i <= 12; i++)
+    {
+        var stepNum = i;
+        <GuideFlowStep Element="@($"#ms-{stepNum}")" Title="@($"Step {stepNum} of 12")" Order="@(stepNum - 1)" ShowProgress="true" ShowProgressBar="true">
+            <p>This is step <strong>@stepNum</strong> of 12.</p>
+        </GuideFlowStep>
+    }
+</GuideFlowTour>
+
+@* Disable Interaction Tour *@
+<GuideFlowTour @ref="interactionTour" TourOptions="interactionOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#interaction-target" Title="Blocked!" Order="0" DisableActiveInteraction="true">
+        <p>The button behind this popover is <strong>blocked</strong>. Try clicking it - nothing should happen.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Resize Tour *@
+<GuideFlowTour @ref="resizeTour" TourOptions="resizeOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#resize-target" Title="Resize Test" Order="0">
+        <p>Resize the browser window. The popover should reposition automatically.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Highlight Class Tour *@
+<GuideFlowTour @ref="highlightClassTour" TourOptions="highlightClassOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#highlight-class-target" Title="Custom Highlight" Order="0">
+        <p>Inspect this target element - it has class <code>my-custom-highlight</code>.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Z-Index Tour *@
+<GuideFlowTour @ref="zindexTour" TourOptions="zindexOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#zindex-target" Title="Z-Index Test" Order="0">
+        <p>This popover is on top of a <code>z-index: 9999</code> container. The tour overlay uses <code>z-index: 10000</code>.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#zindex-target" Title="Z-Index Step 2" Order="1">
+        <p>Still on top! The tour stays above all page elements.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@* Lazy Render Tour *@
+<GuideFlowTour @ref="lazyTour" TourOptions="lazyOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#lazy-target" Title="Lazy Step 1" Order="0">
+        <p>Content rendered only when this step is active.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#lazy-target" Title="Lazy Step 2" Order="1">
+        <p>This content was not in the DOM until now.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? missingTargetTour, disabledStepTour, singleStepTour, manyStepsTour;
+    private GuideFlowTour? interactionTour, resizeTour, highlightClassTour, lazyTour, zindexTour;
+    private bool busy;
+    private int _clickCount;
+
+    private TourOptions missingTargetOpts = new() { ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+    private TourOptions disabledStepOpts = new() { ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+    private TourOptions singleStepOpts = new() { ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions manyStepsOpts = new() { ShowProgress = true, ShowProgressBar = true, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+    private TourOptions interactionOpts = new() { ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions resizeOpts = new() { AutoReposition = true, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions highlightClassOpts = new() { HighlightClass = "my-custom-highlight", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions lazyOpts = new() { LazyRender = true, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+    private TourOptions zindexOpts = new() { ZIndex = 10000, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+
+    private async Task StartMissingTargetTour() { if (missingTargetTour != null && !busy) { busy = true; await missingTargetTour.DriveAsync(); } }
+    private async Task StartDisabledStepTour() { if (disabledStepTour != null && !busy) { busy = true; await disabledStepTour.DriveAsync(); } }
+    private async Task StartSingleStepTour() { if (singleStepTour != null && !busy) { busy = true; await singleStepTour.DriveAsync(); } }
+    private async Task StartManyStepsTour() { if (manyStepsTour != null && !busy) { busy = true; await manyStepsTour.DriveAsync(); } }
+    private async Task StartInteractionTour() { if (interactionTour != null && !busy) { busy = true; await interactionTour.DriveAsync(); } }
+    private async Task StartResizeTour() { if (resizeTour != null && !busy) { busy = true; await resizeTour.DriveAsync(); } }
+    private async Task StartHighlightClassTour() { if (highlightClassTour != null && !busy) { busy = true; await highlightClassTour.DriveAsync(); } }
+    private async Task StartLazyTour() { if (lazyTour != null && !busy) { busy = true; await lazyTour.DriveAsync(); } }
+    private async Task StartZIndexTour() { if (zindexTour != null && !busy) { busy = true; await zindexTour.DriveAsync(); } }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

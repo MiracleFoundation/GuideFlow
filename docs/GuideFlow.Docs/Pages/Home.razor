@@ -1,0 +1,99 @@
+@page "/"
+@layout LandingLayout
+
+<PageTitle>Guide Flow - Blazor Guided Tour Library</PageTitle>
+
+@* ===== Hero ===== *@
+<section class="lp-hero">
+    <div class="lp-hero__badge">v1.0 &bull; MIT License</div>
+    <h1 class="lp-hero__title">
+        <svg class="lp-hero__icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="48" height="48" rx="12" fill="currentColor"/>
+            <path d="M16 14l10 10-10 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M24 34h10" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg> Guide Flow
+    </h1>
+    <p class="lp-hero__subtitle">
+        An accessible, animated guided tour library for Blazor applications.
+        Create step-by-step onboarding tours, feature highlights, and contextual help
+        with <strong>zero dependencies</strong>.
+    </p>
+    <div class="lp-hero__actions">
+        <a href="docs" class="lp-btn lp-btn--primary">
+            Get Started
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="docs/api" class="lp-btn lp-btn--outline">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 3h12M2 8h12M2 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            View Docs
+        </a>
+    </div>
+</section>
+
+@* ===== Features ===== *@
+<section class="lp-section">
+    <h2 class="lp-section__title">Features</h2>
+    <div class="lp-features">
+        <div class="lp-feature">
+            <span class="lp-feature__icon">🎭</span>
+            <h3>Overlay Modes</h3>
+            <p>Cutout SVG mask or 4-panel stage spotlight to focus attention</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">💬</span>
+            <h3>Rich Popovers</h3>
+            <p>Customizable position, buttons, progress bar, and styling</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">🎬</span>
+            <h3>Animated &amp; Static Tours</h3>
+            <p>Smooth animated transitions or static highlight modes</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">📐</span>
+            <h3>Highlight Shapes</h3>
+            <p>Rounded, circle, or exact element-fit cutouts</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">🪟</span>
+            <h3>Modal Tour</h3>
+            <p>Centered modal dialog mode for focused onboarding</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">⌨️</span>
+            <h3>Keyboard &amp; A11y</h3>
+            <p>Arrow keys, Escape, Tab trapping, ARIA roles, screen reader</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">🎨</span>
+            <h3>Themes</h3>
+            <p>Light, dark, and high-contrast presets built-in</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">🔄</span>
+            <h3>Async Tours</h3>
+            <p>Load steps dynamically from API or async data sources</p>
+        </div>
+        <div class="lp-feature">
+            <span class="lp-feature__icon">⚡</span>
+            <h3>Programmatic API</h3>
+            <p>Fluent C# API to build and control tours from code</p>
+        </div>
+    </div>
+</section>
+
+@* ===== CTA ===== *@
+<section class="lp-section lp-section--cta">
+    <h2 class="lp-section__title">Ready to build?</h2>
+    <p class="lp-section__desc">Add Guide Flow to your Blazor project in under 2 minutes.</p>
+    <div class="lp-hero__actions">
+        <a href="docs" class="lp-btn lp-btn--primary">
+            Getting Started
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="docs/api" class="lp-btn lp-btn--outline">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5.5 3L2 8l3.5 5M10.5 3L14 8l-3.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            API Reference
+        </a>
+    </div>
+</section>

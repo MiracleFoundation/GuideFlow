@@ -1,0 +1,310 @@
+@page "/docs/styling-overlay"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Styling Overlay - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="styling-overlay-title">Styling Overlay</h1>
+    <p class="docs-lead" id="styling-overlay-lead">The overlay is the semi-transparent layer that covers the page behind the active tour step. You can customize its appearance, behavior, and mode.</p>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> In the examples below we have used the <code>HighlightAsync</code> method to highlight the elements. The same configuration applies to the tour steps as well.
+    </div>
+
+    <h2 id="overlay-modes">Overlay Modes <a class="docs-anchor" href="#overlay-modes">#</a></h2>
+    <p>GuideFlow supports two overlay modes controlled by <code>OverlayMode</code>. Both create a semi-transparent layer over the page, but they highlight the target element differently:</p>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Cutout mode</strong> (default) uses an SVG mask to cut a hole around the target element. The target sits inside the hole and remains fully visible and interactive. Think of it like cutting a shape out of a sheet of frosted glass - you can see and click through the hole.
+    </div>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Stage mode</strong> uses 4 separate panels (top, bottom, left, right) that surround the target without overlapping it. The panels sit outside the target area, leaving a clear gap controlled by <code>StagePadding</code>. Think of it like a spotlight on a stage - the light shines on the target while the surrounding area stays dark.
+    </div>
+
+    <pre style="background: var(--docs-code-bg); padding: 1rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.6; color: var(--docs-code-text); overflow-x: auto;">
+┌───────────────────────────────┐
+│          Panel Top            │
+├───────┬───────────────┬───────┤
+│       │               │       │
+│ Panel │    TARGET     │ Panel │
+│ Left  │    ELEMENT    │ Right │
+│       │               │       │
+├───────┴───────────────┴───────┤
+│         Panel Bottom          │
+└───────────────────────────────┘
+    </pre>
+
+    <table class="docs-table">
+        <thead>
+            <tr><th></th><th>Cutout</th><th>Stage</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>How it works</td><td>SVG mask cuts a hole</td><td>4 panels surround target</td></tr>
+            <tr><td>Overlay structure</td><td>1 layer with a cutout hole</td><td>4 separate panels (top, bottom, left, right)</td></tr>
+            <tr><td>Target visibility</td><td>Inside the overlay hole</td><td>Between the 4 panels</td></tr>
+            <tr><td>Target clickable?</td><td>Yes (through the hole)</td><td>Yes (not covered by panels)</td></tr>
+            <tr><td>Customization</td><td><code>StagePadding</code>, <code>StageRadius</code></td><td><code>StagePadding</code>, <code>StageRadius</code></td></tr>
+        </tbody>
+    </table>
+
+    <p>Switch between modes using <code>OverlayMode</code>:</p>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="overlay-mode-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(2, 1fr);">
+            <button class="docs-btn" @onclick="ShowCutout">Cutout Mode</button>
+            <button class="docs-btn" @onclick="ShowStage">Stage Mode</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="overlay-mode-code">
+        <CodeBlock Language="razor" Code="@(@"// Cutout mode (default) - SVG mask with a hole around target
+private TourOptions cutoutOpts = new()
+{
+    OverlayMode = OverlayMode.Cutout,
+};
+
+// Stage mode - 4 panels surrounding the target
+private TourOptions stageOpts = new()
+{
+    OverlayMode = OverlayMode.Stage,
+    StagePadding = 10,   // space around the target
+    StageRadius = 5,     // border radius of the highlight
+};")" />
+    </div>
+
+    <h2 id="overlay-disable">Disable Overlay <a class="docs-anchor" href="#overlay-disable">#</a></h2>
+    <p>Set <code>Overlay = false</code> to hide the overlay completely. The tour step will still show but without the dark background.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="overlay-disable-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
+            <button class="docs-btn" @onclick="ShowNoOverlay">No Overlay</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="overlay-disable-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions opts = new()
+{
+    Overlay = false,
+};")" />
+    </div>
+
+    <h2 id="overlay-click-behavior">Overlay Click Behavior <a class="docs-anchor" href="#overlay-click-behavior">#</a></h2>
+    <p>Control what happens when the user clicks on the overlay area using <code>OverlayClickBehavior</code>:</p>
+    <ul>
+        <li><strong>Close</strong> (default) - Clicking the overlay closes the tour</li>
+        <li><strong>NextStep</strong> - Clicking the overlay advances to the next step</li>
+        <li><strong>None</strong> - Clicking the overlay does nothing</li>
+    </ul>
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="overlay-click-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowClickClose">Close (default)</button>
+            <button class="docs-btn" @onclick="ShowClickNext">Next Step</button>
+            <button class="docs-btn" @onclick="ShowClickNone">None</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="overlay-click-code">
+        <CodeBlock Language="razor" Code="@(@"// Click overlay to close (default)
+private TourOptions closeOpts = new()
+{
+    OverlayClickBehavior = OverlayClickBehavior.Close,
+};
+
+// Click overlay to go to next step
+private TourOptions nextOpts = new()
+{
+    OverlayClickBehavior = OverlayClickBehavior.NextStep,
+};
+
+// Click overlay does nothing
+private TourOptions noneOpts = new()
+{
+    OverlayClickBehavior = OverlayClickBehavior.None,
+};")" />
+    </div>
+
+    <h2 id="overlay-color">Overlay Color <a class="docs-anchor" href="#overlay-color">#</a></h2>
+    <p>Here are some examples with different overlay colors.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="overlay-color-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowRed">Red Color</button>
+            <button class="docs-btn" @onclick="ShowBlue">Blue Color</button>
+            <button class="docs-btn" @onclick="ShowYellow">Yellow Color</button>
+        </div>
+    </div>
+
+    <h3>Code for the above example</h3>
+    <div id="overlay-color-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#overlay-color-target"" Title=""Pass any RGB Color"" Order=""0""
+                   Side=""Placement.Bottom"">
+        <p>Here we have set the overlay color to be red. You can pass any RGB color to OverlayColor option.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<button @onclick=""ShowRed"">Red Color</button>
+
+@code {
+    private TourOptions options = new()
+    {
+        OverlayColor = ""rgba(255, 0, 0, 0.5)"",
+        ShowButtons = new[] { ButtonType.Close },
+    };
+}")" />
+    </div>
+
+    <h2 id="overlay-opacity">Overlay Opacity <a class="docs-anchor" href="#overlay-opacity">#</a></h2>
+    <p>You can also adjust the overlay opacity to make it more or less transparent.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="overlay-opacity-target">
+            <span>Target Element</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(3, 1fr);">
+            <button class="docs-btn" @onclick="ShowLight">Light (0.2)</button>
+            <button class="docs-btn" @onclick="ShowMedium">Medium (0.5)</button>
+            <button class="docs-btn" @onclick="ShowDark">Dark (0.8)</button>
+        </div>
+    </div>
+
+    <div id="overlay-opacity-code">
+        <CodeBlock Language="razor" Code="@(@"private TourOptions options = new()
+{
+    OverlayOpacity = 0.3,
+    OverlayColor = ""#000"",
+};")" />
+    </div>
+
+</div>
+
+<GuideFlowTour @ref="redTour" TourOptions="redOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Pass any RGB Color" Order="0" Side="Placement.Bottom">
+        <p>Here we have set the overlay color to be red. You can pass any RGB color to OverlayColor option.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="blueTour" TourOptions="blueOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Blue Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay color set to blue.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="yellowTour" TourOptions="yellowOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-color-target" Title="Yellow Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay color set to yellow.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="lightTour" TourOptions="lightOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-opacity-target" Title="Light Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay opacity set to 0.2.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="mediumTour" TourOptions="mediumOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-opacity-target" Title="Medium Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay opacity set to 0.5.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="darkOverlayTour" TourOptions="darkOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-opacity-target" Title="Dark Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay opacity set to 0.8.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="cutoutTour" TourOptions="cutoutOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-mode-target" Title="Cutout Mode" Order="0" Side="Placement.Bottom">
+        <p>This uses Cutout mode (default). The SVG mask cuts a hole around the target element.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="stageTour" TourOptions="stageOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-mode-target" Title="Stage Mode" Order="0" Side="Placement.Bottom">
+        <p>This uses Stage mode. Four panels surround the target without overlapping it.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="noOverlayTour" TourOptions="noOverlayOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-disable-target" Title="No Overlay" Order="0" Side="Placement.Bottom">
+        <p>Overlay is disabled. The page is not dimmed behind this step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="clickCloseTour" TourOptions="clickCloseOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-click-target" Title="Click to Close" Order="0" Side="Placement.Bottom">
+        <p>Click on the overlay area to close this tour (default behavior).</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#overlay-click-target" Title="Step 2" Order="1" Side="Placement.Bottom">
+        <p>You should not see this - clicking overlay closes the tour.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="clickNextTour" TourOptions="clickNextOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-click-target" Title="Click for Next Step" Order="0" Side="Placement.Bottom">
+        <p>Click on the overlay area to advance to the next step.</p>
+    </GuideFlowStep>
+    <GuideFlowStep Element="#overlay-click-target" Title="Step 2" Order="1" Side="Placement.Bottom">
+        <p>You made it! Clicking the overlay advanced to this step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+<GuideFlowTour @ref="clickNoneTour" TourOptions="clickNoneOpts" OnComplete="OnEnd" OnCancel="OnEnd">
+    <GuideFlowStep Element="#overlay-click-target" Title="Click Does Nothing" Order="0" Side="Placement.Bottom">
+        <p>Clicking on the overlay area does nothing. Use the buttons to navigate.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? redTour, blueTour, yellowTour, lightTour, mediumTour, darkOverlayTour;
+    private GuideFlowTour? cutoutTour, stageTour, noOverlayTour;
+    private GuideFlowTour? clickCloseTour, clickNextTour, clickNoneTour;
+    private bool busy;
+
+    private TourOptions redOpts = new() { OverlayColor = "rgba(255, 0, 0, 0.5)", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions blueOpts = new() { OverlayColor = "rgba(0, 0, 255, 0.5)", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions yellowOpts = new() { OverlayColor = "rgba(255, 255, 0, 0.5)", ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions lightOpts = new() { OverlayOpacity = 0.2, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions mediumOpts = new() { OverlayOpacity = 0.5, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions darkOpts = new() { OverlayOpacity = 0.8, ShowButtons = new[] { ButtonType.Close } };
+
+    private TourOptions cutoutOpts = new() { OverlayMode = OverlayMode.Cutout, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions stageOpts = new() { OverlayMode = OverlayMode.Stage, StagePadding = 10, StageRadius = 5, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions noOverlayOpts = new() { Overlay = false, ShowButtons = new[] { ButtonType.Close } };
+    private TourOptions clickCloseOpts = new() { OverlayClickBehavior = OverlayClickBehavior.Close, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+    private TourOptions clickNextOpts = new() { OverlayClickBehavior = OverlayClickBehavior.NextStep, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+    private TourOptions clickNoneOpts = new() { OverlayClickBehavior = OverlayClickBehavior.None, ShowButtons = new[] { ButtonType.Next, ButtonType.Previous, ButtonType.Close } };
+
+    private async Task ShowRed() { if (redTour != null && !busy) { busy = true; await redTour.DriveAsync(); } }
+    private async Task ShowBlue() { if (blueTour != null && !busy) { busy = true; await blueTour.DriveAsync(); } }
+    private async Task ShowYellow() { if (yellowTour != null && !busy) { busy = true; await yellowTour.DriveAsync(); } }
+    private async Task ShowLight() { if (lightTour != null && !busy) { busy = true; await lightTour.DriveAsync(); } }
+    private async Task ShowMedium() { if (mediumTour != null && !busy) { busy = true; await mediumTour.DriveAsync(); } }
+    private async Task ShowDark() { if (darkOverlayTour != null && !busy) { busy = true; await darkOverlayTour.DriveAsync(); } }
+
+    private async Task ShowCutout() { if (cutoutTour != null && !busy) { busy = true; await cutoutTour.DriveAsync(); } }
+    private async Task ShowStage() { if (stageTour != null && !busy) { busy = true; await stageTour.DriveAsync(); } }
+    private async Task ShowNoOverlay() { if (noOverlayTour != null && !busy) { busy = true; await noOverlayTour.DriveAsync(); } }
+    private async Task ShowClickClose() { if (clickCloseTour != null && !busy) { busy = true; await clickCloseTour.DriveAsync(); } }
+    private async Task ShowClickNext() { if (clickNextTour != null && !busy) { busy = true; await clickNextTour.DriveAsync(); } }
+    private async Task ShowClickNone() { if (clickNoneTour != null && !busy) { busy = true; await clickNoneTour.DriveAsync(); } }
+
+    private void OnEnd() { busy = false; StateHasChanged(); }
+}

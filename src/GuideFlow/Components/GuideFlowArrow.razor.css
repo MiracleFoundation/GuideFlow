@@ -1,0 +1,107 @@
+.gf-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: var(--gf-arrow-size, 10px) solid transparent;
+}
+
+.gf-arrow-none {
+    display: none;
+}
+
+/* Arrow points UP when popover is BELOW the target */
+.gf-arrow--bottom,
+.gf-arrow--bottom-start,
+.gf-arrow--bottom-end {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    border-bottom-color: var(--gf-popover-bg, #ffffff);
+    border-top: none;
+}
+
+.gf-arrow--bottom-start {
+    left: var(--gf-arrow-size, 10px);
+    transform: translateY(-100%);
+}
+
+.gf-arrow--bottom-end {
+    left: auto;
+    right: var(--gf-arrow-size, 10px);
+    transform: translateY(-100%);
+}
+
+/* Arrow points DOWN when popover is ABOVE the target */
+.gf-arrow--top,
+.gf-arrow--top-start,
+.gf-arrow--top-end {
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 100%);
+    border-top-color: var(--gf-popover-bg, #ffffff);
+    border-bottom: none;
+}
+
+.gf-arrow--top-start {
+    left: var(--gf-arrow-size, 10px);
+    transform: translateY(100%);
+}
+
+.gf-arrow--top-end {
+    left: auto;
+    right: var(--gf-arrow-size, 10px);
+    transform: translateY(100%);
+}
+
+/* Arrow points RIGHT when popover is LEFT of target */
+.gf-arrow--left,
+.gf-arrow--left-start,
+.gf-arrow--left-end {
+    right: 0;
+    top: 50%;
+    transform: translate(100%, -50%);
+    border-left-color: var(--gf-popover-bg, #ffffff);
+    border-right: none;
+}
+
+.gf-arrow--left-start {
+    top: var(--gf-arrow-size, 10px);
+    transform: translateX(100%);
+}
+
+.gf-arrow--left-end {
+    top: auto;
+    bottom: var(--gf-arrow-size, 10px);
+    transform: translateX(100%);
+}
+
+/* Arrow points LEFT when popover is RIGHT of target */
+.gf-arrow--right,
+.gf-arrow--right-start,
+.gf-arrow--right-end {
+    left: 0;
+    top: 50%;
+    transform: translate(-100%, -50%);
+    border-right-color: var(--gf-popover-bg, #ffffff);
+    border-left: none;
+}
+
+.gf-arrow--right-start {
+    top: var(--gf-arrow-size, 10px);
+    transform: translateX(-100%);
+}
+
+.gf-arrow--right-end {
+    top: auto;
+    bottom: var(--gf-arrow-size, 10px);
+    transform: translateX(-100%);
+}
+
+/* Auto: default to bottom */
+.gf-arrow--auto {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    border-bottom-color: var(--gf-popover-bg, #ffffff);
+    border-top: none;
+}

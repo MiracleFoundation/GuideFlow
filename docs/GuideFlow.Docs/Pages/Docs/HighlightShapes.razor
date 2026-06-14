@@ -1,0 +1,78 @@
+@page "/docs/highlight-shapes"
+@using GuideFlow.Services
+@using GuideFlow.Enums
+
+<PageTitle>Highlight Shapes - GuideFlow</PageTitle>
+
+<div class="docs-content">
+    <h1 id="highlight-shapes-title">Highlight Shapes</h1>
+    <p class="docs-lead" id="highlight-shapes-lead">Change the cutout shape around the highlighted element - rounded rectangle (default), rectangle, circle, or ellipse. Useful for drawing attention to avatars, icons, or irregularly shaped UI elements.</p>
+
+    <div class="docs-callout docs-callout--info">
+        <strong>Note:</strong> Shape is set via <code>HighlightShape</code> in <code>TourOptions</code>. All steps in a tour share the same shape.
+    </div>
+
+    <h2 id="demo">Demo <a class="docs-anchor" href="#demo">#</a></h2>
+    <p>Click a button to see the highlight shape in action.</p>
+
+    <div class="popover-demo">
+        <div class="popover-demo__target" id="shape-demo-target" style="width:160px;height:100px;border-radius:50%;">
+            <span>Target (160x100)</span>
+        </div>
+        <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(4, 1fr);">
+            <button class="docs-btn" @onclick="() => ShowAsync(HighlightShape.RoundedRect)">RoundedRect</button>
+            <button class="docs-btn" @onclick="() => ShowAsync(HighlightShape.Rectangle)">Rectangle</button>
+            <button class="docs-btn" @onclick="() => ShowAsync(HighlightShape.Circle)">Circle</button>
+            <button class="docs-btn" @onclick="() => ShowAsync(HighlightShape.Ellipse)">Ellipse</button>
+        </div>
+    </div>
+
+    <h3>Code</h3>
+    <div id="shape-code">
+        <CodeBlock Language="razor" Code="@(@"<GuideFlowTour @ref=""tour"" TourOptions=""options"">
+    <GuideFlowStep Element=""#my-avatar"" Title=""Circle Shape"" Order=""0"">
+        <p>Circular highlight around avatar.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private TourOptions options = new()
+    {
+        HighlightShape = HighlightShape.Circle,
+    };
+}")" />
+    </div>
+
+    <p>See <a href="/docs/api#to-stage">API Reference - Stage / Highlight</a> for full shape reference.</p>
+
+</div>
+
+<GuideFlowTour @ref="tour" TourOptions="tourOptions" OnComplete="OnTourEnd" OnCancel="OnTourEnd">
+    <GuideFlowStep Element="#shape-demo-target" Title="@($"Shape: {_shape}")" Order="0"
+                   Side="Placement.Bottom">
+        <p>Highlight shape: <strong>@_shape</strong></p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private GuideFlowTour? tour;
+    private HighlightShape _shape = HighlightShape.RoundedRect;
+
+    private TourOptions tourOptions = new()
+    {
+        HighlightShape = HighlightShape.RoundedRect,
+        ShowButtons = new[] { ButtonType.Close },
+    };
+
+    private async Task ShowAsync(HighlightShape shape)
+    {
+        if (tour == null) return;
+        _shape = shape;
+        tourOptions.HighlightShape = shape;
+        StateHasChanged();
+        await tour.ResetAsync();
+        await tour.DriveAsync();
+    }
+
+    private void OnTourEnd() { StateHasChanged(); }
+}
