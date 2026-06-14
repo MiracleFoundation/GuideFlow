@@ -514,6 +514,7 @@
                         await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);
 
                     await SafeInvokeVoidAsync("disableClickThrough", _activeSelector);
+                    await SafeInvokeVoidAsync("unblockInteraction", _activeSelector);
 
                     var prevStep = _steps.FirstOrDefault(s => s.Element == _activeSelector);
                     if (prevStep != null)
@@ -564,7 +565,12 @@
                         TourOptions.StagePadding, TourOptions.PopoverOffset, _dotNetRef);
                 }
 
-                if (!step.ResolvedDisableActiveInteraction)
+                if (step.ResolvedDisableActiveInteraction)
+                {
+                    await SafeInvokeVoidAsync("blockInteraction",
+                        step.Element, TourOptions.ZIndex);
+                }
+                else
                 {
                     await SafeInvokeVoidAsync("enableClickThrough",
                         step.Element, TourOptions.ZIndex);
@@ -616,6 +622,7 @@
                     await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);
 
                 await SafeInvokeVoidAsync("disableClickThrough", _activeSelector);
+                await SafeInvokeVoidAsync("unblockInteraction", _activeSelector);
 
                 var prevStep = _steps.FirstOrDefault(s => s.Element == _activeSelector);
                 if (prevStep != null)
@@ -687,6 +694,7 @@
                     await SafeInvokeVoidAsync("stopAutoUpdate", _activeSelector, step.StepElement);
 
                 await SafeInvokeVoidAsync("disableClickThrough", _activeSelector);
+                await SafeInvokeVoidAsync("unblockInteraction", _activeSelector);
 
                 if (!string.IsNullOrEmpty(TourOptions.HighlightClass))
                     await SafeInvokeVoidAsync("removeHighlightClass", _activeSelector, TourOptions.HighlightClass);

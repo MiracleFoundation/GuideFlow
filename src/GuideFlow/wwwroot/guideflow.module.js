@@ -734,6 +734,32 @@ export function disableAllClickThrough() {
     _passthroughElements.clear();
 }
 
+// Block interaction with target element (DisableActiveInteraction)
+const _blockElements = new Map();
+
+export function blockInteraction(selector, zIndex) {
+    unblockInteraction(selector);
+    const target = document.querySelector(selector);
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const blocker = document.createElement('div');
+    blocker.className = 'gf-interaction-blocker';
+    blocker.style.cssText = `
+        position:fixed;left:${rect.left}px;top:${rect.top}px;
+        width:${rect.width}px;height:${rect.height}px;
+        z-index:${zIndex + 1};pointer-events:auto;cursor:default;
+    `;
+    blocker.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); });
+    document.body.appendChild(blocker);
+    _blockElements.set(selector, blocker);
+}
+
+export function unblockInteraction(selector) {
+    const el = _blockElements.get(selector);
+    if (el) { el.remove(); _blockElements.delete(selector); }
+}
+
 // ============================================================
 // Highlight Styles
 // ============================================================

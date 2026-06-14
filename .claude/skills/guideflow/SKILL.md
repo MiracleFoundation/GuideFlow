@@ -101,6 +101,12 @@ Use `GuideFlowTour` + `GuideFlowStep` for tours defined in Razor markup.
 | `Disabled` | bool | false | Skip this step |
 | `PopoverClass` | string? | null | Custom CSS class for popover |
 | `DisableActiveInteraction` | bool? | null | Disable interaction with highlighted element |
+| `ShowButtons` | ButtonType[]? | null | Which buttons to show on this step |
+| `DisableButtons` | ButtonType[]? | null | Which buttons to disable (visible but grayed out) |
+| `ButtonsContent` | RenderFragment? | null | Custom button content (replaces default buttons) |
+| `NextBtnText` | string? | null | Override Next button text for this step |
+| `PrevBtnText` | string? | null | Override Back button text for this step |
+| `DoneBtnText` | string? | null | Override Done button text for this step |
 
 ### GuideFlowStep Events
 
@@ -113,6 +119,7 @@ Use `GuideFlowTour` + `GuideFlowStep` for tours defined in Razor markup.
 | `OnNextClick` | EventCallback\<TourContext\> | Override Next button behavior |
 | `OnPrevClick` | EventCallback\<TourContext\> | Override Back button behavior |
 | `OnCloseClick` | EventCallback\<TourContext\> | Override Close button behavior |
+| `OnPopoverRender` | EventCallback\<TourContext\> | After popover DOM is rendered (fires with OnAfterShow) |
 
 ### GuideFlowTour Events
 
@@ -122,7 +129,11 @@ Use `GuideFlowTour` + `GuideFlowStep` for tours defined in Razor markup.
 | `OnComplete` | EventCallback | Tour completes |
 | `OnCancel` | EventCallback | Tour is cancelled |
 | `OnStepChange` | EventCallback\<StepChangeEventArgs\> | Active step changes |
-| `OnBeforeStepChange` | EventCallback\<BeforeStepChangeEventArgs\> | Before step change (can cancel) |
+| `OnBeforeStepChange` | EventCallback\<BeforeStepChangeEventArgs\> | Before step change (set Cancel=true to block) |
+| `OnDestroyStarted` | Func\<Task\<bool\>\>? | Return false to prevent tour exit (confirm on exit) |
+| `OnNextClick` | EventCallback\<TourContext\> | Override all Next button clicks |
+| `OnPrevClick` | EventCallback\<TourContext\> | Override all Back button clicks |
+| `OnCloseClick` | EventCallback\<TourContext\> | Override all Close button clicks |
 
 ### GuideFlowTour Methods
 
@@ -136,7 +147,13 @@ await tour.SkipAsync();            // Skip current step
 await tour.DestroyAsync();         // Destroy tour and clean up
 await tour.CompleteAsync();        // Complete the tour
 await tour.ResetAsync();           // Reset to initial state
-await tour.HighlightAsync("#el");  // Highlight a single element
+await tour.HighlightAsync("#el");  // Highlight element (no popover)
+await tour.HighlightAsync("#el", "Title", "Description");  // Highlight with popover
+await tour.ShowPopoverAsync("Title", "Description");       // Modal popover, no target
+var state = tour.GetState();       // Get current state as JSON
+var config = tour.GetConfig();     // Get TourOptions
+tour.SetConfig(newOptions);        // Replace TourOptions at runtime
+tour.SetSteps(steps);              // Replace steps at runtime
 ```
 
 ## Programmatic Tour (C# Fluent API)
@@ -291,6 +308,43 @@ step => step
 | `DisableActiveInteraction` | bool | false | Disable interaction with highlighted element globally |
 | `StageAutoUpdate` | bool | true | Auto-reposition stage overlay panels |
 | `LazyRender` | bool | false | Render step content lazily |
+
+## Key Types
+
+### TourContext
+Passed to step-level event callbacks.
+```csharp
+public class TourContext
+{
+    public TourOptions Config { get; set; }
+    public GuideFlowState State { get; set; }
+    public GuideFlowTour Driver { get; set; }  // The tour component instance
+}
+```
+
+### StepChangeEventArgs
+Passed to `OnStepChange`.
+```csharp
+public class StepChangeEventArgs : EventArgs
+{
+    public int PreviousStepIndex { get; set; }
+    public int ActiveIndex { get; set; }
+    public int TotalSteps { get; set; }
+    public string? StepId { get; set; }
+    public string? Selector { get; set; }
+}
+```
+
+### BeforeStepChangeEventArgs
+Passed to `OnBeforeStepChange`. Set `Cancel = true` to block the step change.
+```csharp
+public class BeforeStepChangeEventArgs : EventArgs
+{
+    public int ActiveIndex { get; set; }
+    public int TargetStepIndex { get; set; }
+    public bool Cancel { get; set; }
+}
+```
 
 ## Enums
 
@@ -471,28 +525,53 @@ Then apply: `PopoverClass = "my-custom-theme"`
 }
 ```
 
+### Custom Buttons (ButtonsContent)
+```razor
+<GuideFlowStep Element="#target" Title="Review" Order="0">
+    <ButtonsContent>
+        <button class="my-btn" @onclick="Approve">Approve</button>
+        <button class="my-btn" @onclick="Reject">Reject</button>
+    </ButtonsContent>
+    <ChildContent>
+        <p>Custom buttons replace the default navigation buttons.</p>
+    </ChildContent>
+</GuideFlowStep>
+```
+
+### Disable Specific Buttons
+```razor
+<GuideFlowTour TourOptions="options">
+    <GuideFlowStep Element="#target" Title="Step" Order="0"
+        DisableButtons="new[] { ButtonType.Previous }">
+        <p>Previous button is grayed out on this step.</p>
+    </GuideFlowStep>
+</GuideFlowTour>
+
+@code {
+    private TourOptions options = new()
+    {
+        // Or disable globally:
+        DisableButtons = new[] { ButtonType.Previous },
+    };
+}
+```
+
 ### Confirm on Exit
 ```razor
 <GuideFlowTour @ref="tour" TourOptions="options"
-    OnCloseClick="HandleClose"
-    OnCancel="HandleCancel">
+    OnDestroyStarted="OnDestroyStarted">
     @* steps *@
 </GuideFlowTour>
 
 @code {
     private GuideFlowTour? tour;
-    private TourOptions options = new() { AllowClose = false };
+    private TourOptions options = new();
 
-    private async Task HandleClose(TourContext ctx)
+    private async Task<bool> OnDestroyStarted()
     {
-        var confirmed = await JS.InvokeAsync<bool>("confirm", "Exit the tour?");
-        if (confirmed && tour != null)
-        {
-            await tour.DestroyAsync();
-        }
+        return await JS.InvokeAsync<bool>("confirm", "Are you sure you want to exit?");
+        // Return true = proceed with destroy, false = cancel
     }
-
-    private void HandleCancel() { /* cleanup */ }
 }
 ```
 

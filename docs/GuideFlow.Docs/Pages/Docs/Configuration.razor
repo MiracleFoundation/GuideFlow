@@ -78,9 +78,9 @@
 
     <ApiTable>
         <ApiRow Name="AllowKeyboardControl" Type="bool" Default="true" Desc="Arrow keys, Enter, Escape." />
-        <ApiRow Name="SmoothScroll" Type="bool" Default="true" Desc="Smooth scroll to target." />
+        <ApiRow Name="SmoothScroll" Type="bool" Default="false" Desc="Smooth scroll to target." />
         <ApiRow Name="ScrollBehavior" Type="ScrollBehavior" Default="Smooth" Desc="Extended: Smooth, Instant, None." />
-        <ApiRow Name="ScrollBlock" Type="string" Default="center" Desc="ScrollIntoView block position." />
+        <ApiRow Name="ScrollBlock" Type="ScrollBlock" Default="Center" Desc="ScrollIntoView block position: Center, Start, End, Nearest." />
     </ApiTable>
 
     <h2 id="scrolling-demo">Scrolling Demo <a class="docs-anchor" href="#scrolling-demo">#</a></h2>
