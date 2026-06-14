@@ -219,7 +219,7 @@
 | 19.1 | Target element not found | Click "Missing Target Tour" | Step 1 skipped, Step 2 shows | ✅ |
 | 19.2 | Window resize | Start "Resize Test Tour", resize browser | Popover follows target | ✅ |
 | 19.3 | Scroll during tour | Start any tour, scroll page | Popover follows target | ✅ |
-| 19.4 | Z-index conflicts | Page has high z-index elements | Tour stays on top (ZIndex=10000) | |
+| 19.4 | Z-index conflicts | Page has high z-index elements | Tour stays on top (ZIndex=10000) | ✅ |
 | 19.5 | Disabled step | Click "Disabled Step Tour" | Step 2 skipped, goes 1→3 | ✅ |
 | 19.6 | Single step tour | Click "Single Step Tour" | Only 1 step, no Previous, Done button | ✅ |
 | 19.7 | Many steps (10+) | Click "12 Steps Tour" | Performance OK, progress shows "1 of 12" | ✅ |
@@ -262,7 +262,7 @@
 | 16. Accessibility | 7 | 7 | 0 | 0 |
 | 17. Programmatic API | 9 | 8 | 1 | 0 |
 | 18. Async Tour | 1 | 1 | 0 | 0 |
-| 19. Edge Cases | 10 | 9 | 0 | 1 |
+| 19. Edge Cases | 10 | 10 | 0 | 0 |
 | 20. Persist State | 4 | 4 | 0 | 0 |
 | **Total** | **134** | **130** | **2** | **2** |
 
