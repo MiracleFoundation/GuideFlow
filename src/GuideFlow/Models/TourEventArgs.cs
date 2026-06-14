@@ -6,7 +6,7 @@ namespace GuideFlow.Models;
 public class TourEventArgs : EventArgs
 {
     public string? TourName { get; set; }
-    public int ActiveIndex { get; set; }
+    public int CurrentStepIndex { get; set; }
     public int TotalSteps { get; set; }
 }
 
@@ -27,7 +27,7 @@ public class StepChangeEventArgs : EventArgs
 /// </summary>
 public class BeforeStepChangeEventArgs : EventArgs
 {
-    public int ActiveIndex { get; set; }
+    public int CurrentStepIndex { get; set; }
     public int TargetStepIndex { get; set; }
 
     /// <summary>
