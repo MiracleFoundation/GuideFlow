@@ -11,6 +11,16 @@ code {
     font-size: 0.9em;
 }
 
+[data-theme="dark"] code {
+    color: #f472b6;
+}
+
+/* Override docs inline code in dark mode */
+[data-theme="dark"] .docs-content code,
+[data-theme="dark"] .docs-inline-code {
+    color: #f472b6;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

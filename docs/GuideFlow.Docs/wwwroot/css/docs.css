@@ -16,6 +16,7 @@
     --docs-fg-tertiary: #686868;
     --docs-border: #eaeaea;
     --docs-border-subtle: #f0f0f0;
+    --surface-2: #f8f9fa;
     --docs-accent: #0a7a70;
     --docs-accent-light: #d1faf4;
     --docs-accent-hover: #065f56;
@@ -58,12 +59,12 @@
     --docs-token-punctuation: #24292e;
     --docs-token-keyword: #cf3030;
     --docs-token-string: #032f62;
-    --docs-token-function: #6f42c1;
+    --docs-token-function: #5a32a3;
+    --docs-token-class-name: #5a32a3;
+    --docs-token-attr-name: #5a32a3;
     --docs-token-number: #005cc5;
     --docs-token-operator: #cf3030;
-    --docs-token-class-name: #6f42c1;
     --docs-token-tag: #22863a;
-    --docs-token-attr-name: #6f42c1;
     --docs-token-boolean: #005cc5;
     --docs-token-variable: #b85007;
 }
@@ -79,9 +80,10 @@
     --docs-fg-tertiary: #8a8a8a;
     --docs-border: #262626;
     --docs-border-subtle: #1f1f1f;
+    --surface-2: #1a1a1a;
     --docs-accent: #2dd4bf;
     --docs-accent-light: #042f2e;
-    --docs-accent-hover: #14b8a6;
+    --docs-accent-hover: #5eead4;
 
     /* Code - Catppuccin Mocha (dark mode = dark code blocks) */
     --docs-code-bg: #1e1e2e;
@@ -360,6 +362,11 @@ body {
     background: var(--docs-accent);
     color: white;
     border-radius: var(--docs-radius-sm);
+}
+
+[data-theme="dark"] .docs-sidebar__logo-icon {
+    background: #0f766e;
+}
     font-size: 0.75rem;
     font-weight: 700;
     transition: transform 0.2s var(--docs-ease);
@@ -617,7 +624,7 @@ body {
 .docs-content ul, .docs-content ol {
     font-size: 0.95rem;
     line-height: 1.75;
-    color: #374151;
+    color: var(--docs-fg-secondary);
     margin: 0 0 1rem;
     padding-left: 1.5rem;
     max-width: 65ch;
@@ -658,6 +665,12 @@ body {
     padding: 0.15em 0.4em;
     border-radius: 4px;
     font-variant-ligatures: none;
+}
+
+[data-theme="dark"] .docs-inline-code,
+[data-theme="dark"] .docs-content code {
+    color: #f472b6;
+    background: rgba(244, 114, 182, 0.1);
 }
 
 /* Anchor links — hidden by default, shown on heading hover */
@@ -859,6 +872,10 @@ body {
 
 .docs-demo__run:hover {
     background: var(--docs-accent-hover);
+}
+
+[data-theme="dark"] .docs-demo__run {
+    background: #0f766e;
 }
 
 .docs-demo__run:active {
@@ -1120,6 +1137,11 @@ body {
     background: var(--docs-accent);
     color: white;
     border-radius: 14px;
+}
+
+[data-theme="dark"] .lp-hero__icon {
+    background: #0f766e;
+}
     font-size: 1.4rem;
     flex-shrink: 0;
 }
@@ -1177,6 +1199,14 @@ body {
     background: var(--docs-accent-hover);
 }
 
+[data-theme="dark"] .lp-btn--primary {
+    background: #0f766e;
+}
+
+[data-theme="dark"] .lp-btn--primary:hover {
+    background: #14b8a6;
+}
+
 .lp-btn--outline {
     background: transparent;
     color: var(--docs-accent);
@@ -1185,6 +1215,11 @@ body {
 
 .lp-btn--outline:hover {
     background: var(--docs-accent-light);
+}
+
+[data-theme="dark"] .lp-btn--outline {
+    color: var(--docs-accent-hover);
+    border-color: var(--docs-accent-hover);
 }
 
 /* Sections */
@@ -1361,6 +1396,12 @@ body {
     color: #1e40af;
 }
 
+[data-theme="dark"] .docs-callout--info {
+    background: #1a2332;
+    border-color: #2d3a50;
+    color: #93c5fd;
+}
+
 .docs-callout code {
     background: rgba(0, 0, 0, 0.06);
     padding: 0.1em 0.35em;
@@ -1441,6 +1482,13 @@ body {
     font-size: 0.85em;
 }
 
+/* Demo elements with hardcoded light backgrounds — always use dark text */
+[id^="ms-"],
+#a11y-el1,
+#a11y-el2 {
+    color: #1a1a1a !important;
+}
+
 /* ============================================
    Popover Position Demo
    ============================================ */
@@ -1467,6 +1515,10 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
     color: #065f56;
+}
+
+[data-theme="dark"] .popover-demo__target {
+    color: #2dd4bf;
 }
 
 .popover-demo__buttons {
@@ -1506,7 +1558,7 @@ body {
     font-size: 0.8rem;
     line-height: 1.7;
     color: var(--docs-code-text);
-    background: none;
+    background-color: var(--docs-code-bg);
     margin: 0;
     border-radius: 0;
     text-shadow: none;
@@ -1585,7 +1637,19 @@ body {
     font-style: italic;
 }
 
-/* Remove Prism's default background on pre */
-.docs-code-block pre[class*="language-"] {
-    background: transparent !important;
+/* ============================================
+   Dark mode code block background - FINAL OVERRIDE
+   Ensures code blocks switch to dark background
+   when data-theme="dark" is set.
+   ============================================ */
+[data-theme="dark"] .docs-code-block,
+[data-theme="dark"] .docs-code-block .docs-code-block__pre,
+[data-theme="dark"] .docs-code-block pre,
+[data-theme="dark"] .docs-code-block pre[class*="language-"],
+[data-theme="dark"] .docs-code-block code,
+[data-theme="dark"] .docs-code-block code[class*="language-"] {
+    background-color: #1e1e2e !important;
+    background: #1e1e2e !important;
 }
+
+/* Prism background handled in main rule above */
