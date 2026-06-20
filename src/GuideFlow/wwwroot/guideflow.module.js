@@ -799,8 +799,20 @@ export function setupStep(stepElement, dotNetRef, trapFocus) {
         _preTourFocusElement = document.activeElement;
     }
     const el = resolveElement(stepElement);
-    if (el && typeof el.focus === 'function') {
-        el.focus();
+    if (el) {
+        // Double rAF: first waits for layout, second waits for paint
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const firstFocusable = el.querySelector(
+                    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                );
+                if (firstFocusable) {
+                    firstFocusable.focus();
+                } else if (typeof el.focus === 'function') {
+                    el.focus();
+                }
+            });
+        });
     }
 
     _activeKeyHandler = (e) => {
@@ -811,17 +823,19 @@ export function setupStep(stepElement, dotNetRef, trapFocus) {
                 break;
             case 'ArrowRight':
             case 'ArrowDown':
-            case 'Enter':
-                if (document.activeElement?.tagName !== 'BUTTON') {
-                    e.preventDefault();
-                    dotNetRef.invokeMethodAsync('OnKeyboardNext');
-                }
+                e.preventDefault();
+                dotNetRef.invokeMethodAsync('OnKeyboardNext');
                 break;
             case 'ArrowLeft':
             case 'ArrowUp':
+                e.preventDefault();
+                dotNetRef.invokeMethodAsync('OnKeyboardBack');
+                break;
+            case 'Enter':
+                // Let Enter work natively on buttons, navigate only if not on button
                 if (document.activeElement?.tagName !== 'BUTTON') {
                     e.preventDefault();
-                    dotNetRef.invokeMethodAsync('OnKeyboardBack');
+                    dotNetRef.invokeMethodAsync('OnKeyboardNext');
                 }
                 break;
         }

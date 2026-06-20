@@ -82,19 +82,32 @@
 }
 
 .gf-step__close {
-    all: unset;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    appearance: none;
     box-sizing: border-box;
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
     color: var(--gf-close-color, #767676);
-    padding: 0;
+    padding: 4px;
     margin: 0;
     transition: color 0.15s;
+    outline: none;
+    z-index: 1;
 }
 
 .gf-step__close:hover {
     color: var(--gf-text-color, #2d2d2d);
+}
+
+.gf-step__close:focus-visible {
+    outline: 2px solid var(--gf-btn-primary-bg, #4361ee);
+    outline-offset: 2px;
+    border-radius: 2px;
 }
 
 .gf-step__body {
