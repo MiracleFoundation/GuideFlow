@@ -167,3 +167,25 @@ body.gf-animate .gf-step {
     --gf-visited-color: #00ff00;
     --gf-highlight-shadow: 0 0 0 4px #ffff00;
 }
+
+/* Screen-reader only — visually hidden but available to assistive tech */
+.gf-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    body.gf-animate .gf-overlay,
+    body.gf-animate .gf-step {
+        animation: none !important;
+        transition: none !important;
+    }
+}

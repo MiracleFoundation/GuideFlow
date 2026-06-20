@@ -11,6 +11,7 @@
          aria-label="@ResolvedAriaLabel"
          aria-labelledby="@($"gf-step-title-{_stepId}")"
          aria-describedby="@($"gf-step-content-{_stepId}")"
+         aria-modal="@(ResolvedMode == StepMode.Modal ? "true" : null)"
          data-gf-step-id="@_stepId"
          tabindex="-1"
          style="@StepStyle"
@@ -91,6 +92,11 @@
                     }
                 </div>
             </div>
+        </div>
+
+        @* Screen reader announcement: live region announces step content when it changes *@
+        <div class="gf-sr-only" aria-live="assertive" aria-atomic="true">
+            @Title. @ResolvedProgressText.
         </div>
     </div>
 }

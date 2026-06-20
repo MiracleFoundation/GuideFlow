@@ -6,7 +6,7 @@
 
 <div class="docs-content">
     <h1>Accessibility</h1>
-    <p class="docs-lead">Every tour step is fully accessible out of the box. Keyboard users can navigate with arrow keys and Tab, screen readers announce step content via ARIA live regions, and focus is trapped inside the popover to prevent interaction with background elements.</p>
+    <p class="docs-lead">GuideFlow is designed with accessibility in mind. Keyboard users can navigate with arrow keys and Tab, screen readers announce step content via ARIA live regions, and focus is trapped inside the popover to prevent interaction with background elements.</p>
 
     <h2 id="keyboard-nav">
         Keyboard Navigation
@@ -67,8 +67,10 @@ private TourOptions options = new()
     <ul>
         <li><code>role="dialog"</code> on the popover</li>
         <li><code>aria-modal="true"</code> for modal steps</li>
+        <li><code>aria-label</code> and <code>aria-labelledby</code> for dialog identification</li>
         <li><code>aria-describedby</code> linking to step content</li>
-        <li><code>aria-live</code> region for screen reader announcements</li>
+        <li><code>aria-live="assertive"</code> region that announces each step to screen readers</li>
+        <li><code>prefers-reduced-motion</code> automatically disables animations when the user prefers reduced motion</li>
     </ul>
 
     <h2 id="focus-management">
@@ -76,7 +78,7 @@ private TourOptions options = new()
         <a class="docs-anchor" href="#focus-management">#</a>
     </h2>
 
-    <p>When a tour starts, focus moves to the popover. When it ends, focus returns to the previously focused element. This ensures screen reader users don't lose context.</p>
+    <p>When a tour starts, GuideFlow saves a reference to the currently focused element and moves focus to the popover. When the tour ends (via Escape, close button, or completion), focus returns to that saved element. This ensures keyboard and screen reader users don't lose their position in the page.</p>
 
     <h2 id="high-contrast">
         High Contrast Theme
@@ -99,10 +101,10 @@ private TourOptions options = new()
     </h2>
 
     <ul>
-        <li>Always keep <code>KeyboardNavigation = true</code> and <code>TrapFocus = true</code></li>
-        <li>Use <code>ExitOnEsc = true</code> so users can exit at any time</li>
+        <li>Always keep <code>AllowKeyboardControl = true</code> and <code>TrapFocus = true</code></li>
+        <li>Use <code>AllowClose = true</code> so users can exit at any time with Escape</li>
         <li>Write descriptive <code>Title</code> and content for screen readers</li>
-        <li>Test with a screen reader (NVDA, VoiceOver, JAWS)</li>
+        <li>Test with a screen reader (NVDA + Firefox, Narrator + Edge, VoiceOver + Safari)</li>
         <li>Use the high-contrast theme for users with visual impairments</li>
         <li>Keep step content concise - long blocks are hard to follow via audio</li>
     </ul>
