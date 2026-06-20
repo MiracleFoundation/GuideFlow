@@ -11,7 +11,7 @@
             <span class="docs-sidebar__version">v1.0</span>
         </div>
 
-        <nav class="docs-sidebar__nav">
+        <nav class="docs-sidebar__nav" aria-label="Documentation">
             @* === Introduction === *@
             <div class="docs-sidebar__group">
                 <div class="docs-sidebar__group-title">Introduction</div>
@@ -60,7 +60,7 @@
 
         <div class="docs-sidebar__footer">
             <a href="https://github.com/MiracleFoundation/GuideFlow" target="_blank" class="docs-sidebar__footer-link">GitHub</a>
-            <span class="docs-sidebar__footer-sep">&bull;</span>
+            <span class="docs-sidebar__footer-sep" aria-hidden="true">&bull;</span>
             <span>MIT License</span>
             <button class="docs-theme-toggle docs-theme-toggle--sidebar" onclick="toggleDocsTheme()" aria-label="Toggle theme" title="Toggle dark/light mode">
                 <span class="docs-theme-toggle__light">
@@ -73,7 +73,7 @@
         </div>
     </aside>
 
-    <button class="docs-sidebar-toggle" @onclick="ToggleSidebar">
+    <button class="docs-sidebar-toggle" @onclick="ToggleSidebar" aria-label="Toggle navigation">
         <span></span><span></span><span></span>
     </button>
 
