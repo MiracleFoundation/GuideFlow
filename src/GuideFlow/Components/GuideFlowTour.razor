@@ -337,6 +337,9 @@
         StateHasChanged();
         await ClearPersistedStateAsync();
 
+        // Return focus to the element that was focused before the tour started
+        await RestoreFocusAsync();
+
         await OnCancel.InvokeAsync();
         if (OnDestroyed.HasDelegate) await OnDestroyed.InvokeAsync(BuildContext());
     }
@@ -348,6 +351,10 @@
         await SetBodyClassesAsync(false);
         StateHasChanged();
         await ClearPersistedStateAsync();
+
+        // Return focus to the element that was focused before the tour started
+        await RestoreFocusAsync();
+
         await OnComplete.InvokeAsync();
     }
 
@@ -706,6 +713,14 @@
         }
         catch (JSException) { }
         _activeSelector = null;
+    }
+
+    /// <summary>Restore focus to the element that had focus before the tour started.</summary>
+    private async Task RestoreFocusAsync()
+    {
+        if (!_jsAvailable || _jsModule == null) return;
+        try { await SafeInvokeVoidAsync("restoreFocus"); }
+        catch (JSException) { }
     }
 
     /// <summary>Add/remove body classes when tour starts/ends.</summary>

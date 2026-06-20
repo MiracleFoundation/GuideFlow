@@ -12,20 +12,21 @@
     --docs-bg: #fafafa;
     --docs-surface: #ffffff;
     --docs-fg: #0a0a0a;
-    --docs-fg-secondary: #666666;
-    --docs-fg-tertiary: #999999;
+    --docs-fg-secondary: #545454;
+    --docs-fg-tertiary: #686868;
     --docs-border: #eaeaea;
     --docs-border-subtle: #f0f0f0;
-    --docs-accent: #0d9488;
-    --docs-accent-light: #ccfbf1;
-    --docs-accent-hover: #0f766e;
+    --surface-2: #f8f9fa;
+    --docs-accent: #0a7a70;
+    --docs-accent-light: #d1faf4;
+    --docs-accent-hover: #065f56;
 
     /* Code - GitHub Light (light mode = light code blocks) */
     --docs-code-bg: #f6f8fa;
     --docs-code-text: #24292e;
     --docs-code-header: #eaeef2;
     --docs-code-border: #d0d7de;
-    --docs-code-comment: #6a737d;
+    --docs-code-comment: #4b5563;
     --docs-code-line-highlight: rgba(0, 0, 0, 0.04);
 
     /* Fonts */
@@ -54,18 +55,18 @@
     --docs-bg-secondary: var(--docs-bg);
 
     /* Code token colors - GitHub Light (light mode) */
-    --docs-token-comment: #6a737d;
+    --docs-token-comment: #4b5563;
     --docs-token-punctuation: #24292e;
-    --docs-token-keyword: #d73a49;
+    --docs-token-keyword: #cf3030;
     --docs-token-string: #032f62;
-    --docs-token-function: #6f42c1;
+    --docs-token-function: #5a32a3;
+    --docs-token-class-name: #5a32a3;
+    --docs-token-attr-name: #5a32a3;
     --docs-token-number: #005cc5;
-    --docs-token-operator: #d73a49;
-    --docs-token-class-name: #6f42c1;
+    --docs-token-operator: #cf3030;
     --docs-token-tag: #22863a;
-    --docs-token-attr-name: #6f42c1;
     --docs-token-boolean: #005cc5;
-    --docs-token-variable: #e36209;
+    --docs-token-variable: #b85007;
 }
 
 /* ============================================
@@ -75,24 +76,25 @@
     --docs-bg: #0a0a0a;
     --docs-surface: #141414;
     --docs-fg: #e5e5e5;
-    --docs-fg-secondary: #a0a0a0;
-    --docs-fg-tertiary: #666666;
+    --docs-fg-secondary: #b0b0b0;
+    --docs-fg-tertiary: #8a8a8a;
     --docs-border: #262626;
     --docs-border-subtle: #1f1f1f;
+    --surface-2: #1a1a1a;
     --docs-accent: #2dd4bf;
     --docs-accent-light: #042f2e;
-    --docs-accent-hover: #14b8a6;
+    --docs-accent-hover: #5eead4;
 
     /* Code - Catppuccin Mocha (dark mode = dark code blocks) */
     --docs-code-bg: #1e1e2e;
     --docs-code-text: #cdd6f4;
     --docs-code-header: #181825;
     --docs-code-border: #313244;
-    --docs-code-comment: #6c7086;
+    --docs-code-comment: #888da6;
     --docs-code-line-highlight: rgba(108, 112, 134, 0.08);
 
     /* Code token colors - Catppuccin Mocha */
-    --docs-token-comment: #6c7086;
+    --docs-token-comment: #888da6;
     --docs-token-punctuation: #bac2de;
     --docs-token-keyword: #cba6f7;
     --docs-token-string: #a6e3a1;
@@ -218,15 +220,15 @@
 
 /* Dark mode - sidebar / header / footer glass */
 [data-theme="dark"] .docs-sidebar {
-    background: rgba(10, 10, 10, 0.8);
+    background: #0a0a0a;
 }
 
 [data-theme="dark"] .docs-sidebar__header {
-    background: rgba(10, 10, 10, 0.9);
+    background: #0a0a0a;
 }
 
 [data-theme="dark"] .docs-sidebar__footer {
-    background: rgba(10, 10, 10, 0.9);
+    background: #0a0a0a;
 }
 
 [data-theme="dark"] .docs-sidebar-overlay {
@@ -309,9 +311,7 @@ body {
     z-index: 100;
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    background: #ffffff;
     border-right: 1px solid var(--docs-border);
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -338,9 +338,7 @@ body {
     justify-content: space-between;
     position: sticky;
     top: 0;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: #ffffff;
     z-index: 1;
 }
 
@@ -364,6 +362,11 @@ body {
     background: var(--docs-accent);
     color: white;
     border-radius: var(--docs-radius-sm);
+}
+
+[data-theme="dark"] .docs-sidebar__logo-icon {
+    background: #0f766e;
+}
     font-size: 0.75rem;
     font-weight: 700;
     transition: transform 0.2s var(--docs-ease);
@@ -374,7 +377,7 @@ body {
 }
 
 .docs-sidebar__version {
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     color: var(--docs-fg-tertiary);
     background: var(--docs-bg);
     padding: 2px 8px;
@@ -396,7 +399,7 @@ body {
 
 .docs-sidebar__group-title {
     padding: 0.75rem 1.25rem 0.35rem;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -430,16 +433,14 @@ body {
 .docs-sidebar__footer {
     padding: 0.85rem 1.25rem;
     border-top: 1px solid var(--docs-border);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     color: var(--docs-fg-tertiary);
     display: flex;
     align-items: center;
     gap: 6px;
     position: sticky;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: #ffffff;
 }
 
 .docs-sidebar__footer-link {
@@ -453,7 +454,7 @@ body {
 }
 
 .docs-sidebar__footer-sep {
-    opacity: 0.3;
+    color: var(--docs-fg-tertiary);
 }
 
 /* ---- Sidebar Toggle (Mobile) ---- */
@@ -524,7 +525,7 @@ body {
 }
 
 .docs-toc__title {
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -563,7 +564,7 @@ body {
 
 .docs-toc__link--h3 {
     padding-left: 1.5rem;
-    font-size: 0.74rem;
+    font-size: 0.78rem;
 }
 
 /* ============================================
@@ -613,7 +614,7 @@ body {
 }
 
 .docs-content p {
-    font-size: 0.935rem;
+    font-size: 0.95rem;
     line-height: 1.75;
     color: var(--docs-fg-secondary);
     margin: 0 0 1rem;
@@ -621,9 +622,9 @@ body {
 }
 
 .docs-content ul, .docs-content ol {
-    font-size: 0.935rem;
+    font-size: 0.95rem;
     line-height: 1.75;
-    color: #374151;
+    color: var(--docs-fg-secondary);
     margin: 0 0 1rem;
     padding-left: 1.5rem;
     max-width: 65ch;
@@ -658,7 +659,7 @@ body {
 .docs-inline-code,
 .docs-content code {
     font-family: var(--docs-font-mono);
-    font-size: 0.82em;
+    font-size: 0.88em;
     background: rgba(13, 148, 136, 0.06);
     color: var(--docs-accent-hover);
     padding: 0.15em 0.4em;
@@ -666,18 +667,24 @@ body {
     font-variant-ligatures: none;
 }
 
-/* Anchor links */
+[data-theme="dark"] .docs-inline-code,
+[data-theme="dark"] .docs-content code {
+    color: #f472b6;
+    background: rgba(244, 114, 182, 0.1);
+}
+
+/* Anchor links — hidden by default, shown on heading hover */
 .docs-anchor {
     color: var(--docs-accent);
     text-decoration: none;
-    opacity: 0;
+    display: none;
     margin-left: 0.3em;
     font-weight: 400;
-    transition: opacity 0.15s var(--docs-ease);
 }
 
 .docs-content h2:hover .docs-anchor,
 .docs-content h3:hover .docs-anchor {
+    display: inline;
     opacity: 0.6;
 }
 
@@ -708,7 +715,7 @@ body {
 }
 
 .docs-code-block__lang {
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -716,7 +723,7 @@ body {
 }
 
 .docs-code-block__copy {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 500;
     color: var(--docs-code-comment);
     background: transparent;
@@ -789,7 +796,7 @@ body {
     background: var(--docs-bg);
     border-bottom: 1px solid var(--docs-border);
     font-weight: 600;
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--docs-fg-secondary);
@@ -802,6 +809,7 @@ body {
     vertical-align: top;
     line-height: 1.55;
     color: var(--docs-fg-secondary);
+    font-size: 0.88rem;
 }
 
 .docs-api-table tr:last-child td {
@@ -841,7 +849,7 @@ body {
 }
 
 .docs-demo__label {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -864,6 +872,10 @@ body {
 
 .docs-demo__run:hover {
     background: var(--docs-accent-hover);
+}
+
+[data-theme="dark"] .docs-demo__run {
+    background: #0f766e;
 }
 
 .docs-demo__run:active {
@@ -926,7 +938,7 @@ body {
 
 .docs-badge {
     display: inline-block;
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: 600;
     padding: 2px 7px;
     border-radius: 999px;
@@ -945,7 +957,7 @@ body {
 
 .docs-badge--optional {
     background: #f0fdf4;
-    color: #16a34a;
+    color: #15803d;
     border: 1px solid #bbf7d0;
 }
 
@@ -1005,7 +1017,7 @@ body {
     .docs-sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s var(--docs-ease);
-        background: rgba(255, 255, 255, 0.95);
+        background: #ffffff;
     }
 
     .docs-sidebar.open {
@@ -1125,6 +1137,11 @@ body {
     background: var(--docs-accent);
     color: white;
     border-radius: 14px;
+}
+
+[data-theme="dark"] .lp-hero__icon {
+    background: #0f766e;
+}
     font-size: 1.4rem;
     flex-shrink: 0;
 }
@@ -1182,6 +1199,14 @@ body {
     background: var(--docs-accent-hover);
 }
 
+[data-theme="dark"] .lp-btn--primary {
+    background: #0f766e;
+}
+
+[data-theme="dark"] .lp-btn--primary:hover {
+    background: #14b8a6;
+}
+
 .lp-btn--outline {
     background: transparent;
     color: var(--docs-accent);
@@ -1190,6 +1215,11 @@ body {
 
 .lp-btn--outline:hover {
     background: var(--docs-accent-light);
+}
+
+[data-theme="dark"] .lp-btn--outline {
+    color: var(--docs-accent-hover);
+    border-color: var(--docs-accent-hover);
 }
 
 /* Sections */
@@ -1366,6 +1396,12 @@ body {
     color: #1e40af;
 }
 
+[data-theme="dark"] .docs-callout--info {
+    background: #1a2332;
+    border-color: #2d3a50;
+    color: #93c5fd;
+}
+
 .docs-callout code {
     background: rgba(0, 0, 0, 0.06);
     padding: 0.1em 0.35em;
@@ -1422,8 +1458,8 @@ body {
     background: var(--docs-bg);
     border-bottom: 1px solid var(--docs-border);
     font-weight: 600;
-    font-size: 0.82rem;
-    color: var(--docs-fg-secondary);
+    font-size: 0.85rem;
+    color: var(--docs-fg);
 }
 
 .docs-table td {
@@ -1432,6 +1468,7 @@ body {
     vertical-align: top;
     line-height: 1.55;
     color: var(--docs-fg-secondary);
+    font-size: 0.9rem;
 }
 
 .docs-table tr:last-child td {
@@ -1443,6 +1480,13 @@ body {
     padding: 0.15em 0.35em;
     border-radius: 3px;
     font-size: 0.85em;
+}
+
+/* Demo elements with hardcoded light backgrounds — always use dark text */
+[id^="ms-"],
+#a11y-el1,
+#a11y-el2 {
+    color: #1a1a1a !important;
 }
 
 /* ============================================
@@ -1470,7 +1514,11 @@ body {
     border-radius: var(--docs-radius-md);
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--docs-accent-hover);
+    color: #065f56;
+}
+
+[data-theme="dark"] .popover-demo__target {
+    color: #2dd4bf;
 }
 
 .popover-demo__buttons {
@@ -1479,8 +1527,8 @@ body {
     gap: 1rem;
 }
 
-.popover-demo__group h4 {
-    font-size: 0.75rem;
+.popover-demo__group h3 {
+    font-size: 0.82rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -1510,7 +1558,7 @@ body {
     font-size: 0.8rem;
     line-height: 1.7;
     color: var(--docs-code-text);
-    background: none;
+    background-color: var(--docs-code-bg);
     margin: 0;
     border-radius: 0;
     text-shadow: none;
@@ -1589,7 +1637,19 @@ body {
     font-style: italic;
 }
 
-/* Remove Prism's default background on pre */
-.docs-code-block pre[class*="language-"] {
-    background: transparent !important;
+/* ============================================
+   Dark mode code block background - FINAL OVERRIDE
+   Ensures code blocks switch to dark background
+   when data-theme="dark" is set.
+   ============================================ */
+[data-theme="dark"] .docs-code-block,
+[data-theme="dark"] .docs-code-block .docs-code-block__pre,
+[data-theme="dark"] .docs-code-block pre,
+[data-theme="dark"] .docs-code-block pre[class*="language-"],
+[data-theme="dark"] .docs-code-block code,
+[data-theme="dark"] .docs-code-block code[class*="language-"] {
+    background-color: #1e1e2e !important;
+    background: #1e1e2e !important;
 }
+
+/* Prism background handled in main rule above */

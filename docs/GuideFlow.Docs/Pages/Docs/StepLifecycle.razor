@@ -37,14 +37,14 @@
     <div id="lifecycle-log" style="background: var(--docs-code-bg, #1e1e2e); color: var(--docs-code-text, #cdd6f4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 13px; max-height: 250px; overflow-y: auto; margin-top: 0.5rem;">
         @if (_logs.Count == 0)
         {
-            <div style="opacity: 0.5;">Events will appear here when the tour runs...</div>
+            <div style="color: var(--docs-code-comment);">Events will appear here when the tour runs...</div>
         }
         @foreach (var log in _logs)
         {
             <div style="padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">@((MarkupString)log)</div>
         }
     </div>
-    <button class="docs-btn" style="margin-top: 0.5rem; font-size: 12px;" @onclick="ClearLogs">Clear Log</button>
+    <button class="docs-btn" style="margin-top: 0.5rem;" @onclick="ClearLogs">Clear Log</button>
 
     <h3>Code</h3>
     <div id="lifecycle-code">

@@ -10,7 +10,7 @@
     border-radius: var(--gf-popover-radius, 5px);
     box-shadow: var(--gf-popover-shadow, 0 1px 10px rgba(0, 0, 0, 0.4));
     font-family: var(--gf-font-family, "Helvetica Neue", Inter, ui-sans-serif, "Apple Color Emoji", Helvetica, Arial, sans-serif);
-    color: #2d2d2d;
+    color: #2d2d2d !important;
     padding: 15px;
     z-index: 1000000000;
     outline: none;
@@ -77,7 +77,7 @@
     margin: 0;
     font-size: var(--gf-title-size, 19px);
     font-weight: 700;
-    color: var(--gf-title-color, #2d2d2d);
+    color: var(--gf-title-color, #2d2d2d) !important;
     line-height: 1;
 }
 
@@ -87,27 +87,27 @@
     font-size: 18px;
     line-height: 1;
     cursor: pointer;
-    color: var(--gf-text-color, #2d2d2d);
+    color: var(--gf-close-color, #767676);
     padding: 0;
     margin: 0;
-    opacity: 0.5;
-    transition: opacity 0.15s;
+    transition: color 0.15s;
 }
 
 .gf-step__close:hover {
-    opacity: 1;
+    color: var(--gf-text-color, #2d2d2d);
 }
 
 .gf-step__body {
     padding: 0;
     margin: 0;
-    color: var(--gf-text-color, #2d2d2d);
+    color: var(--gf-text-color, #2d2d2d) !important;
     font-size: var(--gf-text-size, 14px);
     line-height: 1.5;
 }
 
 .gf-step__body p {
     margin: 0;
+    color: var(--gf-text-color, #2d2d2d) !important;
 }
 
 .gf-step__footer {
@@ -120,8 +120,7 @@
 
 .gf-step__progress {
     font-size: 13px;
-    color: var(--gf-text-color, #2d2d2d);
-    opacity: 0.5;
+    color: var(--gf-progress-text-color, #686868);
     white-space: nowrap;
     margin-right: auto;
 }
@@ -170,13 +169,12 @@
 
 .gf-btn--skip {
     background: none;
-    color: var(--gf-text-color, #2d2d2d);
-    opacity: 0.5;
+    color: var(--gf-skip-color, #767676);
     text-decoration: none;
     padding: 6px 8px;
 }
 
-.gf-btn--skip:hover { opacity: 1; }
+.gf-btn--skip:hover { color: var(--gf-text-color, #2d2d2d); }
 
 /* Progress Bar */
 .gf-step__progress-bar {

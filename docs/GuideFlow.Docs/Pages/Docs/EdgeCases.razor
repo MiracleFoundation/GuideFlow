@@ -71,7 +71,7 @@
         <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
             <button class="docs-btn" @onclick="StartInteractionTour">Block Interaction Tour</button>
         </div>
-        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">During the tour, clicking the button above should NOT increase the counter.</p>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--docs-fg-secondary);">During the tour, clicking the button above should NOT increase the counter.</p>
     </div>
 
     <h2 id="resize">Window Resize <a class="docs-anchor" href="#resize">#</a></h2>
@@ -83,7 +83,7 @@
         <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
             <button class="docs-btn" @onclick="StartResizeTour">Resize Test Tour</button>
         </div>
-        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">Start the tour, then resize the browser window. The popover should follow the target.</p>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--docs-fg-secondary);">Start the tour, then resize the browser window. The popover should follow the target.</p>
     </div>
 
     <h2 id="highlight-class">Highlight Class <a class="docs-anchor" href="#highlight-class">#</a></h2>
@@ -95,13 +95,13 @@
         <div class="popover-demo__buttons" style="margin-top:1.5rem; grid-template-columns: repeat(1, 1fr);">
             <button class="docs-btn" @onclick="StartHighlightClassTour">Highlight Class Tour</button>
         </div>
-        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">Inspect the target during the tour - it should have class <code>my-custom-highlight</code>.</p>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--docs-fg-secondary);">Inspect the target during the tour - it should have class <code>my-custom-highlight</code>.</p>
     </div>
 
     <h2 id="z-index">Z-Index Conflicts <a class="docs-anchor" href="#z-index">#</a></h2>
     <p>When the page has elements with high <code>z-index</code>, the tour should still appear on top. This demo puts a target element inside a <code>z-index: 9999</code> container.</p>
-    <div style="position:relative; z-index:9999; background:#fef2f2; border:2px solid #ef4444; border-radius:8px; padding:1.5rem; margin:1rem 0;">
-        <p style="margin:0 0 0.5rem; font-weight:600; color:#ef4444;">High z-index container (z-index: 9999)</p>
+    <div style="position:relative; z-index:9999; background:#fef2f2; border:2px solid #b91c1c; border-radius:8px; padding:1.5rem; margin:1rem 0;">
+        <p style="margin:0 0 0.5rem; font-weight:600; color:#b91c1c;">High z-index container (z-index: 9999)</p>
         <div class="popover-demo__target" id="zindex-target" style="margin:0;">
             <span>Target inside z-index:9999</span>
         </div>
@@ -110,7 +110,7 @@
         <div class="popover-demo__buttons" style="grid-template-columns: repeat(1, 1fr);">
             <button class="docs-btn" @onclick="StartZIndexTour">Z-Index Conflict Tour</button>
         </div>
-        <p style="margin-top:0.5rem;font-size:0.82rem;color:#666;">The tour overlay (z-index: 10000) should cover the red container, and the popover should appear on top of everything.</p>
+        <p style="margin-top:0.5rem;font-size:0.82rem;color:var(--docs-fg-secondary);">The tour overlay (z-index: 10000) should cover the red container, and the popover should appear on top of everything.</p>
     </div>
 
     <h2 id="lazy-render">Lazy Render <a class="docs-anchor" href="#lazy-render">#</a></h2>

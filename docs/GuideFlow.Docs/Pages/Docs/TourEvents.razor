@@ -58,7 +58,7 @@
     <div id="events-log" style="background: var(--docs-code-bg, #1e1e2e); color: var(--docs-code-text, #cdd6f4); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 13px; max-height: 300px; overflow-y: auto; margin-top: 0.5rem;">
         @if (_logs.Count == 0)
         {
-            <div style="opacity: 0.5;">Events will appear here when the tour runs...</div>
+            <div style="color: var(--docs-code-comment);">Events will appear here when the tour runs...</div>
         }
         @foreach (var log in _logs)
         {

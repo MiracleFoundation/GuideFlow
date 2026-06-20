@@ -1,5 +1,19 @@
 /* GuideFlow Global Styles */
 
+/* Step text colors — prevent host page dark mode from overriding */
+.gf-step,
+.gf-step p,
+.gf-step li,
+.gf-step span,
+.gf-step__body,
+.gf-step__body p {
+    color: var(--gf-text-color, #2d2d2d) !important;
+}
+
+.gf-step__title {
+    color: var(--gf-title-color, #2d2d2d) !important;
+}
+
 /* Body classes — tour active state */
 body.gf-active {}
 
@@ -138,7 +152,10 @@ body.gf-animate .gf-step {
     --gf-popover-radius: 5px;
     --gf-title-color: #e2e8f0;
     --gf-text-color: #a0aec0;
-    --gf-btn-primary-bg: #6366f1;
+    --gf-close-color: #8a9ab5;
+    --gf-skip-color: #8a9ab5;
+    --gf-progress-text-color: #8a9ab5;
+    --gf-btn-primary-bg: #5558e6;
     --gf-btn-primary-color: #ffffff;
     --gf-btn-secondary-bg: #2d3748;
     --gf-btn-secondary-color: #e2e8f0;
@@ -158,6 +175,9 @@ body.gf-animate .gf-step {
     --gf-popover-radius: 4px;
     --gf-title-color: #ffffff;
     --gf-text-color: #ffffff;
+    --gf-close-color: #999999;
+    --gf-skip-color: #999999;
+    --gf-progress-text-color: #999999;
     --gf-btn-primary-bg: #ffff00;
     --gf-btn-primary-color: #000000;
     --gf-btn-secondary-bg: #333333;
@@ -166,4 +186,26 @@ body.gf-animate .gf-step {
     --gf-progress-color: #ffff00;
     --gf-visited-color: #00ff00;
     --gf-highlight-shadow: 0 0 0 4px #ffff00;
+}
+
+/* Screen-reader only — visually hidden but available to assistive tech */
+.gf-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    body.gf-animate .gf-overlay,
+    body.gf-animate .gf-step {
+        animation: none !important;
+        transition: none !important;
+    }
 }

@@ -779,6 +779,7 @@ export function removeHighlightClass(selector, className) {
 // ============================================================
 
 let _activeKeyHandler = null;
+let _preTourFocusElement = null;
 
 /**
  * Resolve a Blazor ElementReference to an actual DOM element.
@@ -793,6 +794,10 @@ function resolveElement(el) {
 
 export function setupStep(stepElement, dotNetRef, trapFocus) {
     cleanupStep();
+    // Save the element that had focus before the tour started (first step only)
+    if (!_preTourFocusElement) {
+        _preTourFocusElement = document.activeElement;
+    }
     const el = resolveElement(stepElement);
     if (el && typeof el.focus === 'function') {
         el.focus();
@@ -854,6 +859,16 @@ function cleanupStep() {
 // ============================================================
 // Destroy / Cleanup
 // ============================================================
+
+/**
+ * Restore focus to the element that was focused before the tour started.
+ */
+export function restoreFocus() {
+    if (_preTourFocusElement && typeof _preTourFocusElement.focus === 'function') {
+        try { _preTourFocusElement.focus(); } catch { }
+    }
+    _preTourFocusElement = null;
+}
 
 export function destroy() {
     cleanupStep();
