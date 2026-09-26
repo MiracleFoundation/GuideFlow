@@ -33,6 +33,14 @@ builder.Services.AddGuideFlow();
 <script src="_content/GuideFlow/guideflow.module.js"></script>
 ```
 
+Also ensure the host app links its generated CSS-isolation bundle in the document `<head>` (replace `MyApp` with the app's assembly/package name):
+
+```html
+<link href="MyApp.styles.css" rel="stylesheet" />
+```
+
+This is separate from `_content/GuideFlow/guideflow.css` and includes component-scoped styles. If only some styles appear, check the browser's Network tab to confirm the bundle loads.
+
 ### 4. Import namespaces in _Imports.razor
 ```razor
 @using GuideFlow.Components

@@ -53,6 +53,12 @@ await builder.Build().RunAsync();")" />
     <CodeBlock Language="html" Code="@(@"<link href=""_content/GuideFlow/guideflow.css"" rel=""stylesheet"" />
 <script src=""_content/GuideFlow/guideflow.module.js""></script>")" />
 
+    <p>Also make sure your app's generated CSS-isolation bundle is linked in the document <code>&lt;head&gt;</code>. Replace <code>MyApp</code> with your app's assembly/package name:</p>
+
+    <CodeBlock Language="html" Code="@(@"<link href=""MyApp.styles.css"" rel=""stylesheet"" />")" />
+
+    <p>This bundle is separate from <code>_content/GuideFlow/guideflow.css</code> and includes component-scoped styles.</p>
+
     <h3 id="import-namespaces">Import Namespaces</h3>
 
     <p>Add these namespaces to your <code>_Imports.razor</code>:</p>
@@ -109,6 +115,7 @@ await builder.Build().RunAsync();")" />
 
     <ul>
         <li>CSS and JS files are correctly referenced in your HTML</li>
+        <li>If only some styles appear, check that your app's <code>.styles.css</code> bundle (see <a href="#add-css">Add the CSS and JS</a>) loads successfully in the browser's Network tab.</li>
         <li><code>AddGuideFlow()</code> is called in <code>Program.cs</code></li>
         <li>Namespaces are imported in <code>_Imports.razor</code></li>
     </ul>
